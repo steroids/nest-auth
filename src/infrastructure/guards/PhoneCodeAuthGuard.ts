@@ -3,6 +3,7 @@ import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/Validati
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthService} from '../../domain/services/AuthService';
+import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 
 @Injectable()
 export class PhoneCodeAuthGuard implements CanActivate {
@@ -16,7 +17,7 @@ export class PhoneCodeAuthGuard implements CanActivate {
         const req = context.switchToHttp().getRequest();
 
         const authConfirmModel = await this.authConfirmService.findOne(
-            (new SearchQuery())
+            (new SearchQuery<AuthConfirmModel>())
                 .with('user')
                 .where({
                     uid: req.body.uid,

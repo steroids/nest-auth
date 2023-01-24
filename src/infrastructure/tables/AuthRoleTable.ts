@@ -1,6 +1,6 @@
 import {TableFromModel} from '@steroidsjs/nest/infrastructure/decorators/TableFromModel';
-import {DeepPartial} from 'typeorm';
+import {IDeepPartial} from '@steroidsjs/nest/usecases/interfaces/IDeepPartial';
 import { AuthRoleModel } from '../../domain/models/AuthRoleModel';
 
 @TableFromModel(AuthRoleModel, 'auth_role')
-export class AuthRoleTable implements DeepPartial<AuthRoleModel> {}
+export class AuthRoleTable implements IDeepPartial<AuthRoleModel> {}

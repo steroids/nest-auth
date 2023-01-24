@@ -5,7 +5,7 @@ import {
 import {ForbiddenException} from '@steroidsjs/nest/usecases/exceptions';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
-import {In} from 'typeorm';
+import {In} from '@steroidsjs/typeorm';
 import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';
 import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
 import {PermissionsFactory} from '@steroidsjs/nest/infrastructure/helpers/PermissionsFactory';
@@ -86,7 +86,7 @@ export class AuthPermissionsService extends CrudService<AuthPermissionModel,
     }
 
     public async findOrCreate(keys: string[]) {
-        const searchQuery = new SearchQuery();
+        const searchQuery = new SearchQuery<AuthPermissionModel>();
         searchQuery.where({name: In(keys)});
         const permissions = await this.findMany(searchQuery);
         const noExist = keys.filter(e => !permissions.find(element => element.name === e));

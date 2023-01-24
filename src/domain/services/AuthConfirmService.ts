@@ -178,7 +178,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
         if (config.repeatLimitSec > 0) {
             const model = await this.findOne(
-                (new SearchQuery())
+                (new SearchQuery<AuthConfirmModel>())
                     .with('user')
                     .where([
                         '>=',
@@ -250,7 +250,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         // Валидация кода происходит в PhoneCodeAuthGuard
 
         const authConfirmModel = await this.findOne(
-            (new SearchQuery())
+            (new SearchQuery<AuthConfirmModel>())
                 .with('user')
                 .where({
                     uid: dto.uid,

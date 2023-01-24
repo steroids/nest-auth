@@ -2,7 +2,7 @@ import {forwardRef, Global, Module} from '@nestjs/common';
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigModule, ConfigService} from '@nestjs/config';
 import {PassportModule} from '@nestjs/passport';
-import {TypeOrmModule} from '@nestjs/typeorm';
+import {TypeOrmModule} from '@steroidsjs/nest-typeorm';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {DynamicModule} from '@nestjs/common/interfaces/modules/dynamic-module.interface';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';

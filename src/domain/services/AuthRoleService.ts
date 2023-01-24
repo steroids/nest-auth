@@ -39,7 +39,7 @@ export class AuthRoleService extends CrudService<AuthRoleModel,
     }
 
     public async getAutocomplete() {
-        const searchQuery = new SearchQuery();
+        const searchQuery = new SearchQuery<AuthRoleModel>();
         searchQuery.select(['id', 'title']);
         const roles = await this.findMany(searchQuery);
         const rolesDtos = [];
@@ -53,7 +53,7 @@ export class AuthRoleService extends CrudService<AuthRoleModel,
     }
 
     public async getPermissionKeysByRoleId(roleId: number) {
-        const searchQuery = new SearchQuery();
+        const searchQuery = new SearchQuery<AuthRoleModel>();
         searchQuery.where({id: roleId});
         searchQuery.with(['authPermissions', 'parent']);
         const authRole = await this.findOne(searchQuery);
@@ -74,7 +74,7 @@ export class AuthRoleService extends CrudService<AuthRoleModel,
     }
 
     public async findByAuthRolesIds(authRoleIds: number[]) {
-        const searchQuery = new SearchQuery();
+        const searchQuery = new SearchQuery<AuthRoleModel>();
         searchQuery.where(['in', 'id', authRoleIds]);
         return this.findMany(searchQuery);
     }
