@@ -538,10 +538,10 @@
     typedi "^0.10.0"
     uuid "^8.3.2"
 
-"@steroidsjs/nest@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-1.6.3.tgz#c74921ae8091af8069c2c102b75351e3220251a9"
-  integrity sha512-faovvtiWtOjjaNvYLGpGEEAk2n7Ix0jsTx68nL3efuMrevheyc45jyK1SdpxaRvBwqzGRBgEX32HRhkk83/mww==
+"@steroidsjs/nest@^1.6.4":
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-1.6.4.tgz#27da414c943f234e21a508a1a245fc18f1634181"
+  integrity sha512-Icg9P+j65ufy8INzsnNEA7ej93O/APo6IatDF0rLlVDczZfOnXcogXI88zAfdx3SoiKH7C14tfmCrEQjC39tsw==
   dependencies:
     "@dbml/core" "^2.3.1"
     "@nestjs/cli" "^8.2.2"
