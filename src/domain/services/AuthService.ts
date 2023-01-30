@@ -8,8 +8,10 @@ import {AuthUserDto} from '../dtos/AuthUserDto';
 import {AuthLoginService} from './AuthLoginService';
 import {ISessionService} from '../interfaces/ISessionService';
 import {AuthLoginModel} from '../models/AuthLoginModel';
-import {IConfigService} from '../interfaces/IConfigService';
 import JwtTokenStatusEnum from '../enums/JwtTokenStatusEnum';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {IAuthModuleConfig} from '../../infrastructure/config';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 
 export class AuthService {
     constructor(
@@ -18,7 +20,6 @@ export class AuthService {
         private sessionService: ISessionService,
         private authLoginService: AuthLoginService,
         private authPermissionsService: AuthPermissionsService,
-        private readonly configService: IConfigService,
     ) {
     }
 
@@ -59,7 +60,7 @@ export class AuthService {
 
     async refreshToken(refreshToken: string): Promise<AuthLoginModel> {
         const {payload, status} = await this.sessionService.verifyToken(refreshToken, {
-            secret: this.configService.get('auth.jwtRefreshSecretKey'),
+            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtRefreshSecretKey,
         });
         if (status === JwtTokenStatusEnum.VALID && payload) {
             const authLogin = await this.authLoginService.findByUid(payload.jti);

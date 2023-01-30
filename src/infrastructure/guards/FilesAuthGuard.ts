@@ -1,12 +1,14 @@
 import {ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import {ConfigService} from '@nestjs/config';
 import * as ms from 'ms';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
 import {AuthService} from '../../domain/services/AuthService';
 import {parseCookie} from '../helpers/ParseCookie';
 import JwtTokenStatusEnum from '../../domain/enums/JwtTokenStatusEnum';
 import {JWT_STRATEGY_NAME} from '../strategies/JwtStrategy';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {IAuthModuleConfig} from '../config';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 
 @Injectable()
 export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
@@ -15,8 +17,6 @@ export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
         private sessionsService: ISessionService,
         @Inject(AuthService)
         private authService: AuthService,
-        @Inject(ConfigService)
-        private configService: ConfigService,
     ) {
         super();
     }
@@ -36,7 +36,7 @@ export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
         ) {
             if (status === JwtTokenStatusEnum.EXPIRED_ERROR) {
                 const additionalTime = ms(
-                    this.configService.get('auth.filesTokenAdditionalTime')
+                    ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).filesTokenAdditionalTime
                     || this.defaultAdditionalTime,
                 );
                 if (Date.now() - payload.exp * 1000 > additionalTime) {

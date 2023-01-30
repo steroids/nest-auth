@@ -17,15 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true,
-    "paths": {
-      "@steroidsjs/nest/*": [
-        "../nest/src/*"
-      ],
-      "@steroidsjs/nest-modules/*": [
-        "../nest-modules/src/*"
-      ]
-    }
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"

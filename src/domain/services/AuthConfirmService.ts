@@ -5,7 +5,6 @@ import {
 } from 'lodash';
 import {formatISO9075, addSeconds, addMinutes} from 'date-fns';
 import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
-import {ConfigService} from '@nestjs/config';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
@@ -25,6 +24,11 @@ import {AuthConfirmSendSmsDto} from '../dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {AuthService} from './AuthService';
 import {UserRegistrationDto} from '../dtos/UserRegistrationDto';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {IAuthModuleConfig} from '../../infrastructure/config';
+import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
+import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
 
 export interface IAuthConfirmServiceConfig {
     expireMins: number,
@@ -52,7 +56,6 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         public repository: IAuthConfirmRepository,
         private notifierService: INotifierService,
         private userService: IUserService,
-        private configService: ConfigService,
         private authService: AuthService,
     ) {
         super();
@@ -94,7 +97,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                         phone,
                         message: config.messageTemplate
                             .replace('{code}', code)
-                            .replace('{appTitle}', this.configService.get('title')),
+                            .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
                         name: config.providerName,
                     } as INotifierSmsOptions,
                 });
@@ -125,7 +128,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                         phone,
                         message: config.messageTemplate
                             .replace('{code}', `${pronunciationCode}`)
-                            .replace('{appTitle}', this.configService.get('title'))
+                            .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title)
                             .concat(`, повторяю, ${pronunciationCode}`),
                         voice: 'm4',
                     } as INotifierVoiceMessageOptions,
@@ -161,10 +164,11 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
             providerName: 'smsc',
             providerType: 'voice',
             messageTemplate: 'Ваш код авторизации в {appTitle} - {code}',
-            ...this.configService.get('auth.confirm'),
+            voice: 'm',
+            ...ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm,
         };
         if (!config.providerName) {
-            throw new Error('Wrong configuration, please set "auth.confirm.providerName" param.');
+            throw new Error('Wrong configuration, please set "confirm.providerName" param.');
         }
 
         if (!providerType) {

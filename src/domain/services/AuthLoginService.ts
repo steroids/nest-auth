@@ -4,14 +4,17 @@ import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import {ISessionService} from '../interfaces/ISessionService';
 import {IAuthLoginRepository} from '../interfaces/IAuthLoginRepository';
-import {IConfigService} from '../interfaces/IConfigService';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {IAuthModuleConfig} from '../../infrastructure/config';
+import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
+import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
 
 export class AuthLoginService {
     constructor(
         /** @see AuthLoginRepository **/
         private repository: IAuthLoginRepository,
-        private readonly configService: IConfigService,
         private readonly sessionService: ISessionService,
     ) {
     }
@@ -36,20 +39,20 @@ export class AuthLoginService {
 
         // Base sign options
         const baseOptions = {
-            issuer: this.configService.get('name'),
+            issuer: ModuleHelper.getConfig<IAppModuleConfig>(AppModule).name,
             subject: String(user.id),
             jwtid: String(loginModel.uid),
         };
 
         // Access token expiration time
-        const accessTokenExpires = this.configService.get('auth.accessTokenExpiresSec') || '5m';
+        const accessTokenExpires = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).accessTokenExpiresSec;
         const accessTokenExpiresMs = ms(accessTokenExpires);
         const accessExpiration = new Date();
         accessExpiration.setTime(accessExpiration.getTime() + accessTokenExpiresMs);
         loginModel.accessExpireTime = accessExpiration;
 
         // Refresh token expiration time
-        const refreshTokenExpires = this.configService.get('auth.refreshTokenExpiresSec') || '60d';
+        const refreshTokenExpires = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).refreshTokenExpiresSec;
         const refreshTokenExpiresMs = ms(refreshTokenExpires);
         const refreshExpiration = new Date();
         refreshExpiration.setTime(refreshExpiration.getTime() + refreshTokenExpiresMs);
@@ -58,14 +61,14 @@ export class AuthLoginService {
         // Generate access token
         loginModel.accessToken = this.sessionService.signToken(tokenPayload, {
             ...baseOptions,
-            secret: this.configService.get('auth.jwtAccessSecretKey'),
+            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtAccessSecretKey,
             expiresIn: accessTokenExpires,
         });
 
         // Generate refresh token
         loginModel.refreshToken = this.sessionService.signToken(tokenPayload, {
             ...baseOptions,
-            secret: this.configService.get('auth.jwtRefreshSecretKey'),
+            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtRefreshSecretKey,
             expiresIn: refreshTokenExpires,
         });
 
@@ -75,13 +78,13 @@ export class AuthLoginService {
     }
 
     async generateAccessToken(user: UserModel, tokenPayload: AuthTokenPayloadDto, jwtid: string) {
-        const accessTokenExpires = this.configService.get('auth.accessTokenExpiresSec') || '5m';
+        const accessTokenExpires = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).accessTokenExpiresSec;
 
         return this.sessionService.signToken(tokenPayload, {
-            issuer: this.configService.get('name'),
+            issuer: ModuleHelper.getConfig<IAppModuleConfig>(AppModule).name,
             subject: String(user.id),
             jwtid,
-            secret: this.configService.get('auth.jwtAccessSecretKey'),
+            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtAccessSecretKey,
             expiresIn: accessTokenExpires,
         });
     }

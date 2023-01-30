@@ -1,20 +1,19 @@
 import {Injectable} from '@nestjs/common';
 import {PassportStrategy} from '@nestjs/passport';
 import {ExtractJwt, Strategy} from 'passport-jwt';
-import {ConfigService} from '@nestjs/config';
 import {UnauthorizedException} from '@steroidsjs/nest/usecases/exceptions';
 import {AuthLoginService} from '../../domain/services/AuthLoginService';
-import {AuthService} from '../../domain/services/AuthService';
 import {AuthTokenPayloadDto} from '../../domain/dtos/AuthTokenPayloadDto';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {IAuthModuleConfig} from '../config';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 
 export const JWT_STRATEGY_NAME = 'jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY_NAME) {
     constructor(
-        private configService: ConfigService,
         private authLoginService: AuthLoginService,
-        private authService: AuthService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY_NAME) {
                 ExtractJwt.fromUrlQueryParameter('token'),
             ]),
             ignoreExpiration: false,
-            secretOrKey: configService.get('auth.jwtAccessSecretKey'),
+            secretOrKey: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtAccessSecretKey,
         });
     }
 
