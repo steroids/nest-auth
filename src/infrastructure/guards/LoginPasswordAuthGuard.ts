@@ -7,6 +7,9 @@ import {LOGIN_PASSWORD_STRATEGY_NAME} from '../strategies/LoginPasswordStrategy'
 export class LoginPasswordAuthGuard extends AuthGuard(LOGIN_PASSWORD_STRATEGY_NAME) {
     handleRequest<TUser>(err, user): TUser {
         if (err || !user) {
+            if (err) {
+                console.error(err);
+            }
             throw new ValidationException({
                 password: 'Неверный логин или пароль',
             });

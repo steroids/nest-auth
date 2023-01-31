@@ -8,7 +8,7 @@ import {Context} from '../decorators/Context';
 
 @ApiTags('Авторизация')
 @Controller('/auth')
-export class AdminAuthController {
+export class AuthController {
     constructor(
         @Inject(AuthService) private authService: AuthService,
     ) {}

@@ -27,9 +27,8 @@ export class LoginPasswordStrategy extends PassportStrategy(Strategy, LOGIN_PASS
     async validate(login: string, password: string): Promise<any> {
         const user = await this.usersService.findByLogin(login);
         if (user) {
-            const passwordEquals = await this.sessionService.comparePassword(password, user.passwordHash);
-
-            if (passwordEquals) {
+            const isPasswordEquals = await this.sessionService.comparePassword(password, user.passwordHash);
+            if (isPasswordEquals) {
                 return this.authService.createAuthUserDto(this.authService.createTokenPayload(user));
             }
         }
