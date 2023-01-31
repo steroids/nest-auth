@@ -1,4 +1,3 @@
-import {forwardRef} from '@nestjs/common';
 import {JwtModule} from '@nestjs/jwt';
 import {PassportModule} from '@nestjs/passport';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
@@ -8,6 +7,8 @@ import {NotifierModule} from '@steroidsjs/nest-modules/notifier/NotifierModule';
 import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {IFileService} from '@steroidsjs/nest-modules/file/services/IFileService';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {forwardRef} from '@nestjs/common';
 import {SessionService} from './services/SessionService';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
@@ -31,7 +32,11 @@ import {AuthConfirmTable} from './tables/AuthConfirmTable';
 import {AuthLoginTable} from './tables/AuthLoginTable';
 import {AuthPermissionTable} from './tables/AuthPermissionTable';
 import {AuthRoleTable} from './tables/AuthRoleTable';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {AdminAuthController} from './controllers/AdminAuthController';
+import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
+import {AuthPermissionController} from './controllers/AuthPermissionController';
+import {AuthPhoneController} from './controllers/AuthPhoneController';
+import {AuthRoleController} from './controllers/AuthRoleController';
 
 export interface IAuthModuleConfig {
     jwtAccessSecretKey?: string,
@@ -52,6 +57,7 @@ export interface IAuthModuleConfig {
 }
 
 export default {
+    rootTarget: AuthModule,
     global: true,
     config: () => ({
         jwtAccessSecretKey: process.env.AUTH_JWT_ACCESS_SECRET_KEY,
@@ -79,14 +85,20 @@ export default {
     module: (config: IAuthModuleConfig) => ({
         imports: [
             PassportModule,
-            forwardRef(() => NotifierModule),
+            NotifierModule,
             forwardRef(() => UserModule),
-            forwardRef(() => FileModule),
+            FileModule,
             JwtModule.register({
                 secret: config.jwtAccessSecretKey,
             }),
         ],
-        controllers: ModuleHelper.importDir(__dirname + '/controllers'),
+        controllers: [
+            AdminAuthController,
+            AuthFilePermissionController,
+            AuthPermissionController,
+            AuthPhoneController,
+            AuthRoleController,
+        ],
         providers: [
             {
                 provide: IAuthLoginRepository,

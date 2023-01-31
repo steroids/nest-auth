@@ -2,6 +2,8 @@ import {UnauthorizedException, UserException} from '@steroidsjs/nest/usecases/ex
 import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
 import {IUserRegistrationDto} from '@steroidsjs/nest-modules/user/dtos/IUserRegistrationDto';
 import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {AuthPermissionsService} from './AuthPermissionsService';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {AuthUserDto} from '../dtos/AuthUserDto';
@@ -9,9 +11,7 @@ import {AuthLoginService} from './AuthLoginService';
 import {ISessionService} from '../interfaces/ISessionService';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import JwtTokenStatusEnum from '../enums/JwtTokenStatusEnum';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {IAuthModuleConfig} from '../../infrastructure/config';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 
 export class AuthService {
     constructor(
