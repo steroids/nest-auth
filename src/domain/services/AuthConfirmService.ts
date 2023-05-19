@@ -262,7 +262,8 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         );
 
         // Делаем отмету, что код подтвержден
-        await this.update(authConfirmModel.id, {isConfirmed: true});
+        authConfirmModel.isConfirmed = true;
+        await this.update(authConfirmModel.id, authConfirmModel);
 
         // Создаем пользователя, если такого еще нет
         if (!authConfirmModel.user) {

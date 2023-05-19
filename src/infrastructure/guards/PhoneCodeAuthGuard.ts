@@ -43,12 +43,12 @@ export class PhoneCodeAuthGuard implements CanActivate {
                     code: 'Превышено количество попыток',
                 });
             }
-            await this.authConfirmService.update(authConfirmModel.id, {isConfirmed: true});
+            authConfirmModel.isConfirmed = true;
+            await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
         } else {
             if (authConfirmModel.attemptsCount > 0) {
-                await this.authConfirmService.update(authConfirmModel.id, {
-                    attemptsCount: authConfirmModel.attemptsCount - 1,
-                });
+                authConfirmModel.attemptsCount = authConfirmModel.attemptsCount - 1;
+                await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
                 throw new ValidationException({
                     code: `Неверный код, осталось попыток: ${authConfirmModel.attemptsCount}`,
                 });
