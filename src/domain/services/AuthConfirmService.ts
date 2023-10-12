@@ -54,9 +54,9 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
 
     constructor(
         public repository: IAuthConfirmRepository,
-        private notifierService: INotifierService,
-        private userService: IUserService,
-        private authService: AuthService,
+        protected readonly notifierService: INotifierService,
+        protected readonly userService: IUserService,
+        protected readonly authService: AuthService,
     ) {
         super();
     }
