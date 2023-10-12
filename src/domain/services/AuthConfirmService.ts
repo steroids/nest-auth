@@ -61,7 +61,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         super();
     }
 
-    private async sendCall(config: IAuthConfirmServiceConfig, phone: string) {
+    protected async sendCall(config: IAuthConfirmServiceConfig, phone: string) {
         let code;
         if (config.isEnableDebugStaticCode) {
             code = _repeat('1', config.callCodeLength);
@@ -83,7 +83,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         return code;
     }
 
-    private async sendSms(config: IAuthConfirmServiceConfig, phone: string) {
+    protected async sendSms(config: IAuthConfirmServiceConfig, phone: string) {
         let code;
         if (config.isEnableDebugStaticCode) {
             code = _repeat('1', config.smsCodeLength);
@@ -114,7 +114,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         return code;
     }
 
-    private async sendVoiceMessage(config: IAuthConfirmServiceConfig, phone: string) {
+    protected async sendVoiceMessage(config: IAuthConfirmServiceConfig, phone: string) {
         let code;
         if (config.isEnableDebugStaticCode) {
             code = _repeat('1', config.smsCodeLength);
