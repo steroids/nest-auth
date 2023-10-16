@@ -29,6 +29,7 @@ import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IAuthModuleConfig} from '../../infrastructure/config';
 import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
 import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import {ContextDto} from '../dtos/ContextDto';
 
 export interface IAuthConfirmServiceConfig {
     expireMins: number,
@@ -149,6 +150,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
     async sendCode(
         dto: AuthConfirmSendSmsDto,
         providerType: string | null,
+        context: ContextDto,
         schemaClass = null,
     ): Promise<AuthConfirmModel> {
         await validateOrReject(dto);
@@ -244,6 +246,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
                 userId: user?.id || null,
+                ipAddress: context?.ipAddress,
             } as AuthConfirmModel),
         );
 

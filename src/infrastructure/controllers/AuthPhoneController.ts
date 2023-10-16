@@ -8,6 +8,8 @@ import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
+import {ContextDto} from '../../domain/dtos/ContextDto';
+import {Context} from '../decorators/Context';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -23,30 +25,42 @@ export class AuthPhoneController {
 
     @Post('/sms')
     @ApiOkResponse({type: AuthConfirmSchema})
-    async sendSmsCode(@Body() dto: AuthConfirmSendSmsDto) {
+    async sendSmsCode(
+        @Body() dto: AuthConfirmSendSmsDto,
+        @Context() context: ContextDto,
+    ) {
         return this.authConfirmService.sendCode(
             dto,
             NotifierProviderType.SMS,
+            context,
             AuthConfirmSchema,
         );
     }
 
     @Post('/call')
     @ApiOkResponse({type: AuthConfirmSchema})
-    async sendSmsCodeByCall(@Body() dto: AuthConfirmSendSmsDto) {
+    async sendSmsCodeByCall(
+        @Body() dto: AuthConfirmSendSmsDto,
+        @Context() context: ContextDto,
+    ) {
         return this.authConfirmService.sendCode(
             dto,
             NotifierProviderType.CALL,
+            context,
             AuthConfirmSchema,
         );
     }
 
     @Post('/send')
     @ApiOkResponse({type: AuthConfirmSchema})
-    async send(@Body() dto: AuthConfirmSendSmsDto) {
+    async send(
+        @Body() dto: AuthConfirmSendSmsDto,
+        @Context() context: ContextDto,
+    ) {
         return this.authConfirmService.sendCode(
             dto,
             null,
+            context,
             AuthConfirmSchema,
         );
     }
@@ -55,7 +69,9 @@ export class AuthPhoneController {
     @ApiBody({type: AuthConfirmLoginDto})
     @ApiOkResponse({type: AuthLoginSchema})
     @UseGuards(PhoneCodeAuthGuard)
-    async loginByPhoneCode(@Body() dto: AuthConfirmLoginDto) {
+    async loginByPhoneCode(
+        @Body() dto: AuthConfirmLoginDto,
+    ) {
         return this.authConfirmService.confirmCode(dto, AuthLoginSchema);
     }
 }

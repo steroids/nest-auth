@@ -80,6 +80,12 @@ export class AuthConfirmModel {
     })
     attemptsCount: number;
 
+    @StringField({
+        label: 'IP',
+        nullable: true,
+    })
+    ipAddress: string;
+
     @CreateTimeField({
         label: 'Создан',
     })

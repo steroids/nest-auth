@@ -18,4 +18,9 @@ export class ContextDto implements IContextDto {
         relationClass: () => AuthConfirmSectionDto,
     })
     authConfirm?: AuthConfirmSectionDto;
+
+    @StringField({
+        nullable: true,
+    })
+    ipAddress: string;
 }
