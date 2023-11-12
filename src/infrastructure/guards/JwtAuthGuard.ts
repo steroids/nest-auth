@@ -22,7 +22,7 @@ export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
         const token = getTokenFromHttpRequest(req);
 
         if (!token) {
-            return true;
+            return false;
         }
 
         const {status, payload} = this.sessionsService.verifyToken(token);
