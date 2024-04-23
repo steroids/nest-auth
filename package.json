@@ -32,8 +32,8 @@
   "devDependencies": {
     "@steroidsjs/nest": "^1.8.1",
     "@steroidsjs/nest-modules": "^0.0.13",
-    "@steroidsjs/nest-typeorm": "^9.0.3",
-    "@steroidsjs/typeorm": "^0.3.11",
+    "@steroidsjs/nest-typeorm": "^10.0.3",
+    "@steroidsjs/typeorm": "^0.3.23",
     "@steroidsjs/eslint-config": "^2.1.2",
     "copyfiles": "^2.4.1",
     "@nestjs/schematics": "^9.0.4",
