@@ -253,7 +253,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         return schemaClass ? DataMapper.create(schemaClass, model) : model;
     }
 
-    async confirmCode(dto: AuthConfirmLoginDto, schemaClass = null) {
+    async confirmCode(dto: AuthConfirmLoginDto, context: ContextDto, schemaClass = null) {
         // Валидация кода происходит в PhoneCodeAuthGuard
 
         const authConfirmModel = await this.findOne(
@@ -274,6 +274,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                 DataMapper.create(UserRegistrationDto, {
                     phone: authConfirmModel.phone,
                 }),
+                context,
             );
         }
 
@@ -281,7 +282,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         const authUserDto = await this.authService.createAuthUserDto(
             this.authService.createTokenPayload(authConfirmModel.user),
         );
-        const loginModel = await this.authService.login(authUserDto);
+        const loginModel = await this.authService.login(authUserDto, context);
 
         return schemaClass ? DataMapper.create(schemaClass, loginModel) : loginModel;
     }

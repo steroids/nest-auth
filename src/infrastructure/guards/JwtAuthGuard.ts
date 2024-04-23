@@ -36,9 +36,10 @@ export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
                 ...user.permissions,
             ];
 
-            delete user.permissions;
+            user.permissions = req.permissions;
 
             req.user = user;
+            req.loginUid = payload.jti;
 
             return true;
         }

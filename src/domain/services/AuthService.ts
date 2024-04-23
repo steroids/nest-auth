@@ -12,6 +12,7 @@ import {ISessionService} from '../interfaces/ISessionService';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import JwtTokenStatusEnum from '../enums/JwtTokenStatusEnum';
 import {IAuthModuleConfig} from '../../infrastructure/config';
+import { ContextDto } from '../dtos/ContextDto';
 
 export class AuthService {
     constructor(
@@ -43,18 +44,18 @@ export class AuthService {
         return dto;
     }
 
-    async login(authUser: AuthUserDto): Promise<AuthLoginModel> {
+    async login(authUser: AuthUserDto, context: ContextDto): Promise<AuthLoginModel> {
         const user = await this.usersService.findById(authUser.id);
         if (!user) {
             throw new UnauthorizedException('Пользователь не найден');
         }
 
-        return this.authLoginService.create(user, this.createTokenPayload(user));
+        return this.authLoginService.create(user, this.createTokenPayload(user), context);
     }
 
-    async registration(registrationDto: IUserRegistrationDto) {
+    async registration(registrationDto: IUserRegistrationDto, context: ContextDto) {
         const user = await this.usersService.registration(registrationDto);
-        await this.authLoginService.create(user, this.createTokenPayload(user));
+        await this.authLoginService.create(user, this.createTokenPayload(user), context);
         return user;
     }
 
@@ -75,5 +76,9 @@ export class AuthService {
             }
         }
         throw new UserException('Неверный токен авторизациии');
+    }
+
+    async logout(context: ContextDto): Promise<void> {
+        return this.authLoginService.revoke(context.loginUid);
     }
 }

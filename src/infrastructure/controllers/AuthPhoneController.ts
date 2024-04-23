@@ -71,7 +71,8 @@ export class AuthPhoneController {
     @UseGuards(PhoneCodeAuthGuard)
     async loginByPhoneCode(
         @Body() dto: AuthConfirmLoginDto,
+        @Context() context: ContextDto,
     ) {
-        return this.authConfirmService.confirmCode(dto, AuthLoginSchema);
+        return this.authConfirmService.confirmCode(dto, context, AuthLoginSchema);
     }
 }

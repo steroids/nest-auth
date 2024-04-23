@@ -44,11 +44,13 @@ export class AuthLoginModel {
 
     @StringField({
         label: 'Токен для обновления',
+        noColumn: true,
     })
     refreshToken: string;
 
     @StringField({
         label: 'Время истечения токена обновления',
+        noColumn: true,
     })
     refreshExpireTime: Date;
 

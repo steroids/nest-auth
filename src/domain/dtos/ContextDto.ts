@@ -6,12 +6,8 @@ export class ContextDto implements IContextDto {
     user?: any | {
         id?: number,
         name?: string,
+        permissions?: string[],
     };
-
-    @StringField({
-        isArray: true,
-    })
-    permissions?: string[];
 
     @RelationField({
         type: 'ManyToOne',
@@ -23,4 +19,14 @@ export class ContextDto implements IContextDto {
         nullable: true,
     })
     ipAddress: string;
+
+    @StringField({
+        nullable: true,
+    })
+    userAgent?: string;
+
+    @StringField({
+        nullable: true,
+    })
+    loginUid?: string;
 }

@@ -1,15 +1,17 @@
 import * as ms from 'ms';
 import {generateUid} from '@steroidsjs/nest/infrastructure/decorators/fields/UidField';
 import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
+import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import { DataMapper } from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import {ISessionService} from '../interfaces/ISessionService';
 import {IAuthLoginRepository} from '../interfaces/IAuthLoginRepository';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IAuthModuleConfig} from '../../infrastructure/config';
-import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
-import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import { ContextDto } from '../dtos/ContextDto';
 
 export class AuthLoginService {
     constructor(
@@ -32,10 +34,13 @@ export class AuthLoginService {
         return model && !model.isRevoked;
     }
 
-    async create(user: UserModel, tokenPayload: AuthTokenPayloadDto): Promise<AuthLoginModel> {
-        const loginModel = new AuthLoginModel();
-        loginModel.uid = generateUid();
-        loginModel.userId = user.id;
+    async create(user: UserModel, tokenPayload: AuthTokenPayloadDto, context: ContextDto): Promise<AuthLoginModel> {
+        const loginModel = DataMapper.create<AuthLoginModel>(AuthLoginModel, {
+            uid: generateUid(),
+            userId: user.id,
+            ipAddress: context.ipAddress,
+            userAgent: context.userAgent,
+        });
 
         // Base sign options
         const baseOptions = {
@@ -87,5 +92,16 @@ export class AuthLoginService {
             secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtAccessSecretKey,
             expiresIn: accessTokenExpires,
         });
+    }
+
+    async revoke(uid: string) {
+        const loginModel = await this.findByUid(uid);
+
+        if (loginModel) {
+            await this.repository.update(loginModel.id, {
+                ...loginModel,
+                isRevoked: true,
+            });
+        }
     }
 }
