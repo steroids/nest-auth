@@ -1,4 +1,4 @@
-import {Body, Controller, forwardRef, Get, Inject, Param, Post, Query, UseGuards} from '@nestjs/common';
+import { Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import {ApiOkSearchResponse} from '@steroidsjs/nest/infrastructure/decorators/ApiOkSearchResponse';
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {AuthRoleService} from '../../domain/services/AuthRoleService';
@@ -12,21 +12,24 @@ import {
 } from '../permissions';
 import {JwtAuthGuard} from '../guards/JwtAuthGuard';
 import {Context} from '../decorators/Context';
+import { ContextDto } from '../../domain/dtos/ContextDto';
 
 @ApiTags('Роли')
 @Controller('/auth/roles')
 export class AuthRoleController {
     constructor(
         @Inject(forwardRef(() => AuthRoleService))
-        private roleService: AuthRoleService,
-    ) {
-    }
+        private readonly roleService: AuthRoleService,
+    ) {}
 
     @Get()
     @AuthPermissions(PERMISSION_AUTH_MANAGE_ROLES_VIEW)
     @ApiOkSearchResponse({type: AuthRoleDetailSchema})
     @UseGuards(JwtAuthGuard)
-    async search(@Context() context, @Query() dto: AuthRoleSearchInputDto) {
+    async search(
+        @Context() context: ContextDto,
+        @Query() dto: AuthRoleSearchInputDto,
+    ) {
         dto.pageSize = 0;
         return this.roleService.search(dto, context, AuthRoleDetailSchema);
     }
@@ -41,7 +44,10 @@ export class AuthRoleController {
     @AuthPermissions(PERMISSION_AUTH_MANAGE_ROLES_VIEW)
     @ApiOkResponse({type: AuthRoleDetailSchema})
     @UseGuards(JwtAuthGuard)
-    async findById(@Context() context, @Param('id') id: string) {
+    async findById(
+        @Context() context: ContextDto,
+        @Param('id', ParseIntPipe) id: string,
+    ) {
         return this.roleService.findById(id, context, AuthRoleDetailSchema);
     }
 
@@ -50,7 +56,10 @@ export class AuthRoleController {
     @ApiBody({type: AuthRoleSaveDto})
     @ApiOkResponse({type: AuthRoleDetailSchema})
     @UseGuards(JwtAuthGuard)
-    async create(@Context() context, @Body() dto: AuthRoleSaveDto) {
+    async create(
+        @Context() context: ContextDto,
+        @Body() dto: AuthRoleSaveDto,
+    ) {
         return this.roleService.updateOrCreate(dto, null, context, AuthRoleDetailSchema);
     }
 
@@ -59,7 +68,11 @@ export class AuthRoleController {
     @ApiBody({type: AuthRoleSaveDto})
     @ApiOkResponse({type: AuthRoleDetailSchema})
     @UseGuards(JwtAuthGuard)
-    async update(@Context() context, @Param('id') id: string, @Body() dto: AuthRoleSaveDto) {
+    async update(
+        @Context() context: ContextDto,
+        @Param('id') id: number,
+        @Body() dto: AuthRoleSaveDto,
+    ) {
         return this.roleService.updateOrCreate(dto, id, context, AuthRoleDetailSchema);
     }
 }

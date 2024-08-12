@@ -5,7 +5,6 @@ import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {PhoneCodeAuthGuard} from '../guards/PhoneCodeAuthGuard';
 import {AuthConfirmSendSmsDto} from '../../domain/dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
-import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
 import {ContextDto} from '../../domain/dtos/ContextDto';
@@ -17,9 +16,6 @@ export class AuthPhoneController {
     constructor(
         @Inject(AuthConfirmService)
         private authConfirmService: AuthConfirmService,
-
-        @Inject(AuthService)
-        private authService: AuthService,
     ) {
     }
 
