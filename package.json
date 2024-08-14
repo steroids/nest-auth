@@ -30,7 +30,7 @@
     "@steroidsjs/typeorm": "^0"
   },
   "devDependencies": {
-    "@steroidsjs/nest": "^1.8.1",
+    "@steroidsjs/nest": "^2.1.1",
     "@steroidsjs/nest-modules": "^0.0.13",
     "@steroidsjs/nest-typeorm": "^10.0.3",
     "@steroidsjs/typeorm": "^0.3.23",

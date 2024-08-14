@@ -1,14 +1,14 @@
 import {ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import * as ms from 'ms';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
 import {AuthService} from '../../domain/services/AuthService';
 import {parseCookie} from '../helpers/ParseCookie';
 import JwtTokenStatusEnum from '../../domain/enums/JwtTokenStatusEnum';
 import {JWT_STRATEGY_NAME} from '../strategies/JwtStrategy';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {IAuthModuleConfig} from '../config';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 
 @Injectable()
 export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {

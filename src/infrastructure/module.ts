@@ -8,6 +8,8 @@ import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService'
 import {IFileService} from '@steroidsjs/nest-modules/file/services/IFileService';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {forwardRef} from '@nestjs/common';
+import { IAuthUpdateUserOwnPasswordUseCase } from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
+import { IUserUpdatePasswordUseCase } from '@steroidsjs/nest-modules/user/usecases/IUserUpdatePasswordUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
@@ -33,6 +35,8 @@ import {AuthPermissionController} from './controllers/AuthPermissionController';
 import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
+import { AuthUpdateUserOwnPasswordUseCase } from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
+import { PasswordValidator } from './validators/PasswordValidator';
 
 export default (config: IAuthModuleConfig) => ({
     imports: [
@@ -110,6 +114,20 @@ export default (config: IAuthModuleConfig) => ({
             ISessionService,
         ]),
         JwtStrategy,
+
+        // UseCases
+        ModuleHelper.provide(AuthUpdateUserOwnPasswordUseCase, IAuthUpdateUserOwnPasswordUseCase, [
+            IUserUpdatePasswordUseCase,
+            [
+                PasswordValidator,
+            ],
+        ]),
+
+        // Validators
+        ModuleHelper.provide(PasswordValidator, [
+            IUserService,
+            ISessionService,
+        ]),
     ],
     exports: [
         ISessionService,

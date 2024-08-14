@@ -28,7 +28,8 @@ export class AuthRoleService extends CrudService<AuthRoleModel,
         schema?,
     ): Promise<any> {
         const permissions = await this.permissionService.findOrCreate(saveDto.permissionKeys);
-        const roleSaveDto = DataMapper.create(AuthRoleSaveInputDto, {
+        // TODO SaveDto не всегда ровно ложится на обновленный интерфейс в CrudService и это нормально. Нужно подумать, как это исправить
+        const roleSaveDto: any = DataMapper.create(AuthRoleSaveInputDto, {
             ...saveDto,
             authPermissions: permissions,
         });

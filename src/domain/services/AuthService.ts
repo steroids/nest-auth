@@ -4,6 +4,7 @@ import {IUserRegistrationDto} from '@steroidsjs/nest-modules/user/dtos/IUserRegi
 import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import { IUserRegistrationUseCase } from '@steroidsjs/nest-modules/user/usecases/IUserRegistrationUseCase';
 import {AuthPermissionsService} from './AuthPermissionsService';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {AuthUserDto} from '../dtos/AuthUserDto';
@@ -16,11 +17,12 @@ import { ContextDto } from '../dtos/ContextDto';
 
 export class AuthService {
     constructor(
-        private usersService: IUserService,
+        private readonly usersService: IUserService,
         /** @see SessionService **/
-        private sessionService: ISessionService,
-        private authLoginService: AuthLoginService,
-        private authPermissionsService: AuthPermissionsService,
+        private readonly sessionService: ISessionService,
+        private readonly authLoginService: AuthLoginService,
+        private readonly authPermissionsService: AuthPermissionsService,
+        private readonly userRegistrationUseCase: IUserRegistrationUseCase,
     ) {
     }
 
@@ -54,7 +56,7 @@ export class AuthService {
     }
 
     async registration(registrationDto: IUserRegistrationDto, context: ContextDto) {
-        const user = await this.usersService.registration(registrationDto);
+        const user = await this.userRegistrationUseCase.handle(registrationDto, context);
         await this.authLoginService.create(user, this.createTokenPayload(user), context);
         return user;
     }
