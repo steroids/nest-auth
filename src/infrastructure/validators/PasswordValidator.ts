@@ -18,7 +18,7 @@ export class PasswordValidator implements IValidator {
         if (!userId) {
             throw new Error('Context is not provided for PasswordValidator');
         }
-        const user = await this.userService.findById(params.context?.user?.id);
+        const user = await this.userService.findById(userId);
 
         if (!user) {
             throw new Error(`User with id=${userId} not found`);
