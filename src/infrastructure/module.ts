@@ -37,6 +37,8 @@ import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import { AuthUpdateUserOwnPasswordUseCase } from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import { PasswordValidator } from './validators/PasswordValidator';
+import { IAuthRevokeUserActiveLoginsUseCase } from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import { AuthRevokeUserActiveLoginsUseCase } from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
 
 export default (config: IAuthModuleConfig) => ({
     imports: [
@@ -118,9 +120,13 @@ export default (config: IAuthModuleConfig) => ({
         // UseCases
         ModuleHelper.provide(AuthUpdateUserOwnPasswordUseCase, IAuthUpdateUserOwnPasswordUseCase, [
             IUserUpdatePasswordUseCase,
+            IAuthRevokeUserActiveLoginsUseCase,
             [
                 PasswordValidator,
             ],
+        ]),
+        ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
+            AuthLoginService,
         ]),
 
         // Validators
