@@ -1,5 +1,5 @@
-import { IAuthRevokeUserActiveLoginsUseCase } from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
-import { AuthLoginService } from '../../domain/services/AuthLoginService';
+import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {AuthLoginService} from '../../domain/services/AuthLoginService';
 
 export class AuthRevokeUserActiveLoginsUseCase implements IAuthRevokeUserActiveLoginsUseCase {
     constructor(

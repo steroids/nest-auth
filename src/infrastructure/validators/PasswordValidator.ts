@@ -1,7 +1,7 @@
-import { IValidator, IValidatorParams } from '@steroidsjs/nest/usecases/interfaces/IValidator';
-import { IUserService } from '@steroidsjs/nest-modules/user/services/IUserService';
-import { ISessionService } from '@steroidsjs/nest-modules/auth/services/ISessionService';
-import { FieldValidatorException } from '@steroidsjs/nest/usecases/exceptions/FieldValidatorException';
+import {IValidator, IValidatorParams} from '@steroidsjs/nest/usecases/interfaces/IValidator';
+import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
+import {ISessionService} from '@steroidsjs/nest-modules/auth/services/ISessionService';
+import {FieldValidatorException} from '@steroidsjs/nest/usecases/exceptions/FieldValidatorException';
 
 interface IPasswordValidatorDto {
     currentPassword: string;
@@ -18,7 +18,7 @@ export class PasswordValidator implements IValidator {
         if (!userId) {
             throw new Error('Context is not provided for PasswordValidator');
         }
-        const user = await this.userService.findById(params.context?.user?.id);
+        const user = await this.userService.findById(userId);
 
         if (!user) {
             throw new Error(`User with id=${userId} not found`);
