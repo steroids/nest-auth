@@ -94,6 +94,15 @@ export class AuthLoginService {
         });
     }
 
+    async getUserActiveAuthLogins(userId: number): Promise<AuthLoginModel[]> {
+        return this.repository.createQuery()
+            .where({
+                userId,
+                isRevoked: false,
+            })
+            .many();
+    }
+
     async revoke(uid: string) {
         const loginModel = await this.findByUid(uid);
 

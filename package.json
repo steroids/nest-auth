@@ -25,13 +25,13 @@
   },
   "peerDependencies": {
     "@steroidsjs/nest": "^1",
-    "@steroidsjs/nest-modules": "^0",
+    "@steroidsjs/nest-modules": "^0.1.5",
     "@steroidsjs/nest-typeorm": "^9",
     "@steroidsjs/typeorm": "^0"
   },
   "devDependencies": {
-    "@steroidsjs/nest": "^1.8.1",
-    "@steroidsjs/nest-modules": "^0.0.13",
+    "@steroidsjs/nest": "^2.1.1",
+    "@steroidsjs/nest-modules": "^0.1.5",
     "@steroidsjs/nest-typeorm": "^10.0.3",
     "@steroidsjs/typeorm": "^0.3.23",
     "@steroidsjs/eslint-config": "^2.1.2",
