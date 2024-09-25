@@ -29,7 +29,7 @@ export class SessionService implements ISessionService {
         return this.jwtService.sign(plainPayload, options);
     }
 
-    verifyToken(token: string, options?: JwtVerifyOptions): {status: string, payload: any} {
+    verifyToken(token: string, options?: JwtVerifyOptions): { status: string, payload: any } {
         try {
             return {
                 status: JwtTokenStatusEnum.VALID,
@@ -49,5 +49,13 @@ export class SessionService implements ISessionService {
 
     getTokenPayload(token: string, options?: JwtVerifyOptions): AuthTokenPayloadDto {
         return this.jwtService.decode(token, options) as AuthTokenPayloadDto;
+    }
+
+    getTokenExpireTime(token: string): Date | null {
+        const decoded = this.jwtService.decode(token) as { exp: number };
+        if (decoded && decoded.exp) {
+            return new Date(decoded.exp * 1000);
+        }
+        return null;
     }
 }
