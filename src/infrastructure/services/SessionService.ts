@@ -53,9 +53,8 @@ export class SessionService implements ISessionService {
 
     getTokenExpireTime(token: string): Date | null {
         const decoded = this.jwtService.decode(token) as { exp: number };
-        if (decoded && decoded.exp) {
-            return new Date(decoded.exp * 1000);
-        }
-        return null;
+        return decoded && decoded.exp
+            ? new Date(decoded.exp * 1000)
+            : null;
     }
 }
