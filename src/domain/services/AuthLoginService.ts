@@ -34,43 +34,41 @@ export class AuthLoginService {
     }
 
     async create(user: UserModel, tokenPayload: AuthTokenPayloadDto, context: ContextDto): Promise<AuthLoginModel> {
-        const loginModel = DataMapper.create<AuthLoginModel>(AuthLoginModel, {
-            uid: generateUid(),
-            userId: user.id,
-            ipAddress: context.ipAddress,
-            userAgent: context.userAgent,
-        });
+        const loginModelUid = generateUid();
 
         // Base sign options
-        const baseOptions = {
+        const baseTokenOptions = {
             issuer: ModuleHelper.getConfig<IAppModuleConfig>(AppModule).name,
-            subject: String(user.id),
-            jwtid: String(loginModel.uid),
+            subject: `${user.id}`,
+            jwtid: loginModelUid,
         };
 
-        // Access token expiration time
-        const accessTokenExpires = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).accessTokenExpiresSec;
-
-        // Refresh token expiration time
-        const refreshTokenExpires = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).refreshTokenExpiresSec;
+        const authModuleConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule);
 
         // Generate access token
-        loginModel.accessToken = this.sessionService.signToken(tokenPayload, {
-            ...baseOptions,
-            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtAccessSecretKey,
-            expiresIn: accessTokenExpires,
+        const accessToken = this.sessionService.signToken(tokenPayload, {
+            ...baseTokenOptions,
+            secret: authModuleConfig.jwtAccessSecretKey,
+            expiresIn: authModuleConfig.accessTokenExpiresSec,
         });
 
         // Generate refresh token
-        loginModel.refreshToken = this.sessionService.signToken(tokenPayload, {
-            ...baseOptions,
-            secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtRefreshSecretKey,
-            expiresIn: refreshTokenExpires,
+        const refreshToken = this.sessionService.signToken(tokenPayload, {
+            ...baseTokenOptions,
+            secret: authModuleConfig.jwtRefreshSecretKey,
+            expiresIn: authModuleConfig.refreshTokenExpiresSec,
         });
 
-        // Set expiration dates
-        loginModel.accessExpireTime = this.sessionService.getTokenExpireTime(loginModel.accessToken);
-        loginModel.refreshExpireTime = this.sessionService.getTokenExpireTime(loginModel.refreshToken);
+        const loginModel = DataMapper.create<AuthLoginModel>(AuthLoginModel, {
+            uid: loginModelUid,
+            userId: user.id,
+            ipAddress: context.ipAddress,
+            userAgent: context.userAgent,
+            accessToken,
+            accessExpireTime: this.sessionService.getTokenExpireTime(accessToken),
+            refreshToken,
+            refreshExpireTime: this.sessionService.getTokenExpireTime(refreshToken),
+        });
 
         await this.repository.create(loginModel);
 
