@@ -15,8 +15,8 @@ import {ContextDto} from '../dtos/ContextDto';
 export class AuthLoginService {
     constructor(
         /** @see AuthLoginRepository **/
-        private repository: IAuthLoginRepository,
-        private readonly sessionService: ISessionService,
+        protected repository: IAuthLoginRepository,
+        protected readonly sessionService: ISessionService,
     ) {
     }
 
