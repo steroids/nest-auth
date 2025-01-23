@@ -1,15 +1,18 @@
 import * as bcrypt from 'bcryptjs';
 import {JwtService} from '@nestjs/jwt';
 import {JwtSignOptions, JwtVerifyOptions} from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
-import {Injectable} from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
 import {AuthTokenPayloadDto} from '../../domain/dtos/AuthTokenPayloadDto';
 import JwtTokenStatusEnum from '../../domain/enums/JwtTokenStatusEnum';
+import {AuthLoginService} from '../../domain/services/AuthLoginService';
 
 @Injectable()
 export class SessionService implements ISessionService {
     constructor(
         private readonly jwtService: JwtService,
+        @Inject(forwardRef(() => AuthLoginService))
+        private readonly authLoginService: AuthLoginService,
     ) {}
 
     async hashPassword(password: string) {
@@ -29,15 +32,14 @@ export class SessionService implements ISessionService {
         return this.jwtService.sign(plainPayload, options);
     }
 
-    verifyToken(token: string, options?: JwtVerifyOptions): { status: string, payload: any } {
+    async verifyToken(token: string, options?: JwtVerifyOptions): Promise<{ status: string, payload: any }> {
+        let payload: any;
+
         try {
-            return {
-                status: JwtTokenStatusEnum.VALID,
-                payload: this.jwtService.verify(token, options),
-            };
+            payload = this.jwtService.verify(token, options);
         } catch (e) {
             if (e.name === JwtTokenStatusEnum.TOKEN_ERROR || e.name === JwtTokenStatusEnum.EXPIRED_ERROR) {
-                const payload = this.jwtService.decode(token, options);
+                payload = this.jwtService.decode(token, options);
                 return {
                     status: e.name,
                     payload,
@@ -45,6 +47,13 @@ export class SessionService implements ISessionService {
             }
             throw e;
         }
+
+        const isNotRevoked = await this.authLoginService.isLoginValid(payload.jti);
+
+        return {
+            status: isNotRevoked ? JwtTokenStatusEnum.VALID : JwtTokenStatusEnum.TOKEN_ERROR,
+            payload,
+        };
     }
 
     getTokenPayload(token: string, options?: JwtVerifyOptions): AuthTokenPayloadDto {

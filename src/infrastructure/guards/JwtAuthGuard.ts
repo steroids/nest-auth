@@ -25,7 +25,7 @@ export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
             return true;
         }
 
-        const {status, payload} = this.sessionsService.verifyToken(token);
+        const {status, payload} = await this.sessionsService.verifyToken(token);
 
         if (status === JwtTokenStatusEnum.VALID && payload) {
             const user = await this.authService.createAuthUserDto(payload);

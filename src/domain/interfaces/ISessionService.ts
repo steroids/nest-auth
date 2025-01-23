@@ -8,7 +8,7 @@ export interface ISessionService {
     hashPassword: (password: string) => Promise<string>,
 
     signToken: (payload: Buffer | object, options?: any) => string,
-    verifyToken: (token: string, options?: any) => any,
+    verifyToken: (token: string, options?: any) => Promise<any>,
     getTokenPayload: (token: string, options?: any) => AuthTokenPayloadDto,
     getTokenExpireTime: (token: string) => (Date | null),
 }

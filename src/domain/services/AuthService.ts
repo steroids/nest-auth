@@ -67,16 +67,14 @@ export class AuthService {
         });
         if (status === JwtTokenStatusEnum.VALID && payload) {
             const authLogin = await this.authLoginService.findByUid(payload.jti);
-            if (authLogin && !authLogin.isRevoked) {
-                const user = await this.usersService.findById(payload.sub);
-                authLogin.accessToken = await this.authLoginService.generateAccessToken(
-                    user,
-                    this.createTokenPayload(user),
-                    payload.jti,
-                );
-                authLogin.accessExpireTime = this.sessionService.getTokenExpireTime(authLogin.accessToken);
-                return authLogin;
-            }
+            const user = await this.usersService.findById(payload.sub);
+            authLogin.accessToken = await this.authLoginService.generateAccessToken(
+                user,
+                this.createTokenPayload(user),
+                payload.jti,
+            );
+            authLogin.accessExpireTime = this.sessionService.getTokenExpireTime(authLogin.accessToken);
+            return authLogin;
         }
         throw new UserException('Неверный токен авторизациии');
     }
