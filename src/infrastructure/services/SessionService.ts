@@ -48,10 +48,10 @@ export class SessionService implements ISessionService {
             throw e;
         }
 
-        const isNotRevoked = await this.authLoginService.isLoginValid(payload.jti);
+        const isLoginValid = await this.authLoginService.isLoginValid(payload.jti);
 
         return {
-            status: isNotRevoked ? JwtTokenStatusEnum.VALID : JwtTokenStatusEnum.TOKEN_ERROR,
+            status: isLoginValid ? JwtTokenStatusEnum.VALID : JwtTokenStatusEnum.TOKEN_ERROR,
             payload,
         };
     }
