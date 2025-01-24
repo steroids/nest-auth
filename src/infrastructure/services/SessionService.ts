@@ -33,27 +33,23 @@ export class SessionService implements ISessionService {
     }
 
     async verifyToken(token: string, options?: JwtVerifyOptions): Promise<{ status: string, payload: any }> {
-        let payload: any;
-
         try {
-            payload = this.jwtService.verify(token, options);
+            const payload = this.jwtService.verify(token, options);
+            const isLoginValid = await this.authLoginService.isLoginValid(payload.jti);
+
+            return {
+                status: isLoginValid ? JwtTokenStatusEnum.VALID : JwtTokenStatusEnum.TOKEN_ERROR,
+                payload,
+            };
         } catch (e) {
             if (e.name === JwtTokenStatusEnum.TOKEN_ERROR || e.name === JwtTokenStatusEnum.EXPIRED_ERROR) {
-                payload = this.jwtService.decode(token, options);
                 return {
                     status: e.name,
-                    payload,
+                    payload: this.jwtService.decode(token, options),
                 };
             }
             throw e;
         }
-
-        const isLoginValid = await this.authLoginService.isLoginValid(payload.jti);
-
-        return {
-            status: isLoginValid ? JwtTokenStatusEnum.VALID : JwtTokenStatusEnum.TOKEN_ERROR,
-            payload,
-        };
     }
 
     getTokenPayload(token: string, options?: JwtVerifyOptions): AuthTokenPayloadDto {

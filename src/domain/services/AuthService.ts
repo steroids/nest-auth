@@ -65,18 +65,24 @@ export class AuthService {
         const {payload, status} = await this.sessionService.verifyToken(refreshToken, {
             secret: ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtRefreshSecretKey,
         });
-        if (status === JwtTokenStatusEnum.VALID && payload) {
-            const authLogin = await this.authLoginService.findByUid(payload.jti);
-            const user = await this.usersService.findById(payload.sub);
-            authLogin.accessToken = await this.authLoginService.generateAccessToken(
-                user,
-                this.createTokenPayload(user),
-                payload.jti,
-            );
-            authLogin.accessExpireTime = this.sessionService.getTokenExpireTime(authLogin.accessToken);
-            return authLogin;
+
+        if (status !== JwtTokenStatusEnum.VALID || !payload) {
+            throw new UserException('Неверный токен авторизации');
         }
-        throw new UserException('Неверный токен авторизациии');
+
+        const authLogin = await this.authLoginService.findByUid(payload.jti);
+        const user = await this.usersService.findById(payload.sub);
+        const accessToken = await this.authLoginService.generateAccessToken(
+            user,
+            this.createTokenPayload(user),
+            payload.jti,
+        );
+
+        return {
+            ...authLogin,
+            accessToken,
+            accessExpireTime: this.sessionService.getTokenExpireTime(authLogin.accessToken),
+        };
     }
 
     async logout(context: ContextDto): Promise<void> {
