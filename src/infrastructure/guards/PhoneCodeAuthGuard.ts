@@ -2,14 +2,12 @@ import {CanActivate, ExecutionContext, Inject, Injectable} from '@nestjs/common'
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
-import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 
 @Injectable()
 export class PhoneCodeAuthGuard implements CanActivate {
     constructor(
         @Inject(AuthConfirmService) private authConfirmService: AuthConfirmService,
-        @Inject(AuthService) private authService: AuthService,
     ) {
     }
 
