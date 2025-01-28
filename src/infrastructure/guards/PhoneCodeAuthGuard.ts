@@ -43,8 +43,6 @@ export class PhoneCodeAuthGuard implements CanActivate {
                     code: 'Превышено количество попыток',
                 });
             }
-            authConfirmModel.isConfirmed = true;
-            await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
         } else {
             if (authConfirmModel.attemptsCount > 0) {
                 authConfirmModel.attemptsCount = authConfirmModel.attemptsCount - 1;
