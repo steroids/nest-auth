@@ -17,12 +17,12 @@ import {ContextDto} from '../dtos/ContextDto';
 
 export class AuthService {
     constructor(
-        private readonly usersService: IUserService,
+        protected readonly usersService: IUserService,
         /** @see SessionService **/
-        private readonly sessionService: ISessionService,
-        private readonly authLoginService: AuthLoginService,
-        private readonly authPermissionsService: AuthPermissionsService,
-        private readonly userRegistrationUseCase: IUserRegistrationUseCase,
+        protected readonly sessionService: ISessionService,
+        protected readonly authLoginService: AuthLoginService,
+        protected readonly authPermissionsService: AuthPermissionsService,
+        protected readonly userRegistrationUseCase: IUserRegistrationUseCase,
     ) {
     }
 
