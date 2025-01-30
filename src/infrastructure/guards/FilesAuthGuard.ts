@@ -30,7 +30,7 @@ export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
         if (!token) {
             return true;
         }
-        const {status, payload} = this.sessionsService.verifyToken(token);
+        const {status, payload} = await this.sessionsService.verifyToken(token);
         if ([JwtTokenStatusEnum.VALID, JwtTokenStatusEnum.EXPIRED_ERROR].includes(status)
             && payload
         ) {

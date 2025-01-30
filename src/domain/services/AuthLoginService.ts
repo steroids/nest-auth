@@ -30,7 +30,7 @@ export class AuthLoginService {
 
     async isLoginValid(uid: string): Promise<boolean> {
         const model = await this.repository.findOne({uid});
-        return model && !model.isRevoked;
+        return Boolean(model && !model.isRevoked);
     }
 
     async create(user: UserModel, tokenPayload: AuthTokenPayloadDto, context: ContextDto): Promise<AuthLoginModel> {
