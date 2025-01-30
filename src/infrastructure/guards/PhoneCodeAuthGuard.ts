@@ -2,14 +2,12 @@ import {CanActivate, ExecutionContext, Inject, Injectable} from '@nestjs/common'
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
-import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 
 @Injectable()
 export class PhoneCodeAuthGuard implements CanActivate {
     constructor(
         @Inject(AuthConfirmService) private authConfirmService: AuthConfirmService,
-        @Inject(AuthService) private authService: AuthService,
     ) {
     }
 
@@ -43,8 +41,6 @@ export class PhoneCodeAuthGuard implements CanActivate {
                     code: 'Превышено количество попыток',
                 });
             }
-            authConfirmModel.isConfirmed = true;
-            await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
         } else {
             if (authConfirmModel.attemptsCount > 0) {
                 authConfirmModel.attemptsCount = authConfirmModel.attemptsCount - 1;
