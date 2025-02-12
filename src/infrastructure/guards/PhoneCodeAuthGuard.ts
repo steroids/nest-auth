@@ -1,9 +1,11 @@
 import {CanActivate, ExecutionContext, Inject, Injectable} from '@nestjs/common';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
+import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
+import {AuthConfirmSaveInputDto} from '../../domain/dtos/AuthConfirmSaveInputDto';
 
 @Injectable()
 export class PhoneCodeAuthGuard implements CanActivate {
@@ -47,8 +49,9 @@ export class PhoneCodeAuthGuard implements CanActivate {
             await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
         } else {
             if (authConfirmModel.attemptsCount > 0) {
-                authConfirmModel.attemptsCount = authConfirmModel.attemptsCount - 1;
-                await this.authConfirmService.update(authConfirmModel.id, authConfirmModel);
+                authConfirmModel.attemptsCount -= 1;
+                const authConfirmSaveDto = DataMapper.create(AuthConfirmSaveInputDto, authConfirmModel);
+                await this.authConfirmService.update(authConfirmModel.id, authConfirmSaveDto);
                 throw new ValidationException({
                     code: `Неверный код, осталось попыток: ${authConfirmModel.attemptsCount}`,
                 });
