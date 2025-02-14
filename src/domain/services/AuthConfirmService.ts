@@ -268,16 +268,6 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         authConfirmModel.isConfirmed = true;
         await this.update(authConfirmModel.id, authConfirmModel);
 
-        // Создаем пользователя, если такого еще нет
-        if (!authConfirmModel.user) {
-            authConfirmModel.user = await this.authService.registration(
-                DataMapper.create(UserRegistrationDto, {
-                    phone: authConfirmModel.phone,
-                }),
-                context,
-            );
-        }
-
         // Авторизуемся
         const authUserDto = await this.authService.createAuthUserDto(
             this.authService.createTokenPayload(authConfirmModel.user),
