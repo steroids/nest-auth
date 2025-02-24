@@ -1,13 +1,14 @@
 import {IContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {RelationField, StringField} from '@steroidsjs/nest/infrastructure/decorators/fields';
 import {AuthConfirmSectionDto} from './AuthConfirmSectionDto';
+import {AuthUserDto} from './AuthUserDto';
 
 export class ContextDto implements IContextDto {
-    user?: any | {
-        id?: number,
-        name?: string,
-        permissions?: string[],
-    };
+    @RelationField({
+        type: 'ManyToOne',
+        relationClass: () => AuthUserDto,
+    })
+    user?: AuthUserDto;
 
     @RelationField({
         type: 'ManyToOne',
