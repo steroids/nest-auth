@@ -3,5 +3,8 @@ import {AuthPermissionModel} from '../models/AuthPermissionModel';
 
 export class AuthPermissionSaveInputDto {
     @ExtendField(AuthPermissionModel)
+    id: number;
+
+    @ExtendField(AuthPermissionModel)
     name: string;
 }
