@@ -1,5 +1,11 @@
 # Steroids nest-auth Changelog
 
+## [0.1.4](https://github.com/steroids/nest-auth/compare/0.1.3...0.1.4) (2024-02-24)
+
+### Bugfixes
+
+- Фикс метода AuthPermissionsService.findOrCreate
+
 ## [0.1.3](https://github.com/steroids/nest-auth/compare/0.1.2...0.1.3) (2024-02-24)
 
 ### Bugfixes
