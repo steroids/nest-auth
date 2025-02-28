@@ -88,15 +88,13 @@ export class AuthPermissionsService extends CrudService<AuthPermissionModel,
         const searchQuery = new SearchQuery<AuthPermissionModel>();
         searchQuery.where(['in', 'name', keys]);
         const permissions = await this.findMany(searchQuery);
-        const noExist = keys.filter(e => !permissions.find(element => element.name === e));
-        const newPermissions = [];
-        if (noExist) {
-            for (const element of noExist) {
+        const permissionsKeysToCreate = keys.filter(e => !permissions.some(element => element.name === e));
+        if (permissionsKeysToCreate.length > 0) {
+            for (const permissionKey of permissionsKeysToCreate) {
                 const permissionDto = new AuthPermissionSaveInputDto();
-                permissionDto.name = element;
-                newPermissions.push(await this.create(permissionDto));
+                permissionDto.name = permissionKey;
+                permissions.push(await this.create(permissionDto));
             }
-            permissions.push(...newPermissions);
         }
         return permissions;
     }
