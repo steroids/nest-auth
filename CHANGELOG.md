@@ -1,6 +1,14 @@
 # Steroids nest-auth Changelog
 
-## [0.1.4](https://github.com/steroids/nest-auth/compare/0.1.3...0.1.4) (2024-02-24)
+## [0.1.5](https://github.com/steroids/nest-auth/compare/0.1.4...0.1.5) (2024-02-28)
+
+### Bugfixes
+
+- PhoneCodeAuthGuard больше не обновляет поле AuthModel.isConfirmed ([#12](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/12))
+- В AuthPermissionSaveInputDto добавлено поле id
+- Рефакторинг метода AuthPermissionService.findOrCreate
+
+## [0.1.4](https://github.com/steroids/nest-auth/compare/0.1.3...0.1.4) (2024-02-28)
 
 ### Bugfixes
 
