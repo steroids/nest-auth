@@ -2,7 +2,8 @@ import {ExtendField} from '@steroidsjs/nest/infrastructure/decorators/fields/Ext
 import {Computable} from '@steroidsjs/nest/infrastructure/decorators/Computable';
 import {StringField} from '@steroidsjs/nest/infrastructure/decorators/fields';
 import {AuthRoleModel} from '../../domain/models/AuthRoleModel';
-import {AuthRoleSchema} from './AuthRoleSchema';
+import {AuthPermissionSchema} from './AuthPermissionSchema';
+import {AuthRoleBaseSchema} from './AuthRoleBaseSchema';
 
 export class AuthRoleDetailSchema {
     @ExtendField(AuthRoleModel)
@@ -21,18 +22,20 @@ export class AuthRoleDetailSchema {
     isActive: boolean;
 
     @ExtendField(AuthRoleModel, {
-        relationClass: () => AuthRoleSchema,
+        relationClass: () => AuthRoleBaseSchema,
     })
-    parent: AuthRoleSchema;
+    parent: AuthRoleBaseSchema;
 
     @ExtendField(AuthRoleModel)
     parentId: number;
 
     @ExtendField(AuthRoleModel)
-    expireTime;
+    expireTime: Date;
 
-    @ExtendField(AuthRoleModel)
-    authPermissions;
+    @ExtendField(AuthRoleModel, {
+        relationClass: () => AuthPermissionSchema,
+    })
+    authPermissions: AuthPermissionSchema[];
 
     @StringField({
         isArray: true,
