@@ -85,6 +85,9 @@ export class AuthPermissionsService extends CrudService<AuthPermissionModel,
     }
 
     public async findOrCreate(keys: string[]) {
+        if (!keys?.length) {
+            return [];
+        }
         const searchQuery = new SearchQuery<AuthPermissionModel>();
         searchQuery.where(['in', 'name', keys]);
         const permissions = await this.findMany(searchQuery);
