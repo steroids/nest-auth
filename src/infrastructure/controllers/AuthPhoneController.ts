@@ -2,7 +2,7 @@ import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
-import {PhoneCodeAuthGuard} from '../guards/PhoneCodeAuthGuard';
+import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthConfirmSendSmsDto} from '../../domain/dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
@@ -64,7 +64,7 @@ export class AuthPhoneController {
     @Post('/confirm')
     @ApiBody({type: AuthConfirmLoginDto})
     @ApiOkResponse({type: AuthLoginSchema})
-    @UseGuards(PhoneCodeAuthGuard)
+    @UseGuards(CodeAuthGuard)
     async loginByPhoneCode(
         @Body() dto: AuthConfirmLoginDto,
         @Context() context: ContextDto,

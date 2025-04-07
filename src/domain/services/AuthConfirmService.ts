@@ -254,7 +254,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
     }
 
     async confirmCode(dto: AuthConfirmLoginDto, context: ContextDto, schemaClass = null) {
-        // Валидация кода происходит в PhoneCodeAuthGuard
+        // Валидация кода происходит в CodeAuthGuard
 
         const authConfirmModel = await this.findOne(
             (new SearchQuery<AuthConfirmModel>())
