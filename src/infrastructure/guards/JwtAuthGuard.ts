@@ -17,14 +17,14 @@ export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
         super();
     }
 
-    protected readonly allowEmptyToken: boolean = false;
+    protected readonly isEmptyTokenAllowed: boolean = false;
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const req = context.switchToHttp().getRequest();
         const token = getTokenFromHttpRequest(req);
 
         if (!token) {
-            return this.allowEmptyToken;
+            return this.isEmptyTokenAllowed;
         }
 
         const {status, payload} = await this.sessionsService.verifyToken(token);

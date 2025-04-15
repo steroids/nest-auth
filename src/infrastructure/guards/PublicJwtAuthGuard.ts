@@ -13,5 +13,5 @@ export class PublicJwtAuthGuard extends JwtAuthGuard {
         super(sessionsService, authService);
     }
 
-    protected readonly allowEmptyToken: boolean = true;
+    protected readonly isEmptyTokenAllowed: boolean = true;
 }
