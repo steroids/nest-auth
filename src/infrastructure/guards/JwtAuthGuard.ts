@@ -11,18 +11,20 @@ import {PERMISSION_AUTH_AUTHORIZED} from '../permissions';
 export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
     constructor(
         @Inject(ISessionService)
-        private sessionsService: ISessionService,
-        private authService: AuthService,
+        protected sessionsService: ISessionService,
+        protected authService: AuthService,
     ) {
         super();
     }
 
-    async canActivate(context: ExecutionContext): Promise<any> {
+    protected readonly isEmptyTokenAllowed: boolean = false;
+
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         const req = context.switchToHttp().getRequest();
         const token = getTokenFromHttpRequest(req);
 
         if (!token) {
-            return true;
+            return this.isEmptyTokenAllowed;
         }
 
         const {status, payload} = await this.sessionsService.verifyToken(token);
