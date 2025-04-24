@@ -7,7 +7,7 @@ import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 import {AuthConfirmSaveInputDto} from '../../domain/dtos/AuthConfirmSaveInputDto';
 
 @Injectable()
-export class PhoneCodeAuthGuard implements CanActivate {
+export class CodeAuthGuard implements CanActivate {
     constructor(
         @Inject(AuthConfirmService) private authConfirmService: AuthConfirmService,
     ) {
