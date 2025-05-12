@@ -1,6 +1,14 @@
 # Steroids nest-auth Changelog
 
-## [0.1.6](https://github.com/steroids/nest-auth/compare/0.1.5...0.1.6) (2024-03-13)
+## [0.2.0](https://github.com/steroids/nest-auth/compare/0.1.6...0.2.0) (2025-05-12)
+
+### Features
+
+- Обновление Steroids до 3.2.0
+- Добавлен PublicJwtAuthGuard. JwtAuthGuard теперь не пропускает пользователя без токена ([#108](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/108))
+- PhoneCodeAuthGuard переименован в CodeAuthGuard ([#86](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/86))
+
+## [0.1.6](https://github.com/steroids/nest-auth/compare/0.1.5...0.1.6) (2025-03-13)
 
 ### Bugfixes
 
@@ -9,7 +17,7 @@
 - Фикс метода AuthPermissionsService.findOrCreate (выдавал ошибку. если в keys передать null)
 - Расширен набор схем для сущности AuthRole
 
-## [0.1.5](https://github.com/steroids/nest-auth/compare/0.1.4...0.1.5) (2024-02-28)
+## [0.1.5](https://github.com/steroids/nest-auth/compare/0.1.4...0.1.5) (2025-02-28)
 
 ### Bugfixes
 
@@ -17,13 +25,13 @@
 - В AuthPermissionSaveInputDto добавлено поле id
 - Рефакторинг метода AuthPermissionService.findOrCreate
 
-## [0.1.4](https://github.com/steroids/nest-auth/compare/0.1.3...0.1.4) (2024-02-28)
+## [0.1.4](https://github.com/steroids/nest-auth/compare/0.1.3...0.1.4) (2025-02-28)
 
 ### Bugfixes
 
 - Фикс метода AuthPermissionsService.findOrCreate
 
-## [0.1.3](https://github.com/steroids/nest-auth/compare/0.1.2...0.1.3) (2024-02-24)
+## [0.1.3](https://github.com/steroids/nest-auth/compare/0.1.2...0.1.3) (2025-02-24)
 
 ### Bugfixes
 

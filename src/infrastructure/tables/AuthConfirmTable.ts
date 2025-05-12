@@ -1,6 +1,6 @@
-import {TableFromModel} from '@steroidsjs/nest/infrastructure/decorators/TableFromModel';
 import {IDeepPartial} from '@steroidsjs/nest/usecases/interfaces/IDeepPartial';
+import {TypeOrmTableFromModel} from '@steroidsjs/nest/infrastructure/decorators/typeorm/TypeOrmTableFromModel';
 import { AuthConfirmModel } from '../../domain/models/AuthConfirmModel';
 
-@TableFromModel(AuthConfirmModel, 'auth_confirm')
+@TypeOrmTableFromModel(AuthConfirmModel, 'auth_confirm')
 export class AuthConfirmTable implements IDeepPartial<AuthConfirmModel> {}
