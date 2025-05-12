@@ -414,19 +414,19 @@
   resolved "https://registry.yarnpkg.com/@sqltools/formatter/-/formatter-1.2.5.tgz#3abc203c79b8c3e90fd6c156a0c62d5403520e12"
   integrity sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==
 
-"@steroidsjs/eslint-config@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@steroidsjs/eslint-config/-/eslint-config-2.1.2.tgz#b1589f235178febc320636a62cbfab2565418963"
-  integrity sha512-sLflE4GBP6jxNUYNK8Is4KQf6K6Rwebk2EC3fOXe+Vou7FjTO1kqPH3N/qUC7lpD7weCLKlQ2b02vvMz+Q8Xlg==
+"@steroidsjs/eslint-config@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@steroidsjs/eslint-config/-/eslint-config-3.0.1.tgz#06bf6506274ac5c8d8cd3fe7cd2b3619310bcf0d"
+  integrity sha512-MmigKxSfP5E0mtSF+j3p8jxkJbkF8IsyHloonaYFkr4mdehv9wxA4Wyt+/eTSaB45pO6/xbmSJz/63HnZmdgtg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.49.0"
     "@typescript-eslint/parser" "^5.49.0"
-    eslint "^8.33.0"
     eslint-config-airbnb "^19.0.4"
     eslint-plugin-import "^2.27.5"
     eslint-plugin-jsx-a11y "^6.7.1"
     eslint-plugin-react "^7.32.2"
     eslint-plugin-react-hooks "^4.6.0"
+    typescript "^4.9.5"
 
 "@steroidsjs/nest-modules@^0.1.5":
   version "0.1.5"
@@ -440,10 +440,10 @@
   dependencies:
     uuid "9.0.1"
 
-"@steroidsjs/nest@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-2.1.1.tgz#e4c1a244a115edcef81b6d416a925609555752d2"
-  integrity sha512-PRHrPLvCLxhy3u39IgGKAX4VstyZHPG2KxWvpDD8ySLoxCinEoAWTqLr2ZFWISmO1oKrVpXyIsbNFPKJZaetyw==
+"@steroidsjs/nest@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-3.2.0.tgz#78a1f3a8c59b71ff38661ac76cae66faa1278535"
+  integrity sha512-B0w1xT5SVJpTkSbnmvRjAfft8kuFXmp6iuY1rqpOp3JKp1neUdTQpcBlGFADVUfAL+auewoE6KSK+iXqYImJaw==
   dependencies:
     "@dbml/core" "^2.4.4"
     "@nestjs/cli" "^9.1.9"
@@ -4542,6 +4542,11 @@ typescript@4.9.4, typescript@^4.9.4:
   version "4.9.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
   integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
+
+typescript@^4.9.5:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
+  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

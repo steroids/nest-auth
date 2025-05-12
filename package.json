@@ -1,6 +1,6 @@
 {
   "name": "@steroidsjs/nest-auth",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Steroids Nest Auth Module",
   "author": "",
   "license": "MIT",
@@ -32,8 +32,8 @@
   "devDependencies": {
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.2.1",
-    "@steroidsjs/eslint-config": "^2.1.2",
-    "@steroidsjs/nest": "^2.1.1",
+    "@steroidsjs/eslint-config": "^3.0.1",
+    "@steroidsjs/nest": "^3.2.0",
     "@steroidsjs/nest-modules": "^0.1.5",
     "@steroidsjs/nest-typeorm": "^10.0.3",
     "@steroidsjs/typeorm": "^0.3.23",
