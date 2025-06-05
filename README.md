@@ -14,7 +14,101 @@
 
 ## Быстрый старт
 
-todo
+Для того чтобы подключить AuthModule в существующий проект на Steroids Nest
+нужно следовать шагам, описанным ниже.
+
+1. Определить AuthModule с конфигурацией из `@steroidsjs/nest-auth`:
+
+```typescript
+import {Module} from '@steroidsjs/nest/infrastructure/decorators/Module';
+import coreModule from '@steroidsjs/nest-auth';
+import authPermissions from './permissions';
+import {IAuthModuleConfig} from '../domain/interfaces/IAuthModuleConfig';
+import {UserModule} from '../../user/infrastructure/UserModule';
+
+@Module({
+    ...coreModule,
+    tables: [...(coreModule.tables ?? [])],
+    permissions: authPermissions,
+    config: authConfig,
+    module: (config: IAuthModuleConfig) => {
+        const module = coreModule.module(config);
+        return {
+            ...module,
+            imports: [
+                ...(module.imports ?? []), forwardRef(() => UserModule),
+            ],
+            controllers: [
+                ...(module.controllers ?? []),
+            ],
+            providers: [
+                ...(module.providers ?? []),
+            ],
+            exports: [
+                ...(module.exports ?? []),
+            ],
+        };
+    },
+})
+export class AuthModule {}
+```
+
+2. Так как AuthModule имеет кольцевую зависимость с UserModule, 
+нужно определить и его (либо использовать существующий в проекте, 
+который должен быть подобен модулю из `@steroidsjs/nest-user`):
+
+```typescript
+import coreModule from '@steroidsjs/nest-user';
+import {AuthModule} from '../../auth/infrastructure/AuthModule';
+
+@Module({
+    ...coreModule,
+    module: (config) => {
+        const module = coreModule.module(config);
+        return {
+            ...module,
+            imports: [
+                ...(module.imports ?? []), forwardRef(() => AuthModule),
+            ],
+        };
+    },
+})
+export class UserModule {}
+```
+
+3. Импортировать эти модули в главный модуль:
+```typescript
+import coreModule from '@steroidsjs/nest-user';
+import {AuthModule} from '../../auth/infrastructure/AuthModule';
+import {UserModule} from '../../user/infrastructure/UserModule';
+import coreModule from '@steroidsjs/nest/infrastructure/applications/rest/config';
+
+@Module({
+    ...coreModule,
+    module: (config) => {
+        const module = coreModule.module(config);
+        return {
+            ...module,
+            imports: [
+                ...(module.imports ?? []), 
+                AuthModule,
+                UserModule,
+            ],
+        };
+    },
+})
+export class AppModule {}
+```
+
+4. Сгенерировать и запустить миграции:
+
+```shell
+yarn cli migrate:generate
+````
+
+```shell
+yarn cli migrate
+```
 
 ## Устройство модуля
 
@@ -202,4 +296,78 @@ todo
 
 ## Расширение функциональности
 
-todo
+Расширить или переопределить компоненты модуля можно с помощью
+наследования или добавления новых классов. При этом нужно записать класс в массив `providers` ниже,
+чем классы-провайдеры из базовой конфигурации.
+
+Например, мы хотим переопределить метод `createAuthUserDto` в классе `AuthService`. 
+Тогда сначала нужно наследовать этот класс:
+
+```typescript
+import {AuthTokenPayloadDto} from '@steroidsjs/nest-auth/domain/dtos/AuthTokenPayloadDto';
+import {AuthPermissionsService} from '@steroidsjs/nest-auth/domain/services/AuthPermissionsService';
+import {IUserRegistrationUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserRegistrationUseCase';
+import {AuthService as BaseAuthService} from '@steroidsjs/nest-auth/domain/services/AuthService';
+import {AuthLoginService} from '@steroidsjs/nest-auth/domain/services/AuthLoginService';
+import {ISessionService} from '@steroidsjs/nest-auth/domain/interfaces/ISessionService';
+import {ForbiddenException} from '@steroidsjs/nest/usecases/exceptions';
+import {AuthUserDto} from '@steroidsjs/nest-auth/domain/dtos/AuthUserDto';
+import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
+
+export class AuthService extends BaseAuthService {
+    constructor(
+        protected readonly userService: IUserService,
+        protected readonly sessionService: ISessionService,
+        protected readonly authLoginService: AuthLoginService,
+        protected readonly authPermissionsService: AuthPermissionsService,
+        protected readonly userRegistrationUseCase: IUserRegistrationUseCase,
+    ) {
+        super(
+            userService,
+            sessionService,
+            authLoginService,
+            authPermissionsService,
+            userRegistrationUseCase,
+        );
+    }
+
+    async createAuthUserDto(payload: AuthTokenPayloadDto): Promise<AuthUserDto> {
+        const user = await this.userService
+            .createQuery()
+            .where({
+                id: payload.id,
+                isBlocked: false,
+            })
+            .one();
+
+        if (!user) {
+            throw new ForbiddenException('Пользователь заблокирован');
+        }
+
+        return super.createAuthUserDto(paylaod);
+    }
+}
+```
+
+А затем в классе модуля записать `AuthService` в поле `providers` ниже, чем базовые провайдеры:
+
+```typescript
+import {Module} from '@steroidsjs/nest/infrastructure/decorators/Module';
+import coreModule from '@steroidsjs/nest-auth';
+import {AuthService} from '../domain/services/AuthService';
+
+@Module({
+    ...coreModule,
+    module: (config) => {
+        const module = coreModule.module(config);
+        return {
+            ...module,
+            providers: [
+                ...(module.providers ?? []),
+                AuthService,
+            ],
+        };
+    },
+})
+export class AuthModule {}
+```
