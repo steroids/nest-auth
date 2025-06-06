@@ -2,7 +2,7 @@
 
 Модуль авторизации для библиотеки [Steroids Nest](https://github.com/steroids/nest)
 
-## Предназначение
+# Предназначение
 
 Модуль позволяет быстро внедрить в проект функциональность, связанную с авторизацией и аутентификацией:
 - JWT-авторизация
@@ -12,7 +12,7 @@
 - разграничение доступа на основе ролей и их прав
 - обновление пароля
 
-## Быстрый старт
+# Быстрый старт
 
 Для того чтобы подключить AuthModule в существующий проект на Steroids Nest
 нужно следовать шагам, описанным ниже.
@@ -59,6 +59,7 @@ export class AuthModule {}
 
 ```typescript
 import coreModule from '@steroidsjs/nest-user';
+import {Module} from '@steroidsjs/nest/infrastructure/decorators/Module';
 import {AuthModule} from '../../auth/infrastructure/AuthModule';
 
 @Module({
@@ -79,9 +80,10 @@ export class UserModule {}
 3. Импортировать эти модули в главный модуль:
 ```typescript
 import coreModule from '@steroidsjs/nest-user';
+import coreModule from '@steroidsjs/nest/infrastructure/applications/rest/config';
+import {Module} from '@steroidsjs/nest/infrastructure/decorators/Module';
 import {AuthModule} from '../../auth/infrastructure/AuthModule';
 import {UserModule} from '../../user/infrastructure/UserModule';
-import coreModule from '@steroidsjs/nest/infrastructure/applications/rest/config';
 
 @Module({
     ...coreModule,
@@ -110,13 +112,12 @@ yarn cli migrate:generate
 yarn cli migrate
 ```
 
-## Устройство модуля
+# Устройство модуля
 
-### Конфигурация
+## Конфигурация
 
----
-
-Конфигурация модуля определена интерфейсом `IAuthModuleConfig`.
+Конфигурация модуля определена интерфейсом `IAuthModuleConfig` 
+(находится в файле `src/infrastructure/config.ts`).
 
 `jwtAccessSecretKey?: string`
 
@@ -170,135 +171,114 @@ yarn cli migrate
 
 Тип провайдера для отправки кода подтверждения.
 
----
+## Модели
 
-### Модели
 
----
-
-### AuthRoleModel
+#### AuthRoleModel
 
 Роль в приложении. Имеет возможность наследования родительской роли.
 
-### AuthPermissionModel
+#### AuthPermissionModel
 
-Права доступа роли.
+Право доступа роли.
 
-### AuthLoginModel
+#### AuthLoginModel
 
-Информация о сессиях пользователя.
+Сессия пользователя.
 
-### AuthConfirmModel
+#### AuthConfirmModel
 
-Данные о кодах подтверждения пользователя.
+Код подтверждения пользователя.
 
----
+## Доменные сервисы
 
-### Доменные сервисы
-
----
-
-### AuthLoginService
+#### AuthLoginService
 
 Отвечает за создание и отзыв токенов, а также за управление сессиями пользователей.
 Сохраняет в базу данных информацию о сессии пользователя, включающию данные о refresh и access токенах, способе и статусе входа для конкретного пользователя.
 
-### AuthRoleService
+#### AuthRoleService
 
-Обеспечивает CRUD операции для ролей пользователей, автозаполнение ролями для полей на фронтенде
+Обеспечивает CRUD операции для ролей пользователей,
+автокомплит ролей для фронтенда
 
-### AuthPermissionsService
+#### AuthPermissionsService
 
 Предназначен для работы с правами доступа ролей,
 включая получение списка разрешений для заданных ролей,
 проверку наличия прав доступа у ролей, создание новых прав,
 получения дерева прав.
 
-### AuthConfirmService
+#### AuthConfirmService
 
 Предназначен для управления процессом подтверждения пользователя при его аутентификации, используя SMS, голосовые сообщения или звонки на телефон.
 Основные функции включают отправку кодов подтверждения и проверку их корректности.
 
-### AuthService
+#### AuthService
 
 Обеспечивает регистрацию и аутентификацию пользователя, выход из приложения, создание DTO, который содержит информацию о текущем пользователе.
 
----
+## Инфраструктурные сервисы
 
-### Инфраструктурные сервисы
-
----
-
-### SessionService
+#### SessionService
 
 Сервис SessionService предоставляет функциональность для работы с паролями и токенами, используя библиотеки bcryptjs и @nestjs/jwt.
 Основные функции включают хеширование пароля, сравнение хешированного пароля с нехешированным, подпись и верификация JWT, извлечение данных из JWT.
 
----
+## HTTP-контроллеры
 
-### HTTP-контроллеры
-
----
-
-### AuthController
+#### AuthController
 
 Содержит эндпоинты для аутентификации пользователя, выхода из приложения, обновления пароля и JWT.
 
-### AuthPermissionController
+#### AuthPermissionController
 
 Содержит эндпоинты для получения дерева прав доступа приложения и прав роли.
 
-### AuthPhoneController
+#### AuthPhoneController
 
 Содержит эндпоинты для отправки кода подтверждения на телефон с помощью SMS или звонка, проверки кода. Также есть эндпоинт для типа отправки, взятого из конфига.
 
-### AuthRoleController
+#### AuthRoleController
 
 Содержит эндпоинты для CRUD операций с ролями пользователей и автозаполнения для фронтенда.
 
----
+## Guards
 
-### Guards
-
----
-
-### JwtAuthGuard
+#### JwtAuthGuard
 
 Проверяет валидность JWT переданного в заголовке Authorization.
 
-### LoginPasswordAuthGuard
+#### LoginPasswordAuthGuard
 
 Проверяет валидность логина и пароля из тела запроса.
 
-### PhoneCodeAuthGuard
+#### PhoneCodeAuthGuard
 
 Проверяет валидность кода подтверждения из тела запроса.
 
-### RolesAuthGuard
+#### RolesAuthGuard
 
 Проверяет наличие прав доступа пользователя к конкретному эндпоинту.
 
-### FilesAuthGuard
+#### FilesAuthGuard
 
 Проверяет валидность JWT переданного в заголовке Cookie.
 Используется для проверки доступа к файлам.
 
----
+## Декораторы
 
-### Декораторы
+#### AuthPermissions
 
----
-
-### AuthPermissions
-
-Устанавливает и проверяет права доступа, которые должны быть у пользователя, для конкретного эндпоинта.
+Проверяет права доступа, которые должны быть у пользователя, для конкретного эндпоинта.
 Для проверки использует `RolesAuthGuard`.
 
-## Расширение функциональности
+# Расширение функциональности
 
 Расширить или переопределить компоненты модуля можно с помощью
-наследования или добавления новых классов. При этом нужно записать класс в массив `providers` ниже,
-чем классы-провайдеры из базовой конфигурации.
+наследования или добавления новых классов. 
+При этом переопределенный класс нужно записать в
+массив `providers` после классов-провайдеров из базовой конфигурации.
 
 Например, мы хотим переопределить метод `createAuthUserDto` в классе `AuthService`. 
 Тогда сначала нужно наследовать этот класс:
@@ -349,7 +329,7 @@ export class AuthService extends BaseAuthService {
 }
 ```
 
-А затем в классе модуля записать `AuthService` в поле `providers` ниже, чем базовые провайдеры:
+А затем в классе модуля записать `AuthService` в поле `providers` после базовых провайдеров:
 
 ```typescript
 import {Module} from '@steroidsjs/nest/infrastructure/decorators/Module';
