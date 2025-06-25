@@ -1,14 +1,14 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
+import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthConfirmSendSmsDto} from '../../domain/dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
-import {ContextDto} from '../../domain/dtos/ContextDto';
-import {Context} from '../decorators/Context';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')

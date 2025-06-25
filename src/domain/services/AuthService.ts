@@ -5,15 +5,15 @@ import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService'
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IUserRegistrationUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserRegistrationUseCase';
-import {AuthPermissionsService} from './AuthPermissionsService';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {AuthUserDto} from '../dtos/AuthUserDto';
-import {AuthLoginService} from './AuthLoginService';
 import {ISessionService} from '../interfaces/ISessionService';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import JwtTokenStatusEnum from '../enums/JwtTokenStatusEnum';
 import {IAuthModuleConfig} from '../../infrastructure/config';
-import {ContextDto} from '../dtos/ContextDto';
+import {AuthLoginService} from './AuthLoginService';
+import {AuthPermissionsService} from './AuthPermissionsService';
 
 export class AuthService {
     constructor(

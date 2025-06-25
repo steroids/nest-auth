@@ -1,4 +1,4 @@
-import {ContextDto} from '../dtos/ContextDto';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 
 export class AuthFilePermissionService {
     constructor(

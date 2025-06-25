@@ -3,8 +3,8 @@ import {IValidator} from '@steroidsjs/nest/usecases/interfaces/IValidator';
 import {IUserUpdatePasswordUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserUpdatePasswordUseCase';
 import {IAuthUpdateUserOwnPasswordUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
 import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {AuthUpdateUserOwnPasswordUseCaseDto} from './dtos/AuthUpdateUserOwnPasswordUseCaseDto';
-import {ContextDto} from '../../domain/dtos/ContextDto';
 
 export class AuthUpdateUserOwnPasswordUseCase implements IAuthUpdateUserOwnPasswordUseCase {
     constructor(

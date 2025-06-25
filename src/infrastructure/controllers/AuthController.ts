@@ -3,12 +3,12 @@ import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {
     IAuthUpdateUserOwnPasswordUseCase,
 } from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
+import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {AuthService} from '../../domain/services/AuthService';
 import {AuthLoginDto} from '../../domain/dtos/AuthLoginDto';
 import {LoginPasswordAuthGuard} from '../guards/LoginPasswordAuthGuard';
 import {AuthRefreshTokenDto} from '../../domain/dtos/AuthRefreshTokenDto';
-import {Context} from '../decorators/Context';
-import {ContextDto} from '../../domain/dtos/ContextDto';
 import {JwtAuthGuard} from '../guards/JwtAuthGuard';
 import {AuthUpdateUserOwnPasswordUseCase} from '../../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {

@@ -1,6 +1,8 @@
-import { Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
+import {Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, UseGuards} from '@nestjs/common';
 import {ApiOkSearchResponse} from '@steroidsjs/nest/infrastructure/decorators/ApiOkSearchResponse';
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
+import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {AuthRoleService} from '../../domain/services/AuthRoleService';
 import {AuthRoleDetailSchema} from '../schemas/AuthRoleDetailSchema';
 import {AuthRoleSearchInputDto} from '../../domain/dtos/AuthRoleSearchInputDto';
@@ -11,8 +13,6 @@ import {
     PERMISSION_AUTH_MANAGE_ROLES_VIEW,
 } from '../permissions';
 import {JwtAuthGuard} from '../guards/JwtAuthGuard';
-import {Context} from '../decorators/Context';
-import { ContextDto } from '../../domain/dtos/ContextDto';
 
 @ApiTags('Роли')
 @Controller('/auth/roles')

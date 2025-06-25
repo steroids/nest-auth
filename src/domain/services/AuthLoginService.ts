@@ -5,12 +5,12 @@ import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAp
 import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {generateUid} from '@steroidsjs/nest/infrastructure/decorators/typeorm/fields/TypeOrmUidField/TypeOrmUidBehaviour';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import {ISessionService} from '../interfaces/ISessionService';
 import {IAuthLoginRepository} from '../interfaces/IAuthLoginRepository';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {IAuthModuleConfig} from '../../infrastructure/config';
-import {ContextDto} from '../dtos/ContextDto';
 
 export class AuthLoginService {
     constructor(
