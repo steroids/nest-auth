@@ -16,20 +16,19 @@ import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INoti
 import {INotifierSmscVoiceType} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSmscVoiceType';
 import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
+import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
 import {AuthConfirmSaveInputDto} from '../dtos/AuthConfirmSaveInputDto';
 import {AuthConfirmSendSmsDto} from '../dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
-import {AuthService} from './AuthService';
-import {UserRegistrationDto} from '../dtos/UserRegistrationDto';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IAuthModuleConfig} from '../../infrastructure/config';
-import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
-import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
-import {ContextDto} from '../dtos/ContextDto';
+import {AuthService} from './AuthService';
 
 export interface IAuthConfirmServiceConfig {
     expireMins: number,
