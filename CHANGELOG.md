@@ -1,5 +1,11 @@
 # Steroids nest-auth Changelog
 
+## [0.2.1](https://github.com/steroids/nest-auth/compare/0.2.0...0.2.1) (2025-06-27)
+
+### Features
+
+- Декоратор Context и ContextDto удалены. Рекомендуется использовать соответствующие сущности из основного пакета @steroidsjs/nest
+
 ## [0.2.0](https://github.com/steroids/nest-auth/compare/0.1.6...0.2.0) (2025-05-12)
 
 ### Features
