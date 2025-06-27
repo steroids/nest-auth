@@ -2,11 +2,13 @@ import {Injectable} from '@nestjs/common';
 import {PassportStrategy} from '@nestjs/passport';
 import {ExtractJwt, Strategy} from 'passport-jwt';
 import {UnauthorizedException} from '@steroidsjs/nest/usecases/exceptions';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {AuthLoginService} from '../../domain/services/AuthLoginService';
 import {AuthTokenPayloadDto} from '../../domain/dtos/AuthTokenPayloadDto';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {IAuthModuleConfig} from '../config';
-import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {AuthService} from '../../domain/services/AuthService';
+import {IJwtStrategyValidateData} from '../../domain/interfaces/IJwtStrategyValidateData';
 
 export const JWT_STRATEGY_NAME = 'jwt';
 
@@ -14,7 +16,11 @@ export const JWT_STRATEGY_NAME = 'jwt';
 export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY_NAME) {
     constructor(
         private authLoginService: AuthLoginService,
+        private authService: AuthService,
     ) {
+        /**
+         * JWT Validation Settings
+         */
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,11 +31,19 @@ export class JwtStrategy extends PassportStrategy(Strategy, JWT_STRATEGY_NAME) {
         });
     }
 
+    /**
+     * Called after verification JWT
+     * @param payload contents of JWT
+     */
     async validate(payload: AuthTokenPayloadDto) {
         const isValid = await this.authLoginService.isLoginValid(payload.jti);
         if (!isValid) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException({message: 'Пользователь не авторизован'});
         }
-        return true;
+        const validateData: IJwtStrategyValidateData = {
+            user: await this.authService.createAuthUserDto(payload),
+            loginUid: payload.jti,
+        };
+        return validateData;
     }
 }
