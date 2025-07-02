@@ -1,33 +1,34 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Post, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
-import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
-import {AuthConfirmSendSmsDto} from '../../domain/dtos/AuthConfirmSendSmsDto';
+import {AuthorizeWithCodeDto} from '../../usecases/sendAuthorizationCode/dtos/AuthorizeWithCodeDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
+import {SendAuthorizationCodeUseCase} from '../../usecases/sendAuthorizationCode/SendAuthorizationCodeUseCase';
+import {AuthorizeWithCodeUseCase} from '../../usecases/authorizeWithCode/AuthorizeWithCodeUseCase';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
 export class AuthPhoneController {
     constructor(
-        @Inject(AuthConfirmService)
-        private authConfirmService: AuthConfirmService,
+        private readonly authorizeWithCodeUseCase: AuthorizeWithCodeUseCase,
+        private readonly sendAuthorizationCodeUseCase: SendAuthorizationCodeUseCase,
     ) {
     }
 
     @Post('/sms')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCode(
-        @Body() dto: AuthConfirmSendSmsDto,
+        @Body() dto: AuthorizeWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.authConfirmService.sendCode(
-            dto,
+        return this.sendAuthorizationCodeUseCase.handle(
             NotifierProviderType.SMS,
+            dto,
             context,
             AuthConfirmSchema,
         );
@@ -36,12 +37,12 @@ export class AuthPhoneController {
     @Post('/call')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCodeByCall(
-        @Body() dto: AuthConfirmSendSmsDto,
+        @Body() dto: AuthorizeWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.authConfirmService.sendCode(
-            dto,
+        return this.sendAuthorizationCodeUseCase.handle(
             NotifierProviderType.CALL,
+            dto,
             context,
             AuthConfirmSchema,
         );
@@ -50,12 +51,12 @@ export class AuthPhoneController {
     @Post('/send')
     @ApiOkResponse({type: AuthConfirmSchema})
     async send(
-        @Body() dto: AuthConfirmSendSmsDto,
+        @Body() dto: AuthorizeWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.authConfirmService.sendCode(
-            dto,
+        return this.sendAuthorizationCodeUseCase.handle(
             null,
+            dto,
             context,
             AuthConfirmSchema,
         );
@@ -65,10 +66,10 @@ export class AuthPhoneController {
     @ApiBody({type: AuthConfirmLoginDto})
     @ApiOkResponse({type: AuthLoginSchema})
     @UseGuards(CodeAuthGuard)
-    async loginByPhoneCode(
+    async authorizeWithCode(
         @Body() dto: AuthConfirmLoginDto,
         @Context() context: ContextDto,
     ) {
-        return this.authConfirmService.confirmCode(dto, context, AuthLoginSchema);
+        return this.authorizeWithCodeUseCase.handle(dto, context, AuthLoginSchema);
     }
 }
