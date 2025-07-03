@@ -8,10 +8,9 @@ import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
-import {validateOrReject} from '@steroidsjs/nest/usecases/helpers/ValidationHelper';
+import {ValidationHelper} from '@steroidsjs/nest/usecases/helpers/ValidationHelper';
 import {INotifierCallOptions, INotifierSmsOptions, INotifierVoiceMessageOptions}
     from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
-import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {INotifierSmscVoiceType} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSmscVoiceType';
 import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
@@ -25,9 +24,10 @@ import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
 import {AuthConfirmSaveInputDto} from '../dtos/AuthConfirmSaveInputDto';
-import {AuthConfirmSendSmsDto} from '../dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {IAuthModuleConfig} from '../../infrastructure/config';
+import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
+import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
 import {AuthService} from './AuthService';
 
 export interface IAuthConfirmServiceConfig {
@@ -48,14 +48,16 @@ export const generateCode = (length = 6) => {
     return _padStart(_random(0, (10 ** length) - 1), length, '0');
 };
 
-export class AuthConfirmService extends CrudService<AuthConfirmModel,
-    AuthConfirmSearchInputDto, AuthConfirmSaveInputDto> {
+export class AuthConfirmService extends CrudService<
+    AuthConfirmModel,
+    AuthConfirmSearchInputDto,
+    AuthConfirmSaveDto
+> {
     protected modelClass = AuthConfirmModel;
 
     constructor(
         public repository: IAuthConfirmRepository,
         protected readonly notifierService: INotifierService,
-        protected readonly userService: IUserService,
         protected readonly authService: AuthService,
     ) {
         super();
@@ -147,12 +149,12 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
     }
 
     async sendCode(
-        dto: AuthConfirmSendSmsDto,
+        dto: AuthConfirmSendCodeDto,
         providerType: string | null,
         context: ContextDto,
         schemaClass = null,
     ): Promise<AuthConfirmModel> {
-        await validateOrReject(dto);
+        await ValidationHelper.validate(dto);
 
         // Инициализируем конфиг
         const config: IAuthConfirmServiceConfig = {
@@ -175,9 +177,6 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         if (!providerType) {
             providerType = config.providerType;
         }
-
-        // Получаем пользователя по номеру телефона
-        const user = await this.userService.findByLogin(dto.phone);
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
@@ -244,7 +243,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
-                userId: user?.id || null,
+                userId: dto.userId || null,
                 ipAddress: context?.ipAddress,
             } as AuthConfirmModel),
         );
@@ -252,27 +251,17 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         return schemaClass ? DataMapper.create(schemaClass, model) : model;
     }
 
-    async confirmCode(dto: AuthConfirmLoginDto, context: ContextDto, schemaClass = null) {
+    async confirmCode(dto: AuthConfirmLoginDto) {
         // Валидация кода происходит в CodeAuthGuard
+        const authConfirmModel = await this.createQuery()
+            .where({uid: dto.uid})
+            .one();
 
-        const authConfirmModel = await this.findOne(
-            (new SearchQuery<AuthConfirmModel>())
-                .with('user')
-                .where({
-                    uid: dto.uid,
-                }),
-        );
-
-        // Делаем отмету, что код подтвержден
-        authConfirmModel.isConfirmed = true;
-        await this.update(authConfirmModel.id, authConfirmModel);
-
-        // Авторизуемся
-        const authUserDto = await this.authService.createAuthUserDto(
-            this.authService.createTokenPayload(authConfirmModel.user),
-        );
-        const loginModel = await this.authService.login(authUserDto, context);
-
-        return schemaClass ? DataMapper.create(schemaClass, loginModel) : loginModel;
+        // Делаем отметку, что код подтвержден
+        const saveDto = DataMapper.create(AuthConfirmSaveDto, {
+            ...authConfirmModel,
+            isConfirmed: true,
+        });
+        return this.update(authConfirmModel.id, saveDto);
     }
 }
