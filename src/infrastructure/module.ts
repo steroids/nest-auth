@@ -24,8 +24,8 @@ import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
 import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
-import {AuthorizeWithCodeUseCase} from '../usecases/authorizeWithCode/AuthorizeWithCodeUseCase';
-import {SendAuthorizationCodeUseCase} from '../usecases/sendAuthorizationCode/SendAuthorizationCodeUseCase';
+import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
+import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
 import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
@@ -129,8 +129,8 @@ export default (config: IAuthModuleConfig) => ({
         ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
             AuthLoginService,
         ]),
-        AuthorizeWithCodeUseCase,
-        SendAuthorizationCodeUseCase,
+        AuthenticateWithCodeUseCase,
+        SendAuthenticationCodeUseCase,
 
         // Validators
         ModuleHelper.provide(PasswordValidator, [

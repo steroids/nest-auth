@@ -7,7 +7,7 @@ import {AuthService} from '../../domain/services/AuthService';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 
 @Injectable()
-export class AuthorizeWithCodeUseCase {
+export class AuthenticateWithCodeUseCase {
     constructor(
         protected readonly authService: AuthService,
         protected readonly authConfirmService: AuthConfirmService,

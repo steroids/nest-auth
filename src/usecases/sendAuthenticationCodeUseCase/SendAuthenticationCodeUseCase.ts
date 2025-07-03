@@ -3,10 +3,10 @@ import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Inject, Injectable} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
-import {AuthorizeWithCodeDto} from './dtos/AuthorizeWithCodeDto';
+import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 
 @Injectable()
-export class SendAuthorizationCodeUseCase {
+export class SendAuthenticationCodeUseCase {
     constructor(
         protected readonly authConfirmService: AuthConfirmService,
         @Inject(IUserService)
@@ -15,7 +15,7 @@ export class SendAuthorizationCodeUseCase {
 
     public async handle(
         providerType: string | null,
-        dto: AuthorizeWithCodeDto,
+        dto: AuthenticateWithCodeDto,
         context: ContextDto,
         schemaClass = null,
     ) {
