@@ -118,61 +118,12 @@ yarn cli migrate
 
 Конфигурация модуля определена интерфейсом `IAuthModuleConfig` 
 (находится в файле `src/infrastructure/config.ts`).
-
-`jwtAccessSecretKey?: string`
-
-Секретный ключ для подписи  access токена (JWT).
-
-`jwtRefreshSecretKey?: string`
-
-Секретный ключ для подписи refresh токена (JWT).
-
-`accessTokenExpiresSec?: string`
-
-Время жизни access токена.
-
-`refreshTokenExpiresSec?: string`
-
-Время жизни refresh токена.
-
-`filesTokenAdditionalTime?: string`
-
-Дополнительный срок действия токена для `FilesAuthGuard`.
-
-`confirm.expireMins?: number`
-
-Время в минутах, через которое код подтверждения станет недействительным.
-
-`confirm.repeatLimitSec?: number`
-
-Время в секундах, которое ограничивает возможность повторной отправки кода.
-
-`confirm.attemptsCount?: number`
-
-Количество попыток ввода правильного кода подтверждения.
-
-`confirm.smsCodeLength?: number`
-
-Длина кода подтверждения, который отправляется пользователю через SMS.
-
-`confirm.callCodeLength?: number`
-
-Длина кода подтверждения для звонка.
-
-`confirm.isEnableDebugStaticCode?: boolean`
-
-Включение режима отладки с использованием статического кода подтверждения.
-
-`confirm.providerName?: 'smsc' | string`
-
-Название провайдера для отправки кодов подтверждения.
-
-`confirm.providerType?: 'voice' | 'sms' | 'call'`
-
-Тип провайдера для отправки кода подтверждения.
+Этот интерфейс описывает
+ключи, сроки действия JWT токенов (access и refresh)
+и конфигурацию кодов подтверждения 
+(время действия, лимиты на повторные отправки и попытки, длина кода, режим отладки, провайдер отправки кода и его тип).
 
 ## Модели
-
 
 #### AuthRoleModel
 

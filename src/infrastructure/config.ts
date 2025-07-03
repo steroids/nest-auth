@@ -1,17 +1,59 @@
 export interface IAuthModuleConfig {
+    /**
+     * The secret key for signing the access JWT
+     */
     jwtAccessSecretKey?: string,
+    /**
+     * The secret key for signing the refresh JWT
+     */
     jwtRefreshSecretKey?: string,
+    /**
+     * The lifetime of the access JWT in seconds
+     */
     accessTokenExpiresSec?: string,
+    /**
+     * The lifetime of the refresh JWT in seconds
+     */
     refreshTokenExpiresSec?: string, // Additional token expiration time for FilesAuthGuard
+    /**
+     * Additional validity period of the token for FilesAuthGuard
+     */
     filesTokenAdditionalTime?: string,
+    /**
+     * Confirmation code config
+     */
     confirm: {
+        /**
+         * The time in minutes after which the confirmation code will become invalid
+         */
         expireMins?: number,
+        /**
+         * The time in seconds that limits the ability to resend the code
+         */
         repeatLimitSec?: number,
+        /**
+         * The number of attempts to enter the correct confirmation code
+         */
         attemptsCount?: number,
+        /**
+         * The length of the confirmation code that is sent to the user via SMS
+         */
         smsCodeLength?: number,
+        /**
+         * The length of the confirmation code for the call
+         */
         callCodeLength?: number,
+        /**
+         * Enabling debugging mode using a static confirmation code
+         */
         isEnableDebugStaticCode?: boolean,
+        /**
+         * The name of the provider for sending confirmation codes
+         */
         providerName?: 'smsc' | string,
+        /**
+         * The type of the provider for sending confirmation codes
+         */
         providerType?: 'voice' | 'sms' | 'call',
     }
 }
