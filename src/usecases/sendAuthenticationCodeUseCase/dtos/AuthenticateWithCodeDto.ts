@@ -1,6 +1,6 @@
 import {PhoneField} from '@steroidsjs/nest/infrastructure/decorators/fields';
 
-export class AuthorizeWithCodeDto {
+export class AuthenticateWithCodeDto {
     @PhoneField()
     phone: string;
 }
