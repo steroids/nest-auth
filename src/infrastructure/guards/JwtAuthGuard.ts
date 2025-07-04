@@ -1,50 +1,41 @@
-import {ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import {ISessionService} from '../../domain/interfaces/ISessionService';
-import {getTokenFromHttpRequest} from '../helpers/GetTokenFromHttpRequest';
-import {AuthService} from '../../domain/services/AuthService';
-import JwtTokenStatusEnum from '../../domain/enums/JwtTokenStatusEnum';
+import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
 import {JWT_STRATEGY_NAME} from '../strategies/JwtStrategy';
 import {PERMISSION_AUTH_AUTHORIZED} from '../permissions';
+import {IJwtStrategyValidateData} from '../../domain/interfaces/IJwtStrategyValidateData';
 
+// Working path: Guard.canActivate -> Strategy.constructor verify token -> Strategy.validate -> Guard.handleRequest
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
-    constructor(
-        @Inject(ISessionService)
-        protected sessionsService: ISessionService,
-        protected authService: AuthService,
-    ) {
-        super();
-    }
+    /**
+     * Called after Strategy.validate
+     * @param err error thrown to this function
+     * @param validateData data returned from Strategy.validate
+     * @param info some info about error
+     * @param context ExecutionContext
+     */
+    handleRequest<TUser>(
+        err: any,
+        validateData: IJwtStrategyValidateData,
+        info: any,
+        context: ExecutionContext,
+    ): TUser {
+        if (err || !validateData) {
+            throw err || new UnauthorizedException({message: 'Пользователь не авторизован'});
+        }
 
-    protected readonly isEmptyTokenAllowed: boolean = false;
+        const {user, loginUid} = validateData;
 
-    async canActivate(context: ExecutionContext): Promise<boolean> {
         const req = context.switchToHttp().getRequest();
-        const token = getTokenFromHttpRequest(req);
+        req.permissions = [
+            PERMISSION_AUTH_AUTHORIZED,
+            ...(req.permissions || []),
+            ...user.permissions,
+        ];
+        user.permissions = req.permissions;
+        req.loginUid = loginUid;
 
-        if (!token) {
-            return this.isEmptyTokenAllowed;
-        }
-
-        const {status, payload} = await this.sessionsService.verifyToken(token);
-
-        if (status === JwtTokenStatusEnum.VALID && payload) {
-            const user = await this.authService.createAuthUserDto(payload);
-
-            req.permissions = [
-                PERMISSION_AUTH_AUTHORIZED,
-                ...(req.permissions || []),
-                ...user.permissions,
-            ];
-
-            user.permissions = req.permissions;
-
-            req.user = user;
-            req.loginUid = payload.jti;
-
-            return true;
-        }
-        throw new UnauthorizedException({message: 'Пользователь не авторизован'});
+        // after returns will be req.user = user
+        return user as TUser;
     }
 }

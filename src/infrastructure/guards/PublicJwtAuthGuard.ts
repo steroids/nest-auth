@@ -1,17 +1,20 @@
-import {Inject, Injectable} from '@nestjs/common';
-import {ISessionService} from '../../domain/interfaces/ISessionService';
-import {AuthService} from '../../domain/services/AuthService';
-import {JwtAuthGuard} from "./JwtAuthGuard";
+import {ExecutionContext, Injectable} from '@nestjs/common';
+import {getTokenFromHttpRequest} from '../helpers/GetTokenFromHttpRequest';
+import {JwtAuthGuard} from './JwtAuthGuard';
 
+/**
+ * JWT Guard skipping an empty JWT
+ */
 @Injectable()
 export class PublicJwtAuthGuard extends JwtAuthGuard {
-    constructor(
-        @Inject(ISessionService)
-        protected sessionsService: ISessionService,
-        protected authService: AuthService,
-    ) {
-        super(sessionsService, authService);
-    }
+    canActivate(context: ExecutionContext) {
+        const req = context.switchToHttp().getRequest();
+        const token = getTokenFromHttpRequest(req);
 
-    protected readonly isEmptyTokenAllowed: boolean = true;
+        if (!token) {
+            return true;
+        }
+
+        return super.canActivate(context);
+    }
 }
