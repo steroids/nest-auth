@@ -2,43 +2,29 @@ import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/Notifi
 import {INotifierCallOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {Inject} from '@nestjs/common';
-import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
-import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {IAuthConfirmConfig} from '../../config';
-import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
+import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
-export class AuthConfirmCallProvider implements IAuthConfirmProvider {
+export class AuthConfirmCallProvider extends BaseAuthConfirmProvider {
     constructor(
         @Inject(INotifierService)
         protected readonly notifierService: INotifierService,
     ) {
+        super(notifierService);
     }
 
     readonly notifierProviderType: NotifierProviderType = NotifierProviderType.SMS;
 
     async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
-        let code: string;
-        // Делаем дозвон пользователю
-        try {
-            const response = await this.notifierService.send({
-                call: {
-                    phone,
-                    name: config.providerName,
-                } as INotifierCallOptions,
-            });
+        const response = await this.sendInternal({
+            call: {
+                phone,
+                name: config.providerName,
+            } as INotifierCallOptions,
+        });
 
-            code = response[NotifierProviderType.CALL];
-            // Берем последние цифры из полученного кода
-            code = code.substring(code.length - config.callCodeLength);
-        } catch (e) {
-            if (e instanceof NotifierSendException) {
-                throw new ValidationException({
-                    phone: 'Не удалось отправить код',
-                });
-            } else {
-                throw e;
-            }
-        }
+        let code = response[NotifierProviderType.CALL];
+        code = code.substring(code.length - config.callCodeLength);
 
         return code;
     }

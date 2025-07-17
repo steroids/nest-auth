@@ -4,18 +4,17 @@ import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INoti
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
 import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
-import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
-import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {Inject} from '@nestjs/common';
-import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
 import {generateCode} from '../../../domain/services/AuthConfirmService';
 import {IAuthConfirmConfig} from '../../config';
+import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
-export class AuthConfirmSmsProvider implements IAuthConfirmProvider {
+export class AuthConfirmSmsProvider extends BaseAuthConfirmProvider {
     constructor(
         @Inject(INotifierService)
         protected readonly notifierService: INotifierService,
     ) {
+        super(notifierService);
     }
 
     readonly notifierProviderType: NotifierProviderType = NotifierProviderType.CALL;
@@ -24,25 +23,16 @@ export class AuthConfirmSmsProvider implements IAuthConfirmProvider {
         // Отправляем смс код
         const code = generateCode(config.smsCodeLength);
 
-        try {
-            await this.notifierService.send({
-                sms: {
-                    phone,
-                    message: config.messageTemplate
-                        .replace('{code}', code)
-                        .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
-                    name: config.providerName,
-                } as INotifierSmsOptions,
-            });
-        } catch (e) {
-            if (e instanceof NotifierSendException) {
-                throw new ValidationException({
-                    phone: 'Не удалось отправить код',
-                });
-            } else {
-                throw e;
-            }
-        }
+        await this.sendInternal({
+            sms: {
+                phone,
+                message: config.messageTemplate
+                    .replace('{code}', code)
+                    .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
+                name: config.providerName,
+            } as INotifierSmsOptions,
+        });
+
         return code;
     }
 }
