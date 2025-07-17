@@ -4,16 +4,19 @@ export interface IAuthModuleConfig {
     accessTokenExpiresSec?: string,
     refreshTokenExpiresSec?: string, // Additional token expiration time for FilesAuthGuard
     filesTokenAdditionalTime?: string,
-    confirm: {
-        expireMins?: number,
-        repeatLimitSec?: number,
-        attemptsCount?: number,
-        smsCodeLength?: number,
-        callCodeLength?: number,
-        isEnableDebugStaticCode?: boolean,
-        providerName?: 'smsc' | string,
-        providerType?: 'voice' | 'sms' | 'call',
-    }
+    confirm: IAuthConfirmConfig,
+}
+
+export interface IAuthConfirmConfig {
+    expireMins?: number,
+    repeatLimitSec?: number,
+    attemptsCount?: number,
+    smsCodeLength?: number,
+    callCodeLength?: number,
+    isEnableDebugStaticCode?: boolean,
+    providerName: string,
+    providerType?: 'call' | 'sms' | 'voice',
+    messageTemplate?: string,
 }
 
 export default () => ({
@@ -31,5 +34,6 @@ export default () => ({
         isEnableDebugStaticCode: process.env.AUTH_ENABLE_DEFAULT_CODE === '1',
         providerName: process.env.AUTH_PROVIDER_NAME || 'smsc',
         providerType: process.env.AUTH_PROVIDER_TYPE || 'voice', // or "sms", or "call"
+        messageTemplate: process.env.AUTH_CONFIRM_MESSAGE_TEMPLATE || 'Ваш код авторизации в {appTitle} - {code}',
     },
 } as IAuthModuleConfig);
