@@ -1,5 +1,5 @@
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
-import {INotifierVoiceMessageOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
+import {INotifierSmsOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
@@ -7,34 +7,32 @@ import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule'
 import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {Inject} from '@nestjs/common';
-import {IAuthConfirmProvider} from '../../interfaces/IAuthConfirmProvider';
-import {generateCode} from '../AuthConfirmService';
-import {IAuthConfirmConfig} from '../../../infrastructure/config';
+import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
+import {generateCode} from '../../../domain/services/AuthConfirmService';
+import {IAuthConfirmConfig} from '../../config';
 
-export class AuthConfirmVoiceProvider implements IAuthConfirmProvider {
+export class AuthConfirmCallProvider implements IAuthConfirmProvider {
     constructor(
         @Inject(INotifierService)
         protected readonly notifierService: INotifierService,
     ) {
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.VOICE;
+    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.CALL;
 
     async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
+        // Отправляем смс код
         const code = generateCode(config.smsCodeLength);
-        const pronunciationCode = code.split('')
-            .join(' '); // Чтобы проговорил цифры кода, а не число из цифр
 
         try {
             await this.notifierService.send({
-                voice: {
+                sms: {
                     phone,
                     message: config.messageTemplate
-                        .replace('{code}', `${pronunciationCode}`)
-                        .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title)
-                        .concat(`, повторяю, ${pronunciationCode}`),
-                    voice: 'm4',
-                } as INotifierVoiceMessageOptions,
+                        .replace('{code}', code)
+                        .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
+                    name: config.providerName,
+                } as INotifierSmsOptions,
             });
         } catch (e) {
             if (e instanceof NotifierSendException) {

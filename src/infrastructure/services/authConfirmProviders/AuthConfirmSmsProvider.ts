@@ -2,8 +2,8 @@ import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/Notifi
 import {INotifierCallOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {Inject} from '@nestjs/common';
-import {IAuthConfirmProvider} from '../../interfaces/IAuthConfirmProvider';
-import {IAuthConfirmConfig} from '../../../infrastructure/config';
+import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
+import {IAuthConfirmConfig} from '../../config';
 
 export class AuthConfirmSmsProvider implements IAuthConfirmProvider {
     constructor(
