@@ -40,7 +40,7 @@ export class AuthLoginModel {
         label: 'Время истечения токена',
         noColumn: true,
     })
-    accessExpireTime: Date;
+    accessExpireTime: string;
 
     @StringField({
         label: 'Токен для обновления',
@@ -52,7 +52,7 @@ export class AuthLoginModel {
         label: 'Время истечения токена обновления',
         noColumn: true,
     })
-    refreshExpireTime: Date;
+    refreshExpireTime: string;
 
     @StringField({
         label: 'IP адрес',
