@@ -1,9 +1,9 @@
-import {AuthConfirmCallProvider} from './AuthConfirmCallProvider';
 import {AuthConfirmSmsProvider} from './AuthConfirmSmsProvider';
+import {AuthConfirmCallProvider} from './AuthConfirmCallProvider';
 import {AuthConfirmVoiceProvider} from './AuthConfirmVoiceProvider';
 
 export default [
-    AuthConfirmCallProvider,
     AuthConfirmSmsProvider,
+    AuthConfirmCallProvider,
     AuthConfirmVoiceProvider,
 ];

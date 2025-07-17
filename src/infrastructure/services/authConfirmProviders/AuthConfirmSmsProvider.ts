@@ -1,8 +1,14 @@
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
-import {INotifierCallOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
+import {INotifierSmsOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
+import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
+import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {Inject} from '@nestjs/common';
 import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
+import {generateCode} from '../../../domain/services/AuthConfirmService';
 import {IAuthConfirmConfig} from '../../config';
 
 export class AuthConfirmSmsProvider implements IAuthConfirmProvider {
@@ -12,23 +18,31 @@ export class AuthConfirmSmsProvider implements IAuthConfirmProvider {
     ) {
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.SMS;
+    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.CALL;
 
     async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
-        let code: string;
-        // Делаем дозвон пользователю
-        const response = await this.notifierService.send({
-            call: {
-                phone,
-                name: config.providerName,
-            } as INotifierCallOptions,
-        });
+        // Отправляем смс код
+        const code = generateCode(config.smsCodeLength);
 
-        code = response[NotifierProviderType.CALL];
-
-        // Берем последние цифры из полученного кода
-        code = code.substring(code.length - config.callCodeLength);
-
+        try {
+            await this.notifierService.send({
+                sms: {
+                    phone,
+                    message: config.messageTemplate
+                        .replace('{code}', code)
+                        .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
+                    name: config.providerName,
+                } as INotifierSmsOptions,
+            });
+        } catch (e) {
+            if (e instanceof NotifierSendException) {
+                throw new ValidationException({
+                    phone: 'Не удалось отправить код',
+                });
+            } else {
+                throw e;
+            }
+        }
         return code;
     }
 }

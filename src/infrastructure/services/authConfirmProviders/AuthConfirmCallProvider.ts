@@ -1,15 +1,11 @@
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
-import {INotifierSmsOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
+import {INotifierCallOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
-import {IAppModuleConfig} from '@steroidsjs/nest/infrastructure/applications/IAppModuleConfig';
-import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule';
+import {Inject} from '@nestjs/common';
 import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
-import {Inject} from '@nestjs/common';
-import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
-import {generateCode} from '../../../domain/services/AuthConfirmService';
 import {IAuthConfirmConfig} from '../../config';
+import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
 
 export class AuthConfirmCallProvider implements IAuthConfirmProvider {
     constructor(
@@ -18,22 +14,22 @@ export class AuthConfirmCallProvider implements IAuthConfirmProvider {
     ) {
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.CALL;
+    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.SMS;
 
     async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
-        // Отправляем смс код
-        const code = generateCode(config.smsCodeLength);
-
+        let code: string;
+        // Делаем дозвон пользователю
         try {
-            await this.notifierService.send({
-                sms: {
+            const response = await this.notifierService.send({
+                call: {
                     phone,
-                    message: config.messageTemplate
-                        .replace('{code}', code)
-                        .replace('{appTitle}', ModuleHelper.getConfig<IAppModuleConfig>(AppModule).title),
                     name: config.providerName,
-                } as INotifierSmsOptions,
+                } as INotifierCallOptions,
             });
+
+            code = response[NotifierProviderType.CALL];
+            // Берем последние цифры из полученного кода
+            code = code.substring(code.length - config.callCodeLength);
         } catch (e) {
             if (e instanceof NotifierSendException) {
                 throw new ValidationException({
@@ -43,6 +39,7 @@ export class AuthConfirmCallProvider implements IAuthConfirmProvider {
                 throw e;
             }
         }
+
         return code;
     }
 }
