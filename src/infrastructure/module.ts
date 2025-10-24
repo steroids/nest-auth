@@ -11,34 +11,38 @@ import {forwardRef} from '@nestjs/common';
 import {IAuthUpdateUserOwnPasswordUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
 import {IUserUpdatePasswordUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserUpdatePasswordUseCase';
 import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
-import {SessionService} from './services/SessionService';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
 import {AuthPermissionsService} from '../domain/services/AuthPermissionsService';
-import {AuthLoginRepository} from './repositories/AuthLoginRepository';
-import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
 import {IAuthPermissionsRepository} from '../domain/interfaces/IAuthPermissionsRepository';
 import {IAuthLoginRepository} from '../domain/interfaces/IAuthLoginRepository';
-import {LoginPasswordStrategy} from './strategies/LoginPasswordStrategy';
-import {JwtStrategy} from './strategies/JwtStrategy';
 import {ISessionService} from '../domain/interfaces/ISessionService';
 import {IAuthConfirmRepository} from '../domain/interfaces/IAuthConfirmRepository';
-import {AuthConfirmRepository} from './repositories/AuthConfirmRepository';
 import {AuthConfirmService} from '../domain/services/AuthConfirmService';
-import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
 import {IAuthRoleRepository} from '../domain/interfaces/IAuthRoleRepository';
-import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
+import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
+import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
+import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
+import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
+import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {SessionService} from './services/SessionService';
+import {AuthLoginRepository} from './repositories/AuthLoginRepository';
+import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
+import {LoginPasswordStrategy} from './strategies/LoginPasswordStrategy';
+import {JwtStrategy} from './strategies/JwtStrategy';
+import {AuthConfirmRepository} from './repositories/AuthConfirmRepository';
+import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
+import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {AuthController} from './controllers/AuthController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
 import {AuthPermissionController} from './controllers/AuthPermissionController';
 import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
-import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {PasswordValidator} from './validators/PasswordValidator';
-import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
 
 export default (config: IAuthModuleConfig) => ({
     imports: [
@@ -91,7 +95,6 @@ export default (config: IAuthModuleConfig) => ({
         ModuleHelper.provide(AuthConfirmService, [
             IAuthConfirmRepository,
             INotifierService,
-            IUserService,
             AuthService,
         ]),
         ModuleHelper.provide(AuthLoginService, [
@@ -128,6 +131,14 @@ export default (config: IAuthModuleConfig) => ({
         ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
             AuthLoginService,
         ]),
+        {
+            provide: AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN,
+            useClass: AuthenticateWithCodeUseCase,
+        },
+        {
+            provide: SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
+            useClass: SendAuthenticationCodeUseCase,
+        },
 
         // Validators
         ModuleHelper.provide(PasswordValidator, [
