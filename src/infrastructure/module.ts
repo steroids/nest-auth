@@ -26,6 +26,8 @@ import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthU
 import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
 import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
 import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
+import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
 import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
@@ -129,8 +131,14 @@ export default (config: IAuthModuleConfig) => ({
         ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
             AuthLoginService,
         ]),
-        AuthenticateWithCodeUseCase,
-        SendAuthenticationCodeUseCase,
+        {
+            provide: AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN,
+            useClass: AuthenticateWithCodeUseCase,
+        },
+        {
+            provide: SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
+            useClass: SendAuthenticationCodeUseCase,
+        },
 
         // Validators
         ModuleHelper.provide(PasswordValidator, [

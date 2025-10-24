@@ -1,22 +1,31 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
+import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthenticateWithCodeDto} from '../../usecases/sendAuthenticationCodeUseCase/dtos/AuthenticateWithCodeDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
-import {SendAuthenticationCodeUseCase} from '../../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
-import {AuthenticateWithCodeUseCase} from '../../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
+import {
+    AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN,
+    IAuthenticateWithCodeUseCase,
+} from '../../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {
+    ISendAuthenticationCodeUseCase,
+    SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
+} from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
 export class AuthPhoneController {
     constructor(
-        private readonly authenticateWithCodeUseCase: AuthenticateWithCodeUseCase,
-        private readonly sendAuthenticationCodeUseCase: SendAuthenticationCodeUseCase,
+        @Inject(AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN)
+        private readonly authenticateWithCodeUseCase: IAuthenticateWithCodeUseCase,
+        @Inject(SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN)
+        private readonly sendAuthenticationCodeUseCase: ISendAuthenticationCodeUseCase,
     ) {
     }
 
@@ -26,12 +35,12 @@ export class AuthPhoneController {
         @Body() dto: AuthenticateWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.sendAuthenticationCodeUseCase.handle(
+        const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.SMS,
             dto,
             context,
-            AuthConfirmSchema,
         );
+        return DataMapper.create(AuthConfirmSchema, authConfirm);
     }
 
     @Post('/call')
@@ -40,12 +49,12 @@ export class AuthPhoneController {
         @Body() dto: AuthenticateWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.sendAuthenticationCodeUseCase.handle(
+        const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.CALL,
             dto,
             context,
-            AuthConfirmSchema,
         );
+        return DataMapper.create(AuthConfirmSchema, authConfirm);
     }
 
     @Post('/send')
@@ -54,12 +63,12 @@ export class AuthPhoneController {
         @Body() dto: AuthenticateWithCodeDto,
         @Context() context: ContextDto,
     ) {
-        return this.sendAuthenticationCodeUseCase.handle(
+        const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             null,
             dto,
             context,
-            AuthConfirmSchema,
         );
+        return DataMapper.create(AuthConfirmSchema, authConfirm);
     }
 
     @Post('/confirm')
@@ -70,6 +79,7 @@ export class AuthPhoneController {
         @Body() dto: AuthConfirmLoginDto,
         @Context() context: ContextDto,
     ) {
-        return this.authenticateWithCodeUseCase.handle(dto, context, AuthLoginSchema);
+        const authLogin = await this.authenticateWithCodeUseCase.handle(dto, context);
+        return DataMapper.create(AuthLoginSchema, authLogin);
     }
 }

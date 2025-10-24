@@ -3,10 +3,12 @@ import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Inject, Injectable} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
+import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
+import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
 
 @Injectable()
-export class SendAuthenticationCodeUseCase {
+export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUseCase {
     constructor(
         protected readonly authConfirmService: AuthConfirmService,
         @Inject(IUserService)
@@ -17,8 +19,7 @@ export class SendAuthenticationCodeUseCase {
         providerType: string | null,
         dto: AuthenticateWithCodeDto,
         context: ContextDto,
-        schemaClass = null,
-    ) {
+    ): Promise<AuthConfirmModel> {
         const user = await this.userService.findByLogin(dto.phone);
 
         if (!user) {
@@ -30,6 +31,6 @@ export class SendAuthenticationCodeUseCase {
             phone: dto.phone,
         };
 
-        return this.authConfirmService.sendCode(sendCodeDto, providerType, context, schemaClass);
+        return this.authConfirmService.sendCode(sendCodeDto, providerType, context);
     }
 }
