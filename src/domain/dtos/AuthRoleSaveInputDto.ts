@@ -16,7 +16,7 @@ export class AuthRoleSaveInputDto {
     isActive: boolean;
 
     @ExtendField(AuthRoleModel)
-    expireTime: Date;
+    expireTime: string;
 
     @ExtendField(AuthRoleModel)
     parentId: number;

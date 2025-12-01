@@ -27,5 +27,5 @@ export class AuthRoleSchema {
     parentId: number;
 
     @ExtendField(AuthRoleModel)
-    expireTime: Date;
+    expireTime: string;
 }
