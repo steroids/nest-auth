@@ -12,7 +12,7 @@ import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService'
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
-import {Inject} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
@@ -28,6 +28,7 @@ export const generateCode = (length = 6) => {
     return _padStart(_random(0, (10 ** length) - 1).toString(), length, '0');
 };
 
+@Injectable()
 export class AuthConfirmService extends CrudService<
     AuthConfirmModel,
     AuthConfirmSearchInputDto,
