@@ -17,6 +17,7 @@ import {
     ISendAuthenticationCodeUseCase,
     SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
 } from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {AuthConfirmPhoneDto} from '../../domain/dtos/AuthConfirmPhoneDto';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -32,12 +33,12 @@ export class AuthPhoneController {
     @Post('/sms')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCode(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.SMS,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -46,12 +47,12 @@ export class AuthPhoneController {
     @Post('/call')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCodeByCall(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.CALL,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -60,12 +61,12 @@ export class AuthPhoneController {
     @Post('/send')
     @ApiOkResponse({type: AuthConfirmSchema})
     async send(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             null,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);

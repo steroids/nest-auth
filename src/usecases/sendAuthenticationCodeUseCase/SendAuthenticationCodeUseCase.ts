@@ -4,6 +4,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
+import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../../domain/enums/AuthConfirmProviderTypeEnum';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
 
@@ -16,11 +17,20 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
     ) {}
 
     public async handle(
-        providerType: string | null,
+        providerType: AuthConfirmProviderTypeEnum | null,
         dto: AuthenticateWithCodeDto,
         context: ContextDto,
     ): Promise<AuthConfirmModel> {
-        const user = await this.userService.findByLogin(dto.phone);
+        const targetField = AuthConfirmProviderTypeEnumHelper.getTargetField(providerType);
+
+        const user = await this.userService
+            .createQuery()
+            .where([
+                '=',
+                targetField,
+                dto.target,
+            ])
+            .one();
 
         if (!user) {
             throw new Error('Пользователь не найден');
@@ -28,7 +38,7 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
 
         const sendCodeDto: AuthConfirmSendCodeDto = {
             userId: user.id,
-            phone: dto.phone,
+            target: dto.target,
         };
 
         return this.authConfirmService.sendCode(sendCodeDto, providerType, context);
