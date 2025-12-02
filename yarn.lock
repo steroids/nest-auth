@@ -254,6 +254,13 @@
     tslib "2.4.1"
     uuid "9.0.0"
 
+"@nestjs/event-emitter@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/event-emitter/-/event-emitter-3.0.1.tgz#6c286f3b46a3d22093397a35015de427972bacfb"
+  integrity sha512-0Ln/x+7xkU6AJFOcQI9tIhUMXVF7D5itiaQGOyJbXtlAfAIt8gzDdJm+Im7cFzKoWkiW5nCXCPh6GSvdQd/3Dw==
+  dependencies:
+    eventemitter2 "6.4.9"
+
 "@nestjs/graphql@^10.0.20":
   version "10.1.7"
   resolved "https://registry.yarnpkg.com/@nestjs/graphql/-/graphql-10.1.7.tgz#233d96e34f2aa98aad4956ebc2e1f9f97f1fa713"
@@ -440,15 +447,16 @@
   dependencies:
     uuid "9.0.1"
 
-"@steroidsjs/nest@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-3.2.0.tgz#78a1f3a8c59b71ff38661ac76cae66faa1278535"
-  integrity sha512-B0w1xT5SVJpTkSbnmvRjAfft8kuFXmp6iuY1rqpOp3JKp1neUdTQpcBlGFADVUfAL+auewoE6KSK+iXqYImJaw==
+"@steroidsjs/nest@^3.2.6":
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/@steroidsjs/nest/-/nest-3.2.6.tgz#f68a0ecbbdec142af7ebc27d07986e1f1a927b9c"
+  integrity sha512-hX8fqq1FsVZVdeHG6vaxjWlVvV33uoQd6z2f5kg7yEIQrfwXgTcL56LD0eT2FD6S9IGY2cqvyPMOKI3FceUrUQ==
   dependencies:
     "@dbml/core" "^2.4.4"
     "@nestjs/cli" "^9.1.9"
     "@nestjs/common" "^9.2.1"
     "@nestjs/core" "^9.2.1"
+    "@nestjs/event-emitter" "^3.0.1"
     "@nestjs/platform-express" "^9.2.1"
     "@nestjs/swagger" "^6.1.4"
     "@ntegral/nestjs-sentry" "^4.0.0"
@@ -2175,6 +2183,11 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
+
+eventemitter2@6.4.9:
+  version "6.4.9"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-6.4.9.tgz#41f2750781b4230ed58827bc119d293471ecb125"
+  integrity sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg==
 
 eventemitter3@^3.1.0:
   version "3.1.2"

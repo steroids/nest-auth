@@ -16,21 +16,23 @@ import {Inject} from '@nestjs/common';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
-import {AuthConfirmSaveInputDto} from '../dtos/AuthConfirmSaveInputDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {IAuthConfirmConfig, IAuthModuleConfig} from '../../infrastructure/config';
 import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/IAuthConfirmProvider';
 import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../enums/AuthConfirmProviderTypeEnum';
-import {AuthConfirmSendDto} from '../dtos/AuthConfirmSendDto';
-import {AuthService} from './AuthService';
+import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
+import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
 
 export const generateCode = (length = 6) => {
     length = Math.min(32, Math.max(1, length));
     return _padStart(_random(0, (10 ** length) - 1).toString(), length, '0');
 };
 
-export class AuthConfirmService extends CrudService<AuthConfirmModel,
-    AuthConfirmSearchInputDto, AuthConfirmSaveInputDto> {
+export class AuthConfirmService extends CrudService<
+    AuthConfirmModel,
+    AuthConfirmSearchInputDto,
+    AuthConfirmSaveDto
+> {
     protected modelClass = AuthConfirmModel;
 
     constructor(
@@ -40,14 +42,12 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         protected readonly authConfirmProviders: IAuthConfirmProvider[],
         @Inject(IUserService)
         protected readonly userService: IUserService,
-        @Inject(AuthService)
-        protected readonly authService: AuthService,
     ) {
         super();
     }
 
     async sendCode(
-        dto: AuthConfirmSendDto,
+        dto: AuthConfirmSendCodeDto,
         providerType: AuthConfirmProviderTypeEnum | null,
         context: ContextDto,
         schemaClass = null,
@@ -98,15 +98,6 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
             }
         }
 
-        const user = await this.userService
-            .createQuery()
-            .where([
-                '=',
-                targetField,
-                dto.target,
-            ])
-            .one();
-
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
@@ -116,7 +107,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
-                userId: user?.id || null,
+                userId: dto.userId || null,
                 ipAddress: context?.ipAddress,
             }),
         );
@@ -124,27 +115,17 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
         return schemaClass ? DataMapper.create(schemaClass, model) : model;
     }
 
-    async confirmCode(dto: AuthConfirmLoginDto, context: ContextDto, schemaClass = null) {
+    async confirmCode(dto: AuthConfirmLoginDto) {
         // Валидация кода происходит в CodeAuthGuard
+        const authConfirmModel = await this.createQuery()
+            .where({uid: dto.uid})
+            .one();
 
-        const authConfirmModel = await this.findOne(
-            (new SearchQuery<AuthConfirmModel>())
-                .with('user')
-                .where({
-                    uid: dto.uid,
-                }),
-        );
-
-        // Делаем отмету, что код подтвержден
-        authConfirmModel.isConfirmed = true;
-        await this.update(authConfirmModel.id, authConfirmModel);
-
-        // Авторизуемся
-        const authUserDto = await this.authService.createAuthUserDto(
-            this.authService.createTokenPayload(authConfirmModel.user),
-        );
-        const loginModel = await this.authService.login(authUserDto, context);
-
-        return schemaClass ? DataMapper.create(schemaClass, loginModel) : loginModel;
+        // Делаем отметку, что код подтвержден
+        const saveDto = DataMapper.create(AuthConfirmSaveDto, {
+            ...authConfirmModel,
+            isConfirmed: true,
+        });
+        return this.update(authConfirmModel.id, saveDto);
     }
 }

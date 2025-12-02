@@ -21,10 +21,10 @@ import {AuthConfirmService} from '../domain/services/AuthConfirmService';
 import {IAuthRoleRepository} from '../domain/interfaces/IAuthRoleRepository';
 import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
-import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
-import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
-import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
-import authConfirmProviders from './services/authConfirmProviders';
+import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
+import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
+import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
 import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
@@ -33,6 +33,10 @@ import {JwtStrategy} from './strategies/JwtStrategy';
 import {AuthConfirmRepository} from './repositories/AuthConfirmRepository';
 import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
 import {AuthRoleRepository} from './repositories/AuthRoleRepository';
+import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
+import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
+import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
+import authConfirmProviders from './services/authConfirmProviders';
 import {AuthController} from './controllers/AuthController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
 import {AuthPermissionController} from './controllers/AuthPermissionController';
@@ -130,6 +134,14 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
             AuthLoginService,
         ]),
+        {
+            provide: AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN,
+            useClass: AuthenticateWithCodeUseCase,
+        },
+        {
+            provide: SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
+            useClass: SendAuthenticationCodeUseCase,
+        },
 
         // Validators
         ModuleHelper.provide(PasswordValidator, [
