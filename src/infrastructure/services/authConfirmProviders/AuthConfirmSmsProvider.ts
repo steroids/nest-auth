@@ -1,4 +1,3 @@
-import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {INotifierSmsOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
@@ -7,6 +6,7 @@ import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule'
 import {Inject} from '@nestjs/common';
 import {generateCode} from '../../../domain/services/AuthConfirmService';
 import {IAuthConfirmConfig} from '../../config';
+import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
 export class AuthConfirmSmsProvider extends BaseAuthConfirmProvider {
@@ -17,13 +17,13 @@ export class AuthConfirmSmsProvider extends BaseAuthConfirmProvider {
         super(notifierService);
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.CALL;
+    readonly type: AuthConfirmProviderTypeEnum = AuthConfirmProviderTypeEnum.SMS;
 
-    async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
+    async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
         // Отправляем смс код
         const code = generateCode(config.smsCodeLength);
 
-        await this.sendInternal({
+        await this.sendCode({
             sms: {
                 phone,
                 message: config.messageTemplate

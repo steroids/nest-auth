@@ -1,14 +1,16 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
-import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
+import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthConfirmSendSmsDto} from '../../domain/dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
 import {AuthConfirmSchema} from '../schemas/AuthConfirmSchema';
 import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
+import {AuthConfirmProviderTypeEnum} from '../../domain/enums/AuthConfirmProviderTypeEnum';
+import {AuthConfirmSendDto} from '../../domain/dtos/AuthConfirmSendDto';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -26,8 +28,8 @@ export class AuthPhoneController {
         @Context() context: ContextDto,
     ) {
         return this.authConfirmService.sendCode(
-            dto,
-            NotifierProviderType.SMS,
+            DataMapper.create(AuthConfirmSendDto, {target: dto.phone}),
+            AuthConfirmProviderTypeEnum.SMS,
             context,
             AuthConfirmSchema,
         );
@@ -40,8 +42,8 @@ export class AuthPhoneController {
         @Context() context: ContextDto,
     ) {
         return this.authConfirmService.sendCode(
-            dto,
-            NotifierProviderType.CALL,
+            DataMapper.create(AuthConfirmSendDto, {target: dto.phone}),
+            AuthConfirmProviderTypeEnum.CALL,
             context,
             AuthConfirmSchema,
         );
@@ -54,7 +56,7 @@ export class AuthPhoneController {
         @Context() context: ContextDto,
     ) {
         return this.authConfirmService.sendCode(
-            dto,
+            DataMapper.create(AuthConfirmSendDto, {target: dto.phone}),
             null,
             context,
             AuthConfirmSchema,

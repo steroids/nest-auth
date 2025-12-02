@@ -1,4 +1,3 @@
-import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {INotifierVoiceMessageOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
@@ -7,6 +6,7 @@ import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule'
 import {Inject} from '@nestjs/common';
 import {generateCode} from '../../../domain/services/AuthConfirmService';
 import {IAuthConfirmConfig} from '../../config';
+import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
 export class AuthConfirmVoiceProvider extends BaseAuthConfirmProvider {
@@ -17,14 +17,14 @@ export class AuthConfirmVoiceProvider extends BaseAuthConfirmProvider {
         super(notifierService);
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.VOICE;
+    readonly type: AuthConfirmProviderTypeEnum = AuthConfirmProviderTypeEnum.VOICE;
 
-    async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
+    async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
         const code = generateCode(config.smsCodeLength);
         const pronunciationCode = code.split('')
             .join(' '); // Чтобы проговорил цифры кода, а не число из цифр
 
-        await this.sendInternal({
+        await this.sendCode({
             voice: {
                 phone,
                 message: config.messageTemplate

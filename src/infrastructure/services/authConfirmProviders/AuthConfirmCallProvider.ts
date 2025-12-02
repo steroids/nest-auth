@@ -3,6 +3,7 @@ import {INotifierCallOptions} from '@steroidsjs/nest-modules/notifier/interfaces
 import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INotifierService';
 import {Inject} from '@nestjs/common';
 import {IAuthConfirmConfig} from '../../config';
+import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
 export class AuthConfirmCallProvider extends BaseAuthConfirmProvider {
@@ -13,10 +14,10 @@ export class AuthConfirmCallProvider extends BaseAuthConfirmProvider {
         super(notifierService);
     }
 
-    readonly notifierProviderType: NotifierProviderType = NotifierProviderType.SMS;
+    readonly type: AuthConfirmProviderTypeEnum = AuthConfirmProviderTypeEnum.CALL;
 
-    async send(config: IAuthConfirmConfig, phone: string): Promise<string> {
-        const response = await this.sendInternal({
+    async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
+        const response = await this.sendCode({
             call: {
                 phone,
                 name: config.providerName,

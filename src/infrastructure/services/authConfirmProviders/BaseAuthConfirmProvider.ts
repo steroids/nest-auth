@@ -2,9 +2,9 @@ import {INotifierService} from '@steroidsjs/nest-modules/notifier/services/INoti
 import {INotifierSendOptions} from '@steroidsjs/nest-modules/notifier/interfaces/INotifierSendOptions';
 import NotifierSendException from '@steroidsjs/nest-modules/notifier/exceptions/NotifierSendException';
 import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
-import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {IAuthConfirmConfig} from 'src/infrastructure/config';
 import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
+import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 
 export abstract class BaseAuthConfirmProvider implements IAuthConfirmProvider {
     protected constructor(
@@ -12,17 +12,17 @@ export abstract class BaseAuthConfirmProvider implements IAuthConfirmProvider {
     ) {
     }
 
-    abstract readonly notifierProviderType: NotifierProviderType;
+    abstract readonly type: AuthConfirmProviderTypeEnum;
 
-    abstract send(config: IAuthConfirmConfig, target: string): Promise<string>;
+    abstract generateAndSendCode(config: IAuthConfirmConfig, target: string): Promise<string>;
 
-    protected async sendInternal(options: Partial<INotifierSendOptions>, exceptionFieldName = 'phone') {
+    protected async sendCode(options: Partial<INotifierSendOptions>) {
         try {
             return await this.notifierService.send(options);
         } catch (e) {
             if (e instanceof NotifierSendException) {
                 throw new ValidationException({
-                    [exceptionFieldName]: 'Не удалось отправить код',
+                    [AuthConfirmProviderTypeEnumHelper.getTargetField(this.type)]: 'Не удалось отправить код',
                 });
             }
             throw e;

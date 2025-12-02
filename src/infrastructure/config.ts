@@ -1,3 +1,5 @@
+import {AuthConfirmProviderTypeEnum} from '../domain/enums/AuthConfirmProviderTypeEnum';
+
 export interface IAuthModuleConfig {
     jwtAccessSecretKey?: string,
     jwtRefreshSecretKey?: string,
@@ -11,11 +13,12 @@ export interface IAuthConfirmConfig {
     expireMins?: number,
     repeatLimitSec?: number,
     attemptsCount?: number,
+    debugStaticCodeLength?: number,
     smsCodeLength?: number,
     callCodeLength?: number,
     isEnableDebugStaticCode?: boolean,
     providerName: string,
-    providerType?: 'call' | 'sms' | 'voice',
+    providerType?: AuthConfirmProviderTypeEnum,
     messageTemplate?: string,
 }
 
@@ -29,11 +32,12 @@ export default () => ({
         expireMins: 60,
         repeatLimitSec: 60,
         attemptsCount: 5,
+        debugStaticCodeLength: Number(process.env.AUTH_CONFIRM_DEBUG_STATIC_CODE_LENGTH) || 4,
         smsCodeLength: Number(process.env.AUTH_CONFIRM_SMS_CODE_LENGTH) || 4,
         callCodeLength: Number(process.env.AUTH_CONFIRM_CALL_CODE_LENGTH) || 4,
         isEnableDebugStaticCode: process.env.AUTH_ENABLE_DEFAULT_CODE === '1',
         providerName: process.env.AUTH_PROVIDER_NAME || 'smsc',
-        providerType: process.env.AUTH_PROVIDER_TYPE || 'voice', // or "sms", or "call"
+        providerType: process.env.AUTH_PROVIDER_TYPE || AuthConfirmProviderTypeEnum.VOICE, // or "sms", or "call"
         messageTemplate: process.env.AUTH_CONFIRM_MESSAGE_TEMPLATE || 'Ваш код авторизации в {appTitle} - {code}',
     },
 } as IAuthModuleConfig);

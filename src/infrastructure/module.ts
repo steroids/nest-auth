@@ -23,7 +23,7 @@ import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
 import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
-import {AuthConfirmProvidersToken, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
+import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
 import authConfirmProviders from './services/authConfirmProviders';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
@@ -91,7 +91,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         ]),
         ...authConfirmProviders,
         {
-            provide: AuthConfirmProvidersToken,
+            provide: AUTH_CONFIRM_PROVIDERS_TOKEN,
             useFactory: (...providers: IAuthConfirmProvider[]) => providers,
             inject: authConfirmProviders,
         },

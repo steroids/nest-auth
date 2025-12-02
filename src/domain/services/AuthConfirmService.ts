@@ -17,10 +17,11 @@ import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
 import {AuthConfirmSaveInputDto} from '../dtos/AuthConfirmSaveInputDto';
-import {AuthConfirmSendSmsDto} from '../dtos/AuthConfirmSendSmsDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {IAuthConfirmConfig, IAuthModuleConfig} from '../../infrastructure/config';
-import {AuthConfirmProvidersToken, IAuthConfirmProvider} from '../interfaces/IAuthConfirmProvider';
+import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/IAuthConfirmProvider';
+import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../enums/AuthConfirmProviderTypeEnum';
+import {AuthConfirmSendDto} from '../dtos/AuthConfirmSendDto';
 import {AuthService} from './AuthService';
 
 export const generateCode = (length = 6) => {
@@ -35,7 +36,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
     constructor(
         @Inject(IAuthConfirmRepository)
         public repository: IAuthConfirmRepository,
-        @Inject(AuthConfirmProvidersToken)
+        @Inject(AUTH_CONFIRM_PROVIDERS_TOKEN)
         protected readonly authConfirmProviders: IAuthConfirmProvider[],
         @Inject(IUserService)
         protected readonly userService: IUserService,
@@ -46,8 +47,8 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
     }
 
     async sendCode(
-        dto: AuthConfirmSendSmsDto,
-        providerType: string | null,
+        dto: AuthConfirmSendDto,
+        providerType: AuthConfirmProviderTypeEnum | null,
         context: ContextDto,
         schemaClass = null,
     ): Promise<AuthConfirmModel> {
@@ -58,8 +59,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
             providerType = config.providerType;
         }
 
-        // Получаем пользователя по номеру телефона
-        const user = await this.userService.findByLogin(dto.phone);
+        const targetField = AuthConfirmProviderTypeEnumHelper.getTargetField(providerType);
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
@@ -73,7 +73,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                         formatISO9075(addSeconds(new Date(), -1 * config.repeatLimitSec)),
                     ])
                     .andWhere({
-                        phone: dto.phone,
+                        [targetField]: dto.target,
                         isConfirmed: false,
                     }),
             );
@@ -84,24 +84,33 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
 
         let code: string;
         if (config.isEnableDebugStaticCode) {
-            code = _repeat('1', config.smsCodeLength);
+            code = _repeat('1', config.debugStaticCodeLength);
+        } else {
+            const authConfirmProvider = this.authConfirmProviders.find(provider => provider.type === providerType);
+            if (!authConfirmProvider) {
+                throw new Error('Wrong provider type: ' + providerType);
+            }
+
+            code = await authConfirmProvider.generateAndSendCode(config, dto.target);
+
+            if (!code) {
+                throw new Error('Code is not sent, provider type: ' + providerType);
+            }
         }
 
-        const authConfirmProvider = this.authConfirmProviders.find(provider => provider.notifierProviderType === providerType);
-        if (!authConfirmProvider) {
-            throw new Error('Wrong provider type: ' + providerType);
-        }
-
-        code = await authConfirmProvider.send(config, dto.phone);
-
-        if (!code) {
-            throw new Error('Code is not generated, provider type: ' + providerType);
-        }
+        const user = await this.userService
+            .createQuery()
+            .where([
+                '=',
+                targetField,
+                dto.target,
+            ])
+            .one();
 
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
-                phone: dto.phone,
+                [targetField]: dto.target,
                 code,
                 providerName: providerType,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
@@ -109,7 +118,7 @@ export class AuthConfirmService extends CrudService<AuthConfirmModel,
                 attemptsCount: config.attemptsCount,
                 userId: user?.id || null,
                 ipAddress: context?.ipAddress,
-            } as AuthConfirmModel),
+            }),
         );
 
         return schemaClass ? DataMapper.create(schemaClass, model) : model;
