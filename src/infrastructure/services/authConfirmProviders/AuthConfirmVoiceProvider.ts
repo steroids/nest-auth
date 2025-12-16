@@ -20,7 +20,7 @@ export class AuthConfirmVoiceProvider extends BaseAuthConfirmProvider {
     readonly type: AuthConfirmProviderTypeEnum = AuthConfirmProviderTypeEnum.VOICE;
 
     async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
-        const code = generateCode(config.smsCodeLength);
+        const code = generateCode(config.codeLength);
         const pronunciationCode = code.split('')
             .join(' '); // Чтобы проговорил цифры кода, а не число из цифр
 

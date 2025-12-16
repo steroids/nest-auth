@@ -85,7 +85,7 @@ export class AuthConfirmService extends CrudService<
 
         let code: string;
         if (config.isEnableDebugStaticCode) {
-            code = _repeat('1', config.debugStaticCodeLength);
+            code = _repeat('1', config.codeLength);
         } else {
             const authConfirmProvider = this.authConfirmProviders.find(provider => provider.type === providerType);
             if (!authConfirmProvider) {

@@ -21,7 +21,7 @@ export class AuthConfirmSmsProvider extends BaseAuthConfirmProvider {
 
     async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
         // Отправляем смс код
-        const code = generateCode(config.smsCodeLength);
+        const code = generateCode(config.codeLength);
 
         await this.sendCode({
             sms: {

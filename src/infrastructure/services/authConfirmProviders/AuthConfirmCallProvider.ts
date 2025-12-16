@@ -25,7 +25,7 @@ export class AuthConfirmCallProvider extends BaseAuthConfirmProvider {
         });
 
         let code = response[NotifierProviderType.CALL];
-        code = code.substring(code.length - config.callCodeLength);
+        code = code.substring(code.length - config.codeLength);
 
         return code;
     }
