@@ -9,11 +9,6 @@
     "watch": "tsc -p tsconfig-debug.json"
   },
   "dependencies": {
-    "@nestjs/common": "^9.2.1",
-    "@nestjs/core": "^9.2.1",
-    "@nestjs/jwt": "^10.0.1",
-    "@nestjs/passport": "^9.0.0",
-    "@nestjs/swagger": "^6.1.4",
     "bcryptjs": "^2.4.3",
     "date-fns": "^2.29.3",
     "express": "^4.18.2",
@@ -27,11 +22,20 @@
     "@steroidsjs/nest": "^1",
     "@steroidsjs/nest-modules": "^0.1.5",
     "@steroidsjs/nest-typeorm": "^9",
-    "@steroidsjs/typeorm": "^0"
+    "@steroidsjs/typeorm": "^0",
+    "@nestjs/common": "^9.2.1",
+    "@nestjs/core": "^9.2.1",
+    "@nestjs/jwt": "^10.0.1",
+    "@nestjs/passport": "^9.0.0",
+    "@nestjs/swagger": "^6.1.4"
   },
   "devDependencies": {
-    "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.2.1",
+    "@nestjs/common": "^9.2.1",
+    "@nestjs/core": "^9.2.1",
+    "@nestjs/jwt": "^10.0.1",
+    "@nestjs/passport": "^9.0.0",
+    "@nestjs/swagger": "^6.1.4",
     "@steroidsjs/eslint-config": "^3.0.1",
     "@steroidsjs/nest": "^3.2.0",
     "@steroidsjs/nest-modules": "^0.1.5",

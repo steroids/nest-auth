@@ -1,8 +1,9 @@
 import {ExecutionContext, Inject, Injectable, UnauthorizedException} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {AuthGuard} from '@nestjs/passport';
 import * as ms from 'ms';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {StringValue} from 'ms';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
 import {AuthService} from '../../domain/services/AuthService';
 import {parseCookie} from '../helpers/ParseCookie';
@@ -35,10 +36,9 @@ export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
             && payload
         ) {
             if (status === JwtTokenStatusEnum.EXPIRED_ERROR) {
-                const additionalTime = ms(
-                    ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).filesTokenAdditionalTime
-                    || this.defaultAdditionalTime,
-                );
+                const rawAdditionalTime = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).filesTokenAdditionalTime
+                    || this.defaultAdditionalTime;
+                const additionalTime = ms(rawAdditionalTime as StringValue);
                 if (Date.now() - payload.exp * 1000 > additionalTime) {
                     throw new UnauthorizedException({message: 'Пользователь не авторизован'});
                 }
