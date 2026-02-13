@@ -1,3 +1,5 @@
+import {IAuthJwtCookieConfig} from '../domain/interfaces/IAuthJwtCookieConfig';
+
 export interface IAuthModuleConfig {
     jwtAccessSecretKey?: string,
     jwtRefreshSecretKey?: string,
@@ -13,7 +15,8 @@ export interface IAuthModuleConfig {
         isEnableDebugStaticCode?: boolean,
         providerName?: 'smsc' | string,
         providerType?: 'voice' | 'sms' | 'call',
-    }
+    },
+    jwtCookie?: IAuthJwtCookieConfig,
 }
 
 export default () => ({
@@ -31,5 +34,11 @@ export default () => ({
         isEnableDebugStaticCode: process.env.AUTH_ENABLE_DEFAULT_CODE === '1',
         providerName: process.env.AUTH_PROVIDER_NAME || 'smsc',
         providerType: process.env.AUTH_PROVIDER_TYPE || 'voice', // or "sms", or "call"
+    },
+    jwtCookie: {
+        httpOnly: true,
+        secure: process.env.APP_ENVIRONMENT !== 'dev',
+        sameSite: 'lax',
+        path: '/',
     },
 } as IAuthModuleConfig);

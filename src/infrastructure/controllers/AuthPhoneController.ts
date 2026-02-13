@@ -1,5 +1,5 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Inject, Post, UseGuards, UseInterceptors} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
@@ -17,6 +17,7 @@ import {
     ISendAuthenticationCodeUseCase,
     SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
 } from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {AuthSetCookieInterceptor} from '../interceptors/AuthSetCookieInterceptor';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -74,6 +75,7 @@ export class AuthPhoneController {
     @Post('/confirm')
     @ApiBody({type: AuthConfirmLoginDto})
     @ApiOkResponse({type: AuthLoginSchema})
+    @UseInterceptors(AuthSetCookieInterceptor)
     @UseGuards(CodeAuthGuard)
     async authenticateWithCode(
         @Body() dto: AuthConfirmLoginDto,
