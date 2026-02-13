@@ -1,5 +1,9 @@
 # Steroids nest-auth Changelog
 
+### Features
+
+- Добавлена поддержка передачи JWT в куках
+
 ## [0.3.0](https://github.com/steroids/nest-auth/compare/0.2.3...0.3.0) (2025-12-26)
 
 ### Features
