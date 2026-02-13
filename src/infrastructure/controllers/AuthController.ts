@@ -1,4 +1,4 @@
-import {Body, Controller, Inject, Post, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Inject, Post, Req, UseGuards, UseInterceptors} from '@nestjs/common';
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {
     IAuthUpdateUserOwnPasswordUseCase,
@@ -17,6 +17,8 @@ import {
 import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
 import {AuthSetCookieInterceptor} from '../interceptors/AuthSetCookieInterceptor';
 import {AuthClearCookieInterceptor} from '../interceptors/AuthClearCookieInterceptor';
+import {REFRESH_TOKEN_COOKIE_NAME} from '../../domain/constants';
+import {Cookies} from '../decorators/Cookies';
 
 @ApiTags('Авторизация')
 @Controller('/auth')
@@ -41,7 +43,11 @@ export class AuthController {
     @UseInterceptors(AuthSetCookieInterceptor)
     @ApiBody({type: AuthRefreshTokenDto})
     @ApiOkResponse({type: AuthLoginModel})
-    refresh(@Body() dto: AuthRefreshTokenDto) {
+    refresh(
+        @Body() dto: AuthRefreshTokenDto,
+        @Cookies(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
+    ) {
+        dto.refreshToken = dto.refreshToken || refreshToken;
         return this.authService.refreshToken(dto.refreshToken);
     }
 
