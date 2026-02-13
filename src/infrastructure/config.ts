@@ -38,7 +38,7 @@ export default () => ({
     jwtCookie: {
         httpOnly: true,
         secure: process.env.APP_ENVIRONMENT !== 'dev',
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
     },
 } as IAuthModuleConfig);
