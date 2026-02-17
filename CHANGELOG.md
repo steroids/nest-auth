@@ -1,5 +1,8 @@
 # Steroids nest-auth Changelog
 
+### Fixes
+- Замена ts-типа `Date` на `string` у полей с `DateTimeField` декоратором
+
 ## [0.3.0](https://github.com/steroids/nest-auth/compare/0.2.3...0.3.0) (2025-12-26)
 
 ### Features
