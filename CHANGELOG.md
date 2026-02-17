@@ -1,5 +1,16 @@
 # Steroids nest-auth Changelog
 
+### Fixes
+- Замена ts-типа `Date` на `string` у полей с `DateTimeField` или `StringField` декоратором
+
+## [0.3.0](https://github.com/steroids/nest-auth/compare/0.2.3...0.3.0) (2025-12-26)
+
+### Features
+
+- JwtAuthGuard теперь обязательно требует токен. Добавлен PublicJwtAuthGuard, который не требует токен
+- Логика авторизации по коду AuthConfirm разделена на отдельные юзкейсы по отправке кода (ISendAuthenticationCodeUseCase) и
+    непосредственно авторизации (IAuthenticateWithCodeUseCase). Данные юзкейсы можно переопределить в проекте
+
 ## [0.2.1](https://github.com/steroids/nest-auth/compare/0.2.0...0.2.1) (2025-06-27)
 
 ### Features

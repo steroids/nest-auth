@@ -6,6 +6,7 @@ import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IUserRegistrationUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserRegistrationUseCase';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
+import {normalizeDateTime} from '@steroidsjs/nest/infrastructure/decorators/fields/DateTimeField';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {AuthUserDto} from '../dtos/AuthUserDto';
 import {ISessionService} from '../interfaces/ISessionService';
@@ -78,10 +79,12 @@ export class AuthService {
             payload.jti,
         );
 
+        const accessExpireTime = this.sessionService.getTokenExpireTime(accessToken);
+
         return {
             ...authLogin,
             accessToken,
-            accessExpireTime: this.sessionService.getTokenExpireTime(authLogin.accessToken),
+            accessExpireTime: accessExpireTime && normalizeDateTime(accessExpireTime, false),
         };
     }
 

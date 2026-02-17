@@ -6,6 +6,7 @@ import {AppModule} from '@steroidsjs/nest/infrastructure/applications/AppModule'
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {generateUid} from '@steroidsjs/nest/infrastructure/decorators/typeorm/fields/TypeOrmUidField/TypeOrmUidBehaviour';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
+import {normalizeDateTime} from '@steroidsjs/nest/infrastructure/decorators/fields/DateTimeField';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import {ISessionService} from '../interfaces/ISessionService';
 import {IAuthLoginRepository} from '../interfaces/IAuthLoginRepository';
@@ -59,15 +60,18 @@ export class AuthLoginService {
             expiresIn: authModuleConfig.refreshTokenExpiresSec,
         });
 
+        const accessExpireTime = this.sessionService.getTokenExpireTime(accessToken);
+        const refreshExpireTime = this.sessionService.getTokenExpireTime(refreshToken);
+
         const loginModel = DataMapper.create<AuthLoginModel>(AuthLoginModel, {
             uid: loginModelUid,
             userId: user.id,
             ipAddress: context.ipAddress,
             userAgent: context.userAgent,
             accessToken,
-            accessExpireTime: this.sessionService.getTokenExpireTime(accessToken),
+            accessExpireTime: accessExpireTime && normalizeDateTime(accessExpireTime, false),
             refreshToken,
-            refreshExpireTime: this.sessionService.getTokenExpireTime(refreshToken),
+            refreshExpireTime: refreshExpireTime && normalizeDateTime(refreshExpireTime, false),
         });
 
         await this.repository.create(loginModel);
