@@ -4,7 +4,11 @@ import {Inject, Injectable} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
-import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../../domain/enums/AuthConfirmProviderTypeEnum';
+import {
+    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
+    IGetAuthConfirmTargetFieldUseCase,
+} from '../getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
+import {AuthConfirmProviderType} from '../../domain/types/AuthConfirmProviderType';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
 
@@ -14,14 +18,16 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
         protected readonly authConfirmService: AuthConfirmService,
         @Inject(IUserService)
         protected readonly userService: IUserService,
+        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
+        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
     ) {}
 
     public async handle(
-        providerType: AuthConfirmProviderTypeEnum | null,
+        providerType: AuthConfirmProviderType | null,
         dto: AuthenticateWithCodeDto,
         context: ContextDto,
     ): Promise<AuthConfirmModel> {
-        const targetField = AuthConfirmProviderTypeEnumHelper.getTargetField(providerType);
+        const targetField = this.getAuthConfirmTargetFieldUseCase.handle(providerType);
 
         const user = await this.userService
             .createQuery()

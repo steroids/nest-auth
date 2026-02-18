@@ -1,9 +1,5 @@
-import {
-    repeat as _repeat,
-    random as _random,
-    padStart as _padStart,
-} from 'lodash';
-import {formatISO9075, addSeconds, addMinutes} from 'date-fns';
+import {repeat as _repeat} from 'lodash';
+import {addMinutes, addSeconds, formatISO9075} from 'date-fns';
 import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
@@ -19,14 +15,10 @@ import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {IAuthConfirmConfig, IAuthModuleConfig} from '../../infrastructure/config';
 import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/IAuthConfirmProvider';
-import {AuthConfirmProviderTypeEnum, AuthConfirmProviderTypeEnumHelper} from '../enums/AuthConfirmProviderTypeEnum';
 import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
-
-export const generateCode = (length = 6) => {
-    length = Math.min(32, Math.max(1, length));
-    return _padStart(_random(0, (10 ** length) - 1).toString(), length, '0');
-};
+import {AuthConfirmProviderType} from '../types/AuthConfirmProviderType';
+import {GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN, IGetAuthConfirmTargetFieldUseCase} from '../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
 
 @Injectable()
 export class AuthConfirmService extends CrudService<
@@ -43,13 +35,15 @@ export class AuthConfirmService extends CrudService<
         protected readonly authConfirmProviders: IAuthConfirmProvider[],
         @Inject(IUserService)
         protected readonly userService: IUserService,
+        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
+        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
     ) {
         super();
     }
 
     async sendCode(
         dto: AuthConfirmSendCodeDto,
-        providerType: AuthConfirmProviderTypeEnum | null,
+        providerType: AuthConfirmProviderType | null,
         context: ContextDto,
         schemaClass = null,
     ): Promise<AuthConfirmModel> {
@@ -60,7 +54,7 @@ export class AuthConfirmService extends CrudService<
             providerType = config.providerType;
         }
 
-        const targetField = AuthConfirmProviderTypeEnumHelper.getTargetField(providerType);
+        const targetField = this.getAuthConfirmTargetFieldUseCase.handle(providerType);
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
