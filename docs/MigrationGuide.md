@@ -4,6 +4,7 @@
 ## Использование JWT из cookie
 
 Был добавлен `AuthWebController`, который позволяет хранить `JWT` в cookie.
+Необходимо настроить конфиг для передачи кук (`jwtCookie`) под нужды проекта.
 Также куки можно подписывать на сервере, передав в конфиге `AuthModule` `jwtCookie.signed: true` 
 и поставив `cookieSecret` в конфиге `AppModule` (из `steroids-nest`).
 Подписанные куки будут храниться не в `request.cookies`, а в `request.signedCookies`,
