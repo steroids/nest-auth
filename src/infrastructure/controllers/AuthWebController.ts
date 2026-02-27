@@ -1,4 +1,4 @@
-import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Inject, Post, UseGuards, UseInterceptors} from '@nestjs/common';
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {
     IAuthUpdateUserOwnPasswordUseCase,
@@ -8,17 +8,20 @@ import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {AuthService} from '../../domain/services/AuthService';
 import {AuthLoginDto} from '../../domain/dtos/AuthLoginDto';
 import {LoginPasswordAuthGuard} from '../guards/LoginPasswordAuthGuard';
-import {AuthRefreshTokenDto} from '../../domain/dtos/AuthRefreshTokenDto';
 import {JwtAuthGuard} from '../guards/JwtAuthGuard';
 import {AuthUpdateUserOwnPasswordUseCase} from '../../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {
     AuthUpdateUserOwnPasswordUseCaseDto,
 } from '../../usecases/updatePassword/dtos/AuthUpdateUserOwnPasswordUseCaseDto';
-import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
+import {AuthSetCookieInterceptor} from '../interceptors/AuthSetCookieInterceptor';
+import {AuthClearCookieInterceptor} from '../interceptors/AuthClearCookieInterceptor';
+import {REFRESH_TOKEN_COOKIE_NAME} from '../../domain/constants';
+import {Cookies} from '../decorators/Cookies';
+import {AuthLoginSchema} from '../../domain/dtos/AuthLoginSchema';
 
-@ApiTags('Авторизация')
-@Controller('/auth')
-export class AuthController {
+@ApiTags('Авторизация (для веб-приложений)')
+@Controller('/auth/web')
+export class AuthWebController {
     constructor(
         @Inject(AuthService)
         private readonly authService: AuthService,
@@ -27,27 +30,32 @@ export class AuthController {
     ) {}
 
     @Post('/login')
+    @UseInterceptors(AuthSetCookieInterceptor)
     @UseGuards(LoginPasswordAuthGuard)
     @ApiBody({type: AuthLoginDto})
-    @ApiOkResponse({type: AuthLoginModel})
+    @ApiOkResponse({type: AuthLoginSchema})
     login(@Context() context: ContextDto) {
         return this.authService.login(context.user, context);
     }
 
     @Post('/refresh')
-    @ApiBody({type: AuthRefreshTokenDto})
-    @ApiOkResponse({type: AuthLoginModel})
-    refresh(@Body() dto: AuthRefreshTokenDto) {
-        return this.authService.refreshToken(dto.refreshToken);
+    @UseInterceptors(AuthSetCookieInterceptor)
+    @ApiOkResponse({type: AuthLoginSchema})
+    refresh(
+        @Cookies(REFRESH_TOKEN_COOKIE_NAME) refreshToken: string,
+    ) {
+        return this.authService.refreshToken(refreshToken);
     }
 
     @Post('/logout')
+    @UseInterceptors(AuthClearCookieInterceptor)
     @UseGuards(JwtAuthGuard)
     logout(@Context() context: ContextDto) {
         return this.authService.logout(context);
     }
 
     @Post('/update-password')
+    @UseInterceptors(AuthClearCookieInterceptor)
     @UseGuards(JwtAuthGuard)
     updatePassword(
         @Context() context: ContextDto,

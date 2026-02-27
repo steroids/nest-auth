@@ -5,9 +5,12 @@ import {map} from 'rxjs/operators';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {isObject as _isObject} from 'lodash';
+import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {IAuthModuleConfig} from '../config';
 import {ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME} from '../../domain/constants';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
+import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
+import {AuthLoginSchema} from '../../domain/dtos/AuthLoginSchema';
 
 interface IAuthTokensResponse {
     refreshToken?: string,
@@ -31,7 +34,7 @@ export class AuthSetCookieInterceptor implements NestInterceptor {
         const config = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule);
 
         return next.handle().pipe(
-            map((data: any) => {
+            map((data: AuthLoginModel) => {
                 const dataObject: IAuthTokensResponse = _isObject(data)
                     ? data
                     : {};
@@ -52,7 +55,7 @@ export class AuthSetCookieInterceptor implements NestInterceptor {
                     });
                 }
 
-                return data;
+                return DataMapper.create(AuthLoginSchema, data);
             }),
         );
     }

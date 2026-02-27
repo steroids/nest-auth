@@ -43,6 +43,7 @@ import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import {PasswordValidator} from './validators/PasswordValidator';
+import {AuthWebController} from './controllers/AuthWebController';
 
 export default (config: IAuthModuleConfig) => ({
     imports: [
@@ -56,6 +57,7 @@ export default (config: IAuthModuleConfig) => ({
     ],
     controllers: [
         AuthController,
+        AuthWebController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
