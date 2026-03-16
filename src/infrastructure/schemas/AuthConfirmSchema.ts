@@ -15,6 +15,9 @@ export class AuthConfirmSchema {
     phone: string;
 
     @ExtendField(AuthConfirmModel)
+    purpose?: string;
+
+    @ExtendField(AuthConfirmModel)
     expireTime: string;
 
     @ExtendField(AuthConfirmModel)
