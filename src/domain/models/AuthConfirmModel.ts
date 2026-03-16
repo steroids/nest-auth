@@ -55,6 +55,12 @@ export class AuthConfirmModel {
     code: string;
 
     @StringField({
+        label: 'Назначение кода',
+        nullable: true,
+    })
+    purpose?: string;
+
+    @StringField({
         label: 'Системное имя провайдера для отправки',
     })
     providerName: string;

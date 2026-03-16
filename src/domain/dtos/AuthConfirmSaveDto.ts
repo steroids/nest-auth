@@ -21,6 +21,9 @@ export class AuthConfirmSaveDto {
     code: string;
 
     @ExtendField(AuthConfirmModel)
+    purpose?: string;
+
+    @ExtendField(AuthConfirmModel)
     providerName: string;
 
     @ExtendField(AuthConfirmModel)

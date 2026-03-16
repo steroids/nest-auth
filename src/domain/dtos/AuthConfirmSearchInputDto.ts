@@ -6,4 +6,10 @@ export class AuthConfirmSearchInputDto extends SearchInputDto {
         label: 'uid',
     })
     uid: string;
+
+    @StringField({
+        label: 'purpose',
+        required: false,
+    })
+    purpose?: string;
 }

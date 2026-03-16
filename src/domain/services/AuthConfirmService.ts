@@ -23,7 +23,6 @@ import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
 import {AuthConfirmModel} from '../models/AuthConfirmModel';
 import {AuthConfirmSearchInputDto} from '../dtos/AuthConfirmSearchInputDto';
-import {AuthConfirmSaveInputDto} from '../dtos/AuthConfirmSaveInputDto';
 import {AuthConfirmLoginDto} from '../dtos/AuthConfirmLoginDto';
 import {IAuthModuleConfig} from '../../infrastructure/config';
 import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
@@ -239,6 +238,7 @@ export class AuthConfirmService extends CrudService<
             DataMapper.create(AuthConfirmModel, {
                 phone: dto.phone,
                 code,
+                purpose: dto.purpose,
                 providerName,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),

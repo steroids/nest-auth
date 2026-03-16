@@ -12,4 +12,10 @@ export class AuthConfirmLoginDto {
         required: true,
     })
     code: string;
+
+    @StringField({
+        label: 'Purpose',
+        required: false,
+    })
+    purpose?: string;
 }
