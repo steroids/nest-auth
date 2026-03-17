@@ -7,10 +7,6 @@ import {Inject, Injectable} from '@nestjs/common';
 import {IAuthConfirmConfig} from '../../config';
 import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {generateCode} from '../../../domain/utils';
-import {
-    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-    IGetAuthConfirmTargetFieldUseCase,
-} from '../../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
 import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
 @Injectable()
@@ -18,18 +14,17 @@ export class AuthConfirmVoiceProvider extends BaseAuthConfirmProvider {
     constructor(
         @Inject(INotifierService)
         protected readonly notifierService: INotifierService,
-        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
-        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
     ) {
-        super(notifierService, getAuthConfirmTargetFieldUseCase);
+        super(notifierService);
     }
 
     readonly type = AuthConfirmProviderTypeEnum.VOICE;
 
     async generateAndSendCode(config: IAuthConfirmConfig, phone: string): Promise<string> {
         const code = generateCode(config.codeLength);
+        // Чтобы проговорил цифры кода, а не число из цифр
         const pronunciationCode = code.split('')
-            .join(' '); // Чтобы проговорил цифры кода, а не число из цифр
+            .join(' ');
 
         await this.sendCode({
             voice: {
