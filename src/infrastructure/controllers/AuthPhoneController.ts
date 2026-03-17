@@ -1,9 +1,11 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
+import {Body, Controller, Inject, Post, UseGuards} from '@nestjs/common';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthenticateWithCodeDto} from '../../usecases/sendAuthenticationCodeUseCase/dtos/AuthenticateWithCodeDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
@@ -17,6 +19,8 @@ import {
     ISendAuthenticationCodeUseCase,
     SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
 } from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {AuthConfirmPhoneDto} from '../../domain/dtos/AuthConfirmPhoneDto';
+import {IAuthModuleConfig} from '../config';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -32,12 +36,12 @@ export class AuthPhoneController {
     @Post('/sms')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCode(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.SMS,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -46,12 +50,12 @@ export class AuthPhoneController {
     @Post('/call')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCodeByCall(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.CALL,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -60,12 +64,14 @@ export class AuthPhoneController {
     @Post('/send')
     @ApiOkResponse({type: AuthConfirmSchema})
     async send(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
+        const providerType = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm.providerType;
+
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
-            null,
-            dto,
+            providerType,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
