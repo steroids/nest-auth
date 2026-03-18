@@ -9,7 +9,6 @@ import {AuthService} from '../../domain/services/AuthService';
 import {AuthLoginDto} from '../../domain/dtos/AuthLoginDto';
 import {LoginPasswordAuthGuard} from '../guards/LoginPasswordAuthGuard';
 import {JwtAuthGuard} from '../guards/JwtAuthGuard';
-import {AuthUpdateUserOwnPasswordUseCase} from '../../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {
     AuthUpdateUserOwnPasswordUseCaseDto,
 } from '../../usecases/updatePassword/dtos/AuthUpdateUserOwnPasswordUseCaseDto';
@@ -23,10 +22,9 @@ import {AuthLoginSchema} from '../../domain/dtos/AuthLoginSchema';
 @Controller('/auth/web')
 export class AuthWebController {
     constructor(
-        @Inject(AuthService)
         private readonly authService: AuthService,
         @Inject(IAuthUpdateUserOwnPasswordUseCase)
-        private readonly updatePasswordUseCase: AuthUpdateUserOwnPasswordUseCase,
+        private readonly updatePasswordUseCase: IAuthUpdateUserOwnPasswordUseCase,
     ) {}
 
     @Post('/login')
