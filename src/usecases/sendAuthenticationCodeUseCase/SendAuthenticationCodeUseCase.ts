@@ -1,6 +1,6 @@
 import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
-import {Inject, Injectable} from '@nestjs/common';
+import {Inject, Injectable, NotFoundException} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
@@ -39,7 +39,7 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
             .one();
 
         if (!user) {
-            throw new Error('Пользователь не найден');
+            throw new NotFoundException('Пользователь не найден');
         }
 
         const sendCodeDto: AuthConfirmSendCodeDto = {
