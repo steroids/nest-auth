@@ -1,8 +1,16 @@
 # Steroids nest-auth Changelog
 
+[Migration guide](docs/MigrationGuide.md#)
+
+## [0.4.0](https://github.com/steroids/nest-auth/compare/0.3.0...0.4.0) (2026-03-25)
+
+[Migration guide](docs/MigrationGuide.md#040-2026-03-25)
+
+### Features
+- Отправка кода по разным каналам была вынесена из `AuthConfirmService` в `authConfirmProviders`, которые провайдятся токеном `AUTH_CONFIRM_PROVIDERS_TOKEN`
+
 ### Fixes
 - Замена ts-типа `Date` на `string` у полей с `DateTimeField` или `StringField` декоратором
-- Отправка кода по разным каналам была вынесена из `AuthConfirmService` в `authConfirmProviders`, провайдятся токеном `AUTH_CONFIRM_PROVIDERS_TOKEN`
 - Функция `generateCode` вынесена из `domain/services/AuthConfirmService.ts` в `domain/utils/index.ts`
 - Добавлен `GetAuthConfirmTargetFieldUseCase` для получения поля из пользователя, которое надо взять для отправки кода подтверждения, провайдится по токену `GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN`
 
