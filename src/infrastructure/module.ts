@@ -50,6 +50,7 @@ import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import {PasswordValidator} from './validators/PasswordValidator';
+import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermissionsMigrationCommand';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -158,6 +159,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             IUserService,
             ISessionService,
         ]),
+        GeneratePermissionsMigrationCommand,
     ],
     exports: [
         ISessionService,
