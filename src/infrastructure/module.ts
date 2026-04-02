@@ -50,6 +50,8 @@ import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import {PasswordValidator} from './validators/PasswordValidator';
+import {AuthCookieController} from './controllers/AuthCookieController';
+import {AuthCookieService} from './services/AuthCookieService';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -63,6 +65,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
     ],
     controllers: [
         AuthController,
+        AuthCookieController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
@@ -158,6 +161,8 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             IUserService,
             ISessionService,
         ]),
+
+        AuthCookieService,
     ],
     exports: [
         ISessionService,
