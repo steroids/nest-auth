@@ -16,7 +16,7 @@ export class AuthCookieService {
     ) {
     }
 
-    private readonly cookieConfig:  IAuthJwtCookieConfig & Pick<CookieOptions, 'httpOnly'> = {
+    private readonly cookieConfig: IAuthJwtCookieConfig & Pick<CookieOptions, 'httpOnly'> = {
         ...ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtCookie,
         httpOnly: true,
     };
