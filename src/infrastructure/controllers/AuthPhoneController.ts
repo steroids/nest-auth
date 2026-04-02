@@ -1,9 +1,10 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Inject, Post, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Inject, Post, Res, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
+import {Response} from 'express';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthenticateWithCodeDto} from '../../usecases/sendAuthenticationCodeUseCase/dtos/AuthenticateWithCodeDto';
 import {AuthConfirmLoginDto} from '../../domain/dtos/AuthConfirmLoginDto';
@@ -17,7 +18,8 @@ import {
     ISendAuthenticationCodeUseCase,
     SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
 } from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
-import {AuthSetCookieInterceptor} from '../interceptors/AuthSetCookieInterceptor';
+import {AuthCookieLoginSchema} from '../schemas/AuthCookieLoginSchema';
+import {AuthCookieService} from '../services/AuthCookieService';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -27,6 +29,7 @@ export class AuthPhoneController {
         private readonly authenticateWithCodeUseCase: IAuthenticateWithCodeUseCase,
         @Inject(SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN)
         private readonly sendAuthenticationCodeUseCase: ISendAuthenticationCodeUseCase,
+        private readonly authCookieService: AuthCookieService,
     ) {
     }
 
@@ -75,7 +78,6 @@ export class AuthPhoneController {
     @Post('/confirm')
     @ApiBody({type: AuthConfirmLoginDto})
     @ApiOkResponse({type: AuthLoginSchema})
-    @UseInterceptors(AuthSetCookieInterceptor)
     @UseGuards(CodeAuthGuard)
     async authenticateWithCode(
         @Body() dto: AuthConfirmLoginDto,
@@ -83,5 +85,22 @@ export class AuthPhoneController {
     ) {
         const authLogin = await this.authenticateWithCodeUseCase.handle(dto, context);
         return DataMapper.create(AuthLoginSchema, authLogin);
+    }
+
+    @Post('/confirm/cookie')
+    @ApiBody({type: AuthConfirmLoginDto})
+    @ApiOkResponse({type: AuthCookieLoginSchema})
+    @UseGuards(CodeAuthGuard)
+    async authenticateWithCodeCookie(
+        @Body() dto: AuthConfirmLoginDto,
+        @Context() context: ContextDto,
+        @Res({passthrough: true}) response: Response,
+    ) {
+        const authLogin = await this.authenticateWithCodeUseCase.handle(dto, context);
+        this.authCookieService.setTokens(response, {
+            accessToken: authLogin.accessToken,
+            refreshToken: authLogin.refreshToken,
+        });
+        return DataMapper.create(AuthCookieLoginSchema, authLogin);
     }
 }

@@ -43,7 +43,8 @@ import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import {PasswordValidator} from './validators/PasswordValidator';
-import {AuthWebController} from './controllers/AuthWebController';
+import {AuthCookieController} from './controllers/AuthCookieController';
+import {AuthCookieService} from './services/AuthCookieService';
 
 export default (config: IAuthModuleConfig) => ({
     imports: [
@@ -57,7 +58,7 @@ export default (config: IAuthModuleConfig) => ({
     ],
     controllers: [
         AuthController,
-        AuthWebController,
+        AuthCookieController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
@@ -147,6 +148,8 @@ export default (config: IAuthModuleConfig) => ({
             IUserService,
             ISessionService,
         ]),
+
+        AuthCookieService,
     ],
     exports: [
         ISessionService,

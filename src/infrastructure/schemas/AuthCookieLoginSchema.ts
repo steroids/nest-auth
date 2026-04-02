@@ -1,7 +1,7 @@
 import {ExtendField} from '@steroidsjs/nest/infrastructure/decorators/fields/ExtendField';
-import {AuthLoginModel} from '../models/AuthLoginModel';
+import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
 
-export class AuthLoginSchema {
+export class AuthCookieLoginSchema {
     @ExtendField(AuthLoginModel)
     id: number;
 
