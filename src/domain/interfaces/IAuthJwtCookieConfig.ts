@@ -1,6 +1,5 @@
 export interface IAuthJwtCookieConfig {
     signed?: boolean,
-    httpOnly?: boolean,
     path?: string,
     domain?: string,
     secure?: boolean,

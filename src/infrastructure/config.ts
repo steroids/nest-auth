@@ -39,7 +39,6 @@ export default () => ({
         messageTemplate: process.env.AUTH_CONFIRM_MESSAGE_TEMPLATE || 'Ваш код авторизации в {appTitle} - {code}',
     },
     jwtCookie: {
-        httpOnly: true,
         secure: process.env.APP_ENVIRONMENT !== 'dev',
         sameSite: 'lax',
         path: '/',

@@ -1,4 +1,4 @@
-import {Response} from 'express';
+import {CookieOptions, Response} from 'express';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {Inject, Injectable} from '@nestjs/common';
@@ -6,6 +6,7 @@ import {IAuthTokens} from '../../domain/interfaces/IAuthTokens';
 import {ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME} from '../../domain/constants';
 import {IAuthModuleConfig} from '../config';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
+import {IAuthJwtCookieConfig} from '../../domain/interfaces/IAuthJwtCookieConfig';
 
 @Injectable()
 export class AuthCookieService {
@@ -15,7 +16,10 @@ export class AuthCookieService {
     ) {
     }
 
-    private readonly cookieConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtCookie;
+    private readonly cookieConfig:  IAuthJwtCookieConfig & Pick<CookieOptions, 'httpOnly'> = {
+        ...ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).jwtCookie,
+        httpOnly: true,
+    };
 
     setTokens(response: Response, tokens: IAuthTokens): void {
         response.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken, {
