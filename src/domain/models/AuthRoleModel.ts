@@ -41,7 +41,7 @@ export class AuthRoleModel {
         label: 'Время истечения роли',
         nullable: true,
     })
-    expireTime: Date;
+    expireTime: string;
 
     @RelationField({
         label: 'ID родительской роли (наследование)',

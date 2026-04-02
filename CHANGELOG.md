@@ -4,6 +4,20 @@
 
 - Добавлена поддержка передачи JWT в httpOnly cookies
 
+[Migration guide](docs/MigrationGuide.md#)
+
+## [0.4.0](https://github.com/steroids/nest-auth/compare/0.3.0...0.4.0) (2026-03-25)
+
+[Migration guide](docs/MigrationGuide.md#040-2026-03-25)
+
+### Features
+- Отправка кода по разным каналам была вынесена из `AuthConfirmService` в `authConfirmProviders`, которые провайдятся токеном `AUTH_CONFIRM_PROVIDERS_TOKEN`
+
+### Fixes
+- Замена ts-типа `Date` на `string` у полей с `DateTimeField` или `StringField` декоратором
+- Функция `generateCode` вынесена из `domain/services/AuthConfirmService.ts` в `domain/utils/index.ts`
+- Добавлен `GetAuthConfirmTargetFieldUseCase` для получения поля из пользователя, которое надо взять для отправки кода подтверждения, провайдится по токену `GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN`
+
 ## [0.3.0](https://github.com/steroids/nest-auth/compare/0.2.3...0.3.0) (2025-12-26)
 
 ### Features

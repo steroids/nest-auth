@@ -1,6 +1,6 @@
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
-import {Body, Controller, Inject, Post, Res, UseGuards} from '@nestjs/common';
 import NotifierProviderType from '@steroidsjs/nest-modules/notifier/enums/NotifierProviderType';
+import {Body, Controller, Inject, Post, Res, UseGuards} from '@nestjs/common';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
@@ -18,6 +18,7 @@ import {
     ISendAuthenticationCodeUseCase,
     SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN,
 } from '../../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {AuthConfirmPhoneDto} from '../../domain/dtos/AuthConfirmPhoneDto';
 import {AuthCookieLoginSchema} from '../schemas/AuthCookieLoginSchema';
 import {AuthCookieService} from '../services/AuthCookieService';
 
@@ -36,12 +37,12 @@ export class AuthPhoneController {
     @Post('/sms')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCode(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.SMS,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -50,12 +51,12 @@ export class AuthPhoneController {
     @Post('/call')
     @ApiOkResponse({type: AuthConfirmSchema})
     async sendSmsCodeByCall(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.CALL,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -64,12 +65,12 @@ export class AuthPhoneController {
     @Post('/send')
     @ApiOkResponse({type: AuthConfirmSchema})
     async send(
-        @Body() dto: AuthenticateWithCodeDto,
+        @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             null,
-            dto,
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);

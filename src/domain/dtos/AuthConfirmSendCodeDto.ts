@@ -1,8 +1,8 @@
-import {IntegerField, PhoneField} from '@steroidsjs/nest/infrastructure/decorators/fields';
+import {IntegerField, StringField} from '@steroidsjs/nest/infrastructure/decorators/fields';
 
 export class AuthConfirmSendCodeDto {
-    @PhoneField()
-    phone: string;
+    @StringField()
+    target: string;
 
     @IntegerField()
     userId: number;

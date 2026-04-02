@@ -30,7 +30,7 @@ export class AuthRoleDetailSchema {
     parentId: number;
 
     @ExtendField(AuthRoleModel)
-    expireTime: Date;
+    expireTime: string;
 
     @ExtendField(AuthRoleModel, {
         relationClass: () => AuthPermissionSchema,

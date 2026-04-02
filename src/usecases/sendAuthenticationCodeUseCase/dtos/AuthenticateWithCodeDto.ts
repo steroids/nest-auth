@@ -1,6 +1,6 @@
-import {PhoneField} from '@steroidsjs/nest/infrastructure/decorators/fields';
+import {StringField} from '@steroidsjs/nest/infrastructure/decorators/fields';
 
 export class AuthenticateWithCodeDto {
-    @PhoneField()
-    phone: string;
+    @StringField()
+    target: string;
 }

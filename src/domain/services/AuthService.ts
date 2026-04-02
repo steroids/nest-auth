@@ -79,10 +79,12 @@ export class AuthService {
             payload.jti,
         );
 
+        const accessExpireTime = this.sessionService.getTokenExpireTime(accessToken);
+
         return {
             ...authLogin,
             accessToken,
-            accessExpireTime: normalizeDateTime(this.sessionService.getTokenExpireTime(authLogin.accessToken), false),
+            accessExpireTime: accessExpireTime && normalizeDateTime(accessExpireTime, false),
         };
     }
 

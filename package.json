@@ -1,9 +1,13 @@
 {
   "name": "@steroidsjs/nest-auth",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "Steroids Nest Auth Module",
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/steroids/nest-auth"
+  },
   "scripts": {
     "build": "tsc && copyfiles ./{package.json,LICENSE,README.md} dist/",
     "watch": "tsc -p tsconfig-debug.json"
@@ -42,6 +46,7 @@
     "@steroidsjs/nest-typeorm": "^10.0.3",
     "@steroidsjs/typeorm": "^0.3.23",
     "@types/express": "^4.17.16",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^18.11.18",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "^2.0.12",
