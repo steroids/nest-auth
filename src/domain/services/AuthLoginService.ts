@@ -7,6 +7,7 @@ import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {generateUid} from '@steroidsjs/nest/infrastructure/decorators/typeorm/fields/TypeOrmUidField/TypeOrmUidBehaviour';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {normalizeDateTime} from '@steroidsjs/nest/infrastructure/decorators/fields/DateTimeField';
+import {Inject} from '@nestjs/common';
 import {AuthLoginModel} from '../models/AuthLoginModel';
 import {ISessionService} from '../interfaces/ISessionService';
 import {IAuthLoginRepository} from '../interfaces/IAuthLoginRepository';
@@ -16,7 +17,9 @@ import {IAuthModuleConfig} from '../../infrastructure/config';
 export class AuthLoginService {
     constructor(
         /** @see AuthLoginRepository **/
+        @Inject(IAuthLoginRepository)
         protected repository: IAuthLoginRepository,
+        @Inject(ISessionService)
         protected readonly sessionService: ISessionService,
     ) {
     }
