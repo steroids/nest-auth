@@ -1,6 +1,7 @@
 import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
+import {Inject} from '@nestjs/common';
 import {AuthRoleModel} from '../models/AuthRoleModel';
 import {AuthRoleSearchInputDto} from '../dtos/AuthRoleSearchInputDto';
 import {AuthRoleSaveInputDto} from '../dtos/AuthRoleSaveInputDto';
@@ -15,7 +16,9 @@ export class AuthRoleService extends CrudService<AuthRoleModel,
     protected modelClass = AuthRoleModel;
 
     constructor(
+        @Inject(IAuthRoleRepository)
         public repository: IAuthRoleRepository,
+        @Inject(AuthPermissionsService)
         public permissionService: AuthPermissionsService,
     ) {
         super();

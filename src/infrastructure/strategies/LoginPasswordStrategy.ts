@@ -16,6 +16,7 @@ export class LoginPasswordStrategy extends PassportStrategy(Strategy, LOGIN_PASS
         @Inject(AuthService)
         private authService: AuthService,
         /** SessionService */
+        @Inject(ISessionService)
         private sessionService: ISessionService,
     ) {
         super({
