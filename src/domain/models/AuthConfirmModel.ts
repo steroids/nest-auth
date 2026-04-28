@@ -2,8 +2,6 @@ import {
     RelationField,
     PrimaryKeyField,
     StringField,
-    EmailField,
-    PhoneField,
     BooleanField,
     DateTimeField,
     CreateTimeField,
@@ -36,18 +34,10 @@ export class AuthConfirmModel {
     })
     userId: number;
 
-    @EmailField({
-        label: 'Email',
-        nullable: true,
+    @StringField({
+        label: 'Цель отправки кода',
     })
-    email: string;
-
-    @PhoneField({
-        label: 'Телефон',
-        max: 20,
-        nullable: true,
-    })
-    phone: string;
+    target: string;
 
     @StringField({
         label: 'Код',
