@@ -44,6 +44,7 @@ import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
 import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {authConfirmProviders} from './services/authConfirmProviders';
 import {AuthController} from './controllers/AuthController';
+import {AuthEmailController} from './controllers/AuthEmailController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
 import {AuthPermissionController} from './controllers/AuthPermissionController';
 import {AuthPhoneController} from './controllers/AuthPhoneController';
@@ -64,6 +65,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
     ],
     controllers: [
         AuthController,
+        AuthEmailController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
