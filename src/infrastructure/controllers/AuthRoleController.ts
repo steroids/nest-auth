@@ -1,4 +1,4 @@
-import {Body, Controller, forwardRef, Get, Inject, Param, ParseIntPipe, Post, Query, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get,Param, ParseIntPipe, Post, Query, UseGuards} from '@nestjs/common';
 import {ApiOkSearchResponse} from '@steroidsjs/nest/infrastructure/decorators/ApiOkSearchResponse';
 import {ApiBody, ApiOkResponse, ApiTags} from '@nestjs/swagger';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
@@ -18,7 +18,6 @@ import {JwtAuthGuard} from '../guards/JwtAuthGuard';
 @Controller('/auth/roles')
 export class AuthRoleController {
     constructor(
-        @Inject(forwardRef(() => AuthRoleService))
         private readonly roleService: AuthRoleService,
     ) {}
 

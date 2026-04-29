@@ -8,6 +8,7 @@ import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
 import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';
 import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
 import {PermissionsFactory} from '@steroidsjs/nest/infrastructure/helpers/PermissionsFactory';
+import {Inject, Injectable} from '@nestjs/common';
 import {AuthRoleModel} from '../models/AuthRoleModel';
 import {AuthPermissionModel} from '../models/AuthPermissionModel';
 import {IAuthPermissionsRepository} from '../interfaces/IAuthPermissionsRepository';
@@ -15,6 +16,7 @@ import {AuthPermissionSearchInputDto} from '../dtos/AuthPermissionSearchInputDto
 import {AuthPermissionSaveInputDto} from '../dtos/AuthPermissionSaveInputDto';
 import {IAuthRoleRepository} from '../interfaces/IAuthRoleRepository';
 
+@Injectable()
 export class AuthPermissionsService extends CrudService<AuthPermissionModel,
     AuthPermissionSearchInputDto,
     AuthPermissionSaveInputDto> {
@@ -22,9 +24,10 @@ export class AuthPermissionsService extends CrudService<AuthPermissionModel,
 
     constructor(
         /** @see AuthPermissionRepository **/
+        @Inject(IAuthPermissionsRepository)
         public repository: IAuthPermissionsRepository,
-
         /** @see AuthRoleRepository **/
+        @Inject(IAuthRoleRepository)
         public authRoleRepository: IAuthRoleRepository,
     ) {
         super();

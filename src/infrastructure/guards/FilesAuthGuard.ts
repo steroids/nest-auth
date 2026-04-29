@@ -16,7 +16,6 @@ export class FilesAuthGuard extends AuthGuard(JWT_STRATEGY_NAME) {
     constructor(
         @Inject(ISessionService)
         private sessionsService: ISessionService,
-        @Inject(AuthService)
         private authService: AuthService,
     ) {
         super();

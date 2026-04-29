@@ -20,7 +20,6 @@ import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
 @Controller('/auth')
 export class AuthController {
     constructor(
-        @Inject(AuthService)
         private readonly authService: AuthService,
         @Inject(IAuthUpdateUserOwnPasswordUseCase)
         private readonly updatePasswordUseCase: AuthUpdateUserOwnPasswordUseCase,
