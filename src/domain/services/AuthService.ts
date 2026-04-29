@@ -7,7 +7,7 @@ import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {IUserRegistrationUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserRegistrationUseCase';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {normalizeDateTime} from '@steroidsjs/nest/infrastructure/decorators/fields/DateTimeField';
-import {Inject} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {AuthTokenPayloadDto} from '../dtos/AuthTokenPayloadDto';
 import {AuthUserDto} from '../dtos/AuthUserDto';
 import {ISessionService} from '../interfaces/ISessionService';
@@ -17,6 +17,7 @@ import {IAuthModuleConfig} from '../../infrastructure/config';
 import {AuthLoginService} from './AuthLoginService';
 import {AuthPermissionsService} from './AuthPermissionsService';
 
+@Injectable()
 export class AuthService {
     constructor(
         @Inject(IUserService)
@@ -24,9 +25,7 @@ export class AuthService {
         /** @see SessionService **/
         @Inject(ISessionService)
         protected readonly sessionService: ISessionService,
-        @Inject(AuthLoginService)
         protected readonly authLoginService: AuthLoginService,
-        @Inject(AuthPermissionsService)
         protected readonly authPermissionsService: AuthPermissionsService,
         @Inject(IUserRegistrationUseCase)
         protected readonly userRegistrationUseCase: IUserRegistrationUseCase,

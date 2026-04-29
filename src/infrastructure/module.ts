@@ -48,6 +48,7 @@ import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
 import {authUpdatePasswordValidators} from './validators';
 import {AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN} from '../domain/constants/AuthUpdatePasswordValidatorsToken';
+import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermissionsMigrationCommand';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -133,6 +134,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             useFactory: (...providers: IValidator[]) => providers,
             inject: authUpdatePasswordValidators,
         },
+        GeneratePermissionsMigrationCommand,
     ],
     exports: [
         ISessionService,

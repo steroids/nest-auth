@@ -10,9 +10,7 @@ export const LOGIN_SMS_CODE_STRATEGY_NAME = 'login-sms-code';
 @Injectable()
 export class LoginSmsCodeStrategy extends PassportStrategy(Strategy, LOGIN_SMS_CODE_STRATEGY_NAME) {
     constructor(
-        @Inject(AuthConfirmService)
         private authConfirmService: AuthConfirmService,
-        @Inject(AuthService)
         private authService: AuthService,
         /** SessionService */
         @Inject(ISessionService)

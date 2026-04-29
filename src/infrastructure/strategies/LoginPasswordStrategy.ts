@@ -13,7 +13,6 @@ export class LoginPasswordStrategy extends PassportStrategy(Strategy, LOGIN_PASS
     constructor(
         @Inject(forwardRef(() => IUserService))
         private usersService: IUserService,
-        @Inject(AuthService)
         private authService: AuthService,
         /** SessionService */
         @Inject(ISessionService)

@@ -16,7 +16,6 @@ export class RolesAuthGuard implements CanActivate {
         /** SessionService */
         @Inject(ISessionService)
         protected sessionService: ISessionService,
-        @Inject(AuthService)
         protected authService: AuthService,
     ) {
     }
