@@ -4,9 +4,9 @@ import {CrudService} from '@steroidsjs/nest/usecases/services/CrudService';
 import SearchQuery from '@steroidsjs/nest/usecases/base/SearchQuery';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {ValidationHelper} from '@steroidsjs/nest/usecases/helpers/ValidationHelper';
-import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
+import {IType} from '@steroidsjs/nest/usecases/interfaces/IType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Inject, Injectable} from '@nestjs/common';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
@@ -18,7 +18,16 @@ import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/
 import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
 import {AuthConfirmProviderType} from '../types/AuthConfirmProviderType';
-import {GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN, IGetAuthConfirmTargetFieldUseCase} from '../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
+import {
+    AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
+    IAuthConfirmTargetValidator,
+} from '../interfaces/IAuthConfirmTargetValidator';
+
+export interface IResolvedAuthConfirmTarget {
+    providerType: AuthConfirmProviderType,
+    target: string,
+    validator: IAuthConfirmTargetValidator,
+}
 
 @Injectable()
 export class AuthConfirmService extends CrudService<
@@ -33,28 +42,43 @@ export class AuthConfirmService extends CrudService<
         public repository: IAuthConfirmRepository,
         @Inject(AUTH_CONFIRM_PROVIDERS_TOKEN)
         protected readonly authConfirmProviders: IAuthConfirmProvider[],
-        @Inject(IUserService)
-        protected readonly userService: IUserService,
-        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
-        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
+        @Inject(AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN)
+        protected readonly authConfirmTargetValidators: IAuthConfirmTargetValidator[],
     ) {
         super();
     }
 
-    async sendCode(
+    getTargetValidator(providerType: AuthConfirmProviderType): IAuthConfirmTargetValidator {
+        const targetValidator = this.authConfirmTargetValidators
+            .find(validator => validator.providerTypes.includes(providerType));
+
+        if (!targetValidator) {
+            throw new Error('Wrong provider type: ' + providerType);
+        }
+
+        return targetValidator;
+    }
+
+    async resolveTarget(providerType: AuthConfirmProviderType, target: string): Promise<IResolvedAuthConfirmTarget> {
+        const targetValidator = this.getTargetValidator(providerType);
+
+        return {
+            providerType,
+            validator: targetValidator,
+            target: await targetValidator.validate(target),
+        };
+    }
+
+    async sendCode<TSchema>(
         dto: AuthConfirmSendCodeDto,
-        providerType: AuthConfirmProviderType | null,
+        providerType: AuthConfirmProviderType,
         context: ContextDto,
-        schemaClass = null,
+        schemaClass: IType<TSchema> | null,
+        resolvedTarget?: IResolvedAuthConfirmTarget,
     ): Promise<AuthConfirmModel> {
         await ValidationHelper.validate(dto, {context});
         const config: IAuthConfirmConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm;
-
-        if (!providerType) {
-            providerType = config.providerType;
-        }
-
-        const targetField = this.getAuthConfirmTargetFieldUseCase.handle(providerType);
+        resolvedTarget = resolvedTarget || await this.resolveTarget(providerType, dto.target);
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
@@ -68,12 +92,12 @@ export class AuthConfirmService extends CrudService<
                         formatISO9075(addSeconds(new Date(), -1 * config.repeatLimitSec)),
                     ])
                     .andWhere({
-                        [targetField]: dto.target,
+                        target: resolvedTarget.target,
                         isConfirmed: false,
                     }),
             );
             if (model) {
-                return schemaClass ? DataMapper.create(schemaClass, model) : model;
+                return schemaClass ? DataMapper.create(schemaClass as unknown as any, model) : model;
             }
         }
 
@@ -81,24 +105,24 @@ export class AuthConfirmService extends CrudService<
         if (config.isEnableDebugStaticCode) {
             code = _repeat('1', config.codeLength);
         } else {
-            const authConfirmProvider = this.authConfirmProviders.find(provider => provider.type === providerType);
+            const authConfirmProvider = this.authConfirmProviders.find(provider => provider.type === resolvedTarget.providerType);
             if (!authConfirmProvider) {
-                throw new Error('Wrong provider type: ' + providerType);
+                throw new Error('Wrong provider type: ' + resolvedTarget.providerType);
             }
 
-            code = await authConfirmProvider.generateAndSendCode(config, dto.target);
+            code = await authConfirmProvider.generateAndSendCode(config, resolvedTarget.target);
 
             if (!code) {
-                throw new Error('Code is not sent, provider type: ' + providerType);
+                throw new Error('Code is not sent, provider type: ' + resolvedTarget.providerType);
             }
         }
 
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
-                [targetField]: dto.target,
+                target: resolvedTarget.target,
                 code,
-                providerName: providerType,
+                providerName: resolvedTarget.providerType,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
@@ -107,7 +131,7 @@ export class AuthConfirmService extends CrudService<
             }),
         );
 
-        return schemaClass ? DataMapper.create(schemaClass, model) : model;
+        return schemaClass ? DataMapper.create(schemaClass as unknown as any, model) : model;
     }
 
     async confirmCode(dto: AuthConfirmLoginDto) {

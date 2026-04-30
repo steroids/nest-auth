@@ -5,12 +5,10 @@ import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/Validati
 import {IAuthConfirmConfig} from 'src/infrastructure/config';
 import {IAuthConfirmProvider} from '../../../domain/interfaces/IAuthConfirmProvider';
 import {AuthConfirmProviderType} from '../../../domain/types/AuthConfirmProviderType';
-import {IGetAuthConfirmTargetFieldUseCase} from '../../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
 
 export abstract class BaseAuthConfirmProvider implements IAuthConfirmProvider {
     protected constructor(
         protected readonly notifierService: INotifierService,
-        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
     ) {
     }
 
@@ -24,7 +22,7 @@ export abstract class BaseAuthConfirmProvider implements IAuthConfirmProvider {
         } catch (e) {
             if (e instanceof NotifierSendException) {
                 throw new ValidationException({
-                    [this.getAuthConfirmTargetFieldUseCase.handle(this.type)]: 'Не удалось отправить код',
+                    target: 'Не удалось отправить код',
                 });
             }
             throw e;

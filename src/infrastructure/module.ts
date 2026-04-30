@@ -22,15 +22,13 @@ import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCa
 import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
 import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
 import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {
+    AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
+    IAuthConfirmTargetValidator,
+} from '../domain/interfaces/IAuthConfirmTargetValidator';
 import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
 import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
-import {
-    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-} from '../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
-import {
-    GetAuthConfirmTargetFieldUseCase,
-} from '../usecases/getAuthConfirmTargetField/GetAuthConfirmTargetFieldUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
 import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
@@ -40,6 +38,7 @@ import {AuthConfirmRepository} from './repositories/AuthConfirmRepository';
 import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
 import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {authConfirmProviders} from './services/authConfirmProviders';
+import {authConfirmTargetValidators} from './services/authConfirmTargetValidators';
 import {AuthController} from './controllers/AuthController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
 import {AuthPermissionController} from './controllers/AuthPermissionController';
@@ -92,14 +91,16 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         AuthRoleService,
         AuthService,
         ...authConfirmProviders,
+        ...authConfirmTargetValidators,
         {
             provide: AUTH_CONFIRM_PROVIDERS_TOKEN,
             useFactory: (...providers: IAuthConfirmProvider[]) => providers,
             inject: authConfirmProviders,
         },
         {
-            provide: GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-            useClass: GetAuthConfirmTargetFieldUseCase,
+            provide: AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
+            useFactory: (...validators: IAuthConfirmTargetValidator[]) => validators,
+            inject: authConfirmTargetValidators,
         },
         AuthConfirmService,
         AuthLoginService,
