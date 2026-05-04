@@ -1,5 +1,17 @@
 # Steroids Nest Migration Guide
 
+## [0.5.0](../CHANGELOG.md#050-2026-05-04) (2026-05-04)
+
+### Валидаторы смены собственного пароля
+
+Регистрация провайдеров внутри модуля больше не использует deprecated `ModuleHelper.provide`.
+Валидаторы для `AuthUpdateUserOwnPasswordUseCase` теперь собираются через токен
+`AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN`.
+
+Если в проекте переопределяется `AuthUpdateUserOwnPasswordUseCase` или список валидаторов смены пароля,
+обновите DI-конфигурацию: передавайте массив валидаторов через `AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN`.
+Стандартный `PasswordValidator` уже зарегистрирован в пакете.
+
 ## [0.4.0](../CHANGELOG.md#040-2026-03-25) (2026-03-25)
 
 ### Рефакторинг отправки кода в AuthConfirmService
