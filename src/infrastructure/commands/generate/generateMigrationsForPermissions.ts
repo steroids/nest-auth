@@ -2,8 +2,8 @@ import {loadConfiguration} from '@nestjs/cli/lib/utils/load-configuration';
 import {join} from 'path';
 import {CommandUtils} from '@steroidsjs/typeorm/commands/CommandUtils';
 import {DataSource} from '@steroidsjs/typeorm';
-import {getTemplate, prettifyQuery} from '@steroidsjs/nest/infrastructure/commands/generate';
 import {getNewPermissions} from './getNewPermissions';
+import {getTemplate, prettifyQuery} from './helpers';
 
 const ADD_PERMISSIONS_NAME = 'AddPermissions';
 const DEFAULT_PERMISSION_TABLE = 'auth_permission';

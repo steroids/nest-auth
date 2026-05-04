@@ -1,6 +1,6 @@
 {
   "name": "@steroidsjs/nest-auth",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Steroids Nest Auth Module",
   "author": "",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
     "@nestjs/cli": "^10.4.9",
+    "@sqltools/formatter": "^1.2.5",
     "nestjs-command": "^3.1.5"
   },
   "devDependencies": {
@@ -48,6 +49,7 @@
     "@steroidsjs/nest-modules": "^0.1.5",
     "@steroidsjs/nest-typeorm": "^10.0.3",
     "@steroidsjs/typeorm": "^0.3.23",
+    "@sqltools/formatter": "^1.2.5",
     "@types/express": "^4.17.16",
     "@types/lodash": "^4.17.20",
     "@types/node": "^18.11.18",
