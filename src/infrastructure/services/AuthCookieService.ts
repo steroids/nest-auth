@@ -2,7 +2,6 @@ import {CookieOptions, Response} from 'express';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {Inject, Injectable} from '@nestjs/common';
-import {IAuthTokens} from '../../domain/interfaces/IAuthTokens';
 import {ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME} from '../../domain/constants';
 import {IAuthModuleConfig} from '../config';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
@@ -21,15 +20,17 @@ export class AuthCookieService {
         httpOnly: true,
     };
 
-    setTokens(response: Response, tokens: IAuthTokens): void {
-        response.cookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken, {
+    setRefreshToken(response: Response, refreshToken: string): void {
+        response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
             ...this.cookieConfig,
-            expires: this.sessionService.getTokenExpireTime(tokens.refreshToken),
+            expires: this.sessionService.getTokenExpireTime(refreshToken),
         });
+    }
 
-        response.cookie(ACCESS_TOKEN_COOKIE_NAME, tokens.accessToken, {
+    setAccessToken(response: Response, accessToken: string): void {
+        response.cookie(ACCESS_TOKEN_COOKIE_NAME, accessToken, {
             ...this.cookieConfig,
-            expires: this.sessionService.getTokenExpireTime(tokens.accessToken),
+            expires: this.sessionService.getTokenExpireTime(accessToken),
         });
     }
 

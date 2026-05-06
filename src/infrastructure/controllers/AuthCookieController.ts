@@ -38,10 +38,8 @@ export class AuthCookieController {
         @Res({passthrough: true}) response: Response,
     ) {
         const authLogin = await this.authService.login(context.user, context);
-        this.authCookieService.setTokens(response, {
-            accessToken: authLogin.accessToken,
-            refreshToken: authLogin.refreshToken,
-        });
+        this.authCookieService.setRefreshToken(response, authLogin.refreshToken);
+        this.authCookieService.setAccessToken(response, authLogin.accessToken);
         return DataMapper.create(AuthCookieLoginSchema, authLogin);
     }
 
@@ -52,10 +50,7 @@ export class AuthCookieController {
         @Res({passthrough: true}) response: Response,
     ) {
         const authLogin = await this.authService.refreshToken(refreshToken);
-        this.authCookieService.setTokens(response, {
-            accessToken: authLogin.accessToken,
-            refreshToken: authLogin.refreshToken,
-        });
+        this.authCookieService.setAccessToken(response, authLogin.accessToken);
         return DataMapper.create(AuthCookieLoginSchema, authLogin);
     }
 
