@@ -49,6 +49,7 @@ import {IAuthModuleConfig} from './config';
 import {authUpdatePasswordValidators} from './validators';
 import {AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN} from '../domain/constants/AuthUpdatePasswordValidatorsToken';
 import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermissionsMigrationCommand';
+import {AuthNewPermissionsCheckService} from './services/AuthNewPermissionsCheckService';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -135,6 +136,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             inject: authUpdatePasswordValidators,
         },
         GeneratePermissionsMigrationCommand,
+        AuthNewPermissionsCheckService,
     ],
     exports: [
         ISessionService,

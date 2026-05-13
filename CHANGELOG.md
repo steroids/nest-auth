@@ -1,5 +1,10 @@
 # Steroids nest-auth Changelog
 
+## Unreleased
+
+### Features
+- Добавлена проверка новых permissions (которые есть в коде, но нет в БД) при старте приложения по флагу `AUTH_CHECK_NEW_PERMISSIONS` ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/155))
+
 [Migration guide](docs/MigrationGuide.md#)
 
 ## [0.5.0](https://github.com/steroids/nest-auth/compare/0.4.0...0.5.0) (2026-05-04)
