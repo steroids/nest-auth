@@ -9,10 +9,7 @@ export class AuthConfirmSchema {
     uid: string;
 
     @ExtendField(AuthConfirmModel)
-    email: string;
-
-    @ExtendField(AuthConfirmModel)
-    phone: string;
+    target: string;
 
     @ExtendField(AuthConfirmModel)
     expireTime: string;
