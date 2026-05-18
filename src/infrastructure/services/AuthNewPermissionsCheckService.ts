@@ -2,7 +2,6 @@ import {Injectable, OnApplicationBootstrap} from '@nestjs/common';
 import {DataSource} from '@steroidsjs/typeorm';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
-import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';
 import * as path from 'path';
 import {IAuthModuleConfig} from '../config';
 import {getNewPermissions} from '../commands/generate/getNewPermissions';
@@ -17,7 +16,7 @@ export class AuthNewPermissionsCheckService implements OnApplicationBootstrap {
     async onApplicationBootstrap() {
         const config = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule);
 
-        if (!config?.checkNewPermissions || this.isCliContext()) {
+        if (!config?.checkNewPermissions || this.isMigrateCliCommand()) {
             return;
         }
 
@@ -29,9 +28,13 @@ export class AuthNewPermissionsCheckService implements OnApplicationBootstrap {
         }
     }
 
-    private isCliContext() {
-        return normalizeBoolean(process.env.APP_IS_CLI)
-            || process.argv.some(arg => this.isNestjsCommandBinPath(arg));
+    private isMigrateCliCommand() {
+        const cliBinArgIndex = process.argv.findIndex(arg => this.isNestjsCommandBinPath(arg));
+        if (cliBinArgIndex === -1) {
+            return false;
+        }
+        const commandName = process.argv[cliBinArgIndex + 1];
+        return commandName?.startsWith('migrate');
     }
 
     private isNestjsCommandBinPath(value: string) {
