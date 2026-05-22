@@ -1,8 +1,9 @@
-import {Injectable, OnApplicationBootstrap} from '@nestjs/common';
+import {Injectable, OnApplicationBootstrap, Optional} from '@nestjs/common';
+import {HttpAdapterHost} from '@nestjs/core';
 import {DataSource} from '@steroidsjs/typeorm';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
-import * as path from 'path';
+import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';
 import {IAuthModuleConfig} from '../config';
 import {getNewPermissions} from '../commands/generate/getNewPermissions';
 
@@ -10,13 +11,15 @@ import {getNewPermissions} from '../commands/generate/getNewPermissions';
 export class AuthNewPermissionsCheckService implements OnApplicationBootstrap {
     constructor(
         private readonly dataSource: DataSource,
+        @Optional()
+        private readonly httpAdapterHost?: HttpAdapterHost,
     ) {
     }
 
     async onApplicationBootstrap() {
         const config = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule);
 
-        if (!config?.checkNewPermissions || this.isMigrateCliCommand()) {
+        if (!config?.checkNewPermissions || this.isMigrationCliContext()) {
             return;
         }
 
@@ -28,20 +31,15 @@ export class AuthNewPermissionsCheckService implements OnApplicationBootstrap {
         }
     }
 
-    private isMigrateCliCommand() {
-        const cliBinArgIndex = process.argv.findIndex(arg => this.isNestjsCommandBinPath(arg));
-        if (cliBinArgIndex === -1) {
-            return false;
-        }
-        const commandName = process.argv[cliBinArgIndex + 1];
-        return commandName?.startsWith('migrate');
+    private isMigrationCliContext() {
+        return this.isCliApplicationContext() && this.isMigrateCommand();
     }
 
-    private isNestjsCommandBinPath(value: string) {
-        const parts = path.normalize(value).split(path.sep);
+    private isCliApplicationContext() {
+        return normalizeBoolean(process.env.APP_IS_CLI) && !this.httpAdapterHost?.httpAdapter;
+    }
 
-        return parts.at(-3) === 'nestjs-command'
-            && parts.at(-2) === 'bin'
-            && parts.at(-1) === 'cli';
+    private isMigrateCommand() {
+        return process.argv.some(arg => arg.startsWith('migrate'));
     }
 }
