@@ -1,5 +1,13 @@
 # Steroids Nest Migration Guide
 
+## [Unreleased]
+
+### Сужение ответа эндпоинтов /login и /refresh
+
+Эндпоинты `/auth/login` и `/auth/refresh` теперь возвращают только поля `accessToken`,
+`accessExpireTime`, `refreshToken`, `refreshExpireTime`. Остальные служебные поля модели
+больше не включены в ответ.
+
 ## [0.5.0](../CHANGELOG.md#050-2026-05-04) (2026-05-04)
 
 ### Валидаторы смены собственного пароля
