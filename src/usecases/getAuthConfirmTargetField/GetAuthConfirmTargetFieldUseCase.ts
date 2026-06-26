@@ -12,6 +12,8 @@ export class GetAuthConfirmTargetFieldUseCase implements IGetAuthConfirmTargetFi
             case AuthConfirmProviderTypeEnum.SMS:
             case AuthConfirmProviderTypeEnum.VOICE:
                 return 'phone';
+            case AuthConfirmProviderTypeEnum.EMAIL:
+                return 'email';
             default:
                 throw new Error(`Неизвестный тип провайдера кода подтверждения: ${type}`);
         }
