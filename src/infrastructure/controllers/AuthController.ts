@@ -5,6 +5,7 @@ import {
 } from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
+import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {AuthService} from '../../domain/services/AuthService';
 import {AuthLoginDto} from '../../domain/dtos/AuthLoginDto';
 import {LoginPasswordAuthGuard} from '../guards/LoginPasswordAuthGuard';
@@ -14,7 +15,7 @@ import {AuthUpdateUserOwnPasswordUseCase} from '../../usecases/updatePassword/Au
 import {
     AuthUpdateUserOwnPasswordUseCaseDto,
 } from '../../usecases/updatePassword/dtos/AuthUpdateUserOwnPasswordUseCaseDto';
-import {AuthLoginModel} from '../../domain/models/AuthLoginModel';
+import {AuthLoginSchema} from '../schemas/AuthLoginSchema';
 
 @ApiTags('Авторизация')
 @Controller('/auth')
@@ -28,16 +29,18 @@ export class AuthController {
     @Post('/login')
     @UseGuards(LoginPasswordAuthGuard)
     @ApiBody({type: AuthLoginDto})
-    @ApiOkResponse({type: AuthLoginModel})
-    login(@Context() context: ContextDto) {
-        return this.authService.login(context.user, context);
+    @ApiOkResponse({type: AuthLoginSchema})
+    async login(@Context() context: ContextDto) {
+        const authLogin = await this.authService.login(context.user, context);
+        return DataMapper.create(AuthLoginSchema, authLogin);
     }
 
     @Post('/refresh')
     @ApiBody({type: AuthRefreshTokenDto})
-    @ApiOkResponse({type: AuthLoginModel})
-    refresh(@Body() dto: AuthRefreshTokenDto) {
-        return this.authService.refreshToken(dto.refreshToken);
+    @ApiOkResponse({type: AuthLoginSchema})
+    async refresh(@Body() dto: AuthRefreshTokenDto) {
+        const authLogin = await this.authService.refreshToken(dto.refreshToken);
+        return DataMapper.create(AuthLoginSchema, authLogin);
     }
 
     @Post('/logout')
