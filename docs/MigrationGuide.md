@@ -4,9 +4,10 @@
 
 ### Сужение ответа эндпоинтов /login и /refresh
 
-Эндпоинты `/auth/login` и `/auth/refresh` теперь возвращают только поля `accessToken`,
-`accessExpireTime`, `refreshToken`, `refreshExpireTime`. Остальные служебные поля модели
-больше не включены в ответ.
+Эндпоинты `/auth/login` и `/auth/refresh` теперь возвращают только `accessToken`,
+`accessExpireTime`, `refreshToken`, `refreshExpireTime`. Служебные поля модели больше не включены в ответ.
+
+Если в проекте используется чтение этих полей из ответа, необходимо обновить схему ответа.
 
 ## [0.5.0](../CHANGELOG.md#050-2026-05-04) (2026-05-04)
 
