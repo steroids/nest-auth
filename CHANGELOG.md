@@ -1,11 +1,16 @@
 # Steroids nest-auth Changelog
 
-## Unreleased
+## [0.6.0](https://github.com/steroids/nest-auth/compare/0.5.0...0.6.0) (2026-06-26)
+
+[Migration guide](docs/MigrationGuide.md#060-2026-06-26)
 
 ### Features
-- Добавлена проверка новых permissions (которые есть в коде, но нет в БД) при старте приложения по флагу `AUTH_CHECK_NEW_PERMISSIONS`, при migrate-командах она всегда отключена ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/155))
+- Добавлена проверка новых permissions (которые есть в коде, но нет в БД) при старте приложения по флагу `AUTH_CHECK_NEW_PERMISSIONS`, при migrate-командах она всегда отключена ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
+- Добавлен email-провайдер кодов подтверждения: `AuthConfirmProviderTypeEnum.EMAIL`, `AuthConfirmEmailProvider` и эндпоинты `/auth/email/send`, `/auth/email/confirm` ([#83](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/83))
+- Добавлена peer-зависимость `@sqltools/formatter` для форматирования SQL в генерируемых permission migrations ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
 
-[Migration guide](docs/MigrationGuide.md#)
+### Changes
+- Ответы эндпоинтов `/auth/login` и `/auth/refresh` теперь приводятся к `AuthLoginSchema` и не содержат служебные поля модели ([#261](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/261))
 
 ## [0.5.0](https://github.com/steroids/nest-auth/compare/0.4.0...0.5.0) (2026-05-04)
 
