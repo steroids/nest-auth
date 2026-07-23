@@ -1,6 +1,6 @@
 import {Command} from 'nestjs-command';
 import {Inject, Injectable} from '@nestjs/common';
-import {DataSource} from '@steroidsjs/typeorm';
+import {DataSource} from 'typeorm';
 import {generateMigrationsForPermissions} from './generate/generateMigrationsForPermissions';
 
 @Injectable()

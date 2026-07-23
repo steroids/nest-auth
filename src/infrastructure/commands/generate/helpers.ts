@@ -6,7 +6,7 @@ import {format} from '@sqltools/formatter';
 export const getTemplate = (name: string, timestamp: number, upSqls: string[], downSqls: string[]): string => {
     const migrationName = `${name}${timestamp}`;
 
-    return `import {MigrationInterface, QueryRunner} from '@steroidsjs/typeorm';
+    return `import {MigrationInterface, QueryRunner} from 'typeorm';
 
 export class ${migrationName} implements MigrationInterface {
     name = '${migrationName}'
