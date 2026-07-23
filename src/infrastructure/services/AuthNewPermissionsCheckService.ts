@@ -1,6 +1,6 @@
 import {Injectable, OnApplicationBootstrap, Optional} from '@nestjs/common';
 import {HttpAdapterHost} from '@nestjs/core';
-import {DataSource} from '@steroidsjs/typeorm';
+import {DataSource} from 'typeorm';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';

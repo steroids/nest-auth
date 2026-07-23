@@ -1,5 +1,36 @@
 # Steroids Nest Migration Guide
 
+## [Unreleased](../CHANGELOG.md#unreleased)
+
+### Переход с TypeORM-форков на оригинальные пакеты
+
+Пакеты `@steroidsjs/typeorm` и `@steroidsjs/nest-typeorm` больше не используются.
+Они заменены на `typeorm@^1.1.0` и `@nestjs/typeorm@^11.0.3`.
+
+При обновлении:
+
+1. Удалите `@steroidsjs/typeorm` и `@steroidsjs/nest-typeorm` из зависимостей проекта.
+2. Добавьте `typeorm@^1.1.0` и `@nestjs/typeorm@^11.0.3`.
+3. Замените импорты:
+   - `@steroidsjs/typeorm` на `typeorm`;
+   - `@steroidsjs/nest-typeorm` на `@nestjs/typeorm`;
+   - внутренние импорты наподобие `@steroidsjs/typeorm/commands/CommandUtils` на соответствующие импорты из `typeorm`.
+4. Проверьте существующие миграции и собственные генераторы миграций: `MigrationInterface`, `QueryRunner`
+   и другие TypeORM-типы также должны импортироваться из `typeorm`.
+5. Обновите lock-файл после замены зависимостей.
+
+### Обновление NestJS
+
+Минимальные версии NestJS-зависимостей приведены в соответствие с `@steroidsjs/nest@^5.0.0-beta.1`:
+
+- `@nestjs/common@^10.4.19`;
+- `@nestjs/core@^10.4.19`;
+- `@nestjs/testing@^10.4.19`;
+- `@nestjs/typeorm@^11.0.3`.
+
+Перед обновлением `@steroidsjs/nest-auth` обновите эти зависимости в приложении и убедитесь,
+что остальные NestJS-модули проекта совместимы с NestJS 10.
+
 ## [0.6.0](../CHANGELOG.md#060-2026-06-26) (2026-06-26)
 
 ### Проверка новых permissions при старте приложения

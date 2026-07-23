@@ -1,4 +1,4 @@
-import {DataSource} from '@steroidsjs/typeorm';
+import {DataSource} from 'typeorm';
 import {PermissionsFactory} from '@steroidsjs/nest/infrastructure/helpers/PermissionsFactory';
 
 export const getNewPermissions = async (dataSource: DataSource, tableName = 'auth_permission', columnName = 'name') => {

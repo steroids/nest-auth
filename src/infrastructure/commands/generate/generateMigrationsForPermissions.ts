@@ -1,7 +1,7 @@
-import {loadConfiguration} from '@nestjs/cli/lib/utils/load-configuration';
 import {join} from 'path';
-import {CommandUtils} from '@steroidsjs/typeorm/commands/CommandUtils';
-import {DataSource} from '@steroidsjs/typeorm';
+import {loadConfiguration} from '@nestjs/cli/lib/utils/load-configuration';
+import {CommandUtils} from 'typeorm/commands/CommandUtils';
+import {DataSource} from 'typeorm';
 import {getNewPermissions} from './getNewPermissions';
 import {getTemplate, prettifyQuery} from './helpers';
 
