@@ -1,12 +1,12 @@
 # Steroids nest-auth Changelog
 
-## [Unreleased](https://github.com/steroids/nest-auth/compare/0.6.0...HEAD)
+## [0.7.0](https://github.com/steroids/nest-auth/compare/0.6.0...0.7.0) (2026-07-23)
 
-[Migration guide](docs/MigrationGuide.md#unreleased)
+[Migration guide](docs/MigrationGuide.md#070-2026-07-23)
 
 ### Changes
 - Форки `@steroidsjs/typeorm` и `@steroidsjs/nest-typeorm` заменены на оригинальные пакеты `typeorm@^1.1.0` и `@nestjs/typeorm@^11.0.3`; импорты репозиториев, `DataSource`, CLI-утилит и шаблона permission migrations обновлены ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
-- `@steroidsjs/nest` обновлён до `^5.0.0-beta.1`, а зависимости NestJS приведены к совместимым версиям: `@nestjs/common` и `@nestjs/core` до `^10.4.19`, `@nestjs/testing` до `^10.4.19` ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
+- `@steroidsjs/nest` обновлён до `^5.0.0`, а зависимости NestJS приведены к совместимым версиям: `@nestjs/common` и `@nestjs/core` до `^10.4.19`, `@nestjs/testing` до `^10.4.19` ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
 
 ## [0.6.0](https://github.com/steroids/nest-auth/compare/0.5.0...0.6.0) (2026-06-26)
 
