@@ -1,6 +1,9 @@
 import * as bcrypt from 'bcryptjs';
-import {JwtService} from '@nestjs/jwt';
-import {JwtSignOptions, JwtVerifyOptions} from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
+import {
+    JwtService,
+    JwtSignOptions,
+    JwtVerifyOptions,
+} from '@nestjs/jwt';
 import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {ISessionService} from '../../domain/interfaces/ISessionService';
 import {AuthTokenPayloadDto} from '../../domain/dtos/AuthTokenPayloadDto';

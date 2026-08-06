@@ -1,6 +1,6 @@
 import {ApiTags} from '@nestjs/swagger';
 import {Controller, forwardRef, Get, HttpStatus, Inject, Req, Res, UseGuards} from '@nestjs/common';
-import {Response} from 'express';
+import type {Response} from 'express';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {AuthFilePermissionService} from '../../domain/services/AuthFilePermissionService';
