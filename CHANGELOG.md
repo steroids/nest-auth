@@ -1,10 +1,45 @@
 # Steroids nest-auth Changelog
 
+## Unreleased
+
+[Migration guide](docs/MigrationGuide.md#)
+
 ### Features
 
 - Добавлена поддержка передачи JWT в httpOnly cookies
 
-[Migration guide](docs/MigrationGuide.md#)
+## [0.7.0](https://github.com/steroids/nest-auth/compare/0.6.0...0.7.0) (2026-07-23)
+
+[Migration guide](docs/MigrationGuide.md#070-2026-07-23)
+
+### Changes
+- Форки `@steroidsjs/typeorm` и `@steroidsjs/nest-typeorm` заменены на оригинальные пакеты `typeorm@^1.1.0` и `@nestjs/typeorm@^11.0.3`; импорты репозиториев, `DataSource`, CLI-утилит и шаблона permission migrations обновлены ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
+- `@steroidsjs/nest` обновлён до `^5.0.0`, а зависимости NestJS приведены к совместимым версиям: `@nestjs/common` и `@nestjs/core` до `^10.4.19`, `@nestjs/testing` до `^10.4.19` ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
+
+## [0.6.0](https://github.com/steroids/nest-auth/compare/0.5.0...0.6.0) (2026-06-26)
+
+[Migration guide](docs/MigrationGuide.md#060-2026-06-26)
+
+### Features
+- Добавлена проверка новых permissions (которые есть в коде, но нет в БД) при старте приложения по флагу `AUTH_CHECK_NEW_PERMISSIONS`, при migrate-командах она всегда отключена ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
+- Добавлен email-провайдер кодов подтверждения: `AuthConfirmProviderTypeEnum.EMAIL`, `AuthConfirmEmailProvider` и эндпоинты `/auth/email/send`, `/auth/email/confirm` ([#83](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/83))
+- Добавлена peer-зависимость `@sqltools/formatter` для форматирования SQL в генерируемых permission migrations ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
+
+### Changes
+- Ответы эндпоинтов `/auth/login` и `/auth/refresh` теперь приводятся к `AuthLoginSchema` и не содержат служебные поля модели ([#261](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/261))
+
+## [0.5.0](https://github.com/steroids/nest-auth/compare/0.4.0...0.5.0) (2026-05-04)
+
+[Migration guide](docs/MigrationGuide.md#041-2026-05-04)
+
+### Features
+- Добавлена команда `migrate:generate-permissions` для генерации миграции с новыми permissions, которых еще нет в таблице `auth_permission`([#247](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/247))
+- Добавлены peer-зависимости `@nestjs/cli` и `nestjs-command`, необходимые для работы команды генерации permission migration ([#247](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/247))
+
+### Fixes
+- При отправке кода авторизации для несуществующего пользователя теперь выбрасывается `NotFoundException` вместо обычного `Error` ([#209](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/209))
+- Удалено использование deprecated `ModuleHelper.provide` при регистрации провайдеров внутри модуля ([#159](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/159))
+- Валидаторы смены собственного пароля теперь собираются через токен `AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN` ([#159](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/159))
 
 ## [0.4.0](https://github.com/steroids/nest-auth/compare/0.3.0...0.4.0) (2026-03-25)
 

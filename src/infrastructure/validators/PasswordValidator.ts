@@ -2,14 +2,17 @@ import {IValidator, IValidatorParams} from '@steroidsjs/nest/usecases/interfaces
 import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
 import {ISessionService} from '@steroidsjs/nest-modules/auth/services/ISessionService';
 import {FieldValidatorException} from '@steroidsjs/nest/usecases/exceptions/FieldValidatorException';
+import {Inject} from '@nestjs/common';
 
 interface IPasswordValidatorDto {
-    currentPassword: string;
+    currentPassword: string,
 }
 
 export class PasswordValidator implements IValidator {
     constructor(
+        @Inject(IUserService)
         private readonly userService: IUserService,
+        @Inject(ISessionService)
         private readonly sessionService: ISessionService,
     ) {}
 

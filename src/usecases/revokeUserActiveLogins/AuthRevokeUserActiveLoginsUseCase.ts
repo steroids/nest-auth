@@ -1,6 +1,8 @@
 import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {Injectable} from '@nestjs/common';
 import {AuthLoginService} from '../../domain/services/AuthLoginService';
 
+@Injectable()
 export class AuthRevokeUserActiveLoginsUseCase implements IAuthRevokeUserActiveLoginsUseCase {
     constructor(
         private readonly authLoginService: AuthLoginService,

@@ -1,3 +1,4 @@
+import {normalizeBoolean} from '@steroidsjs/nest/infrastructure/decorators/fields/BooleanField';
 import {AuthConfirmProviderTypeEnum} from '../domain/enums/AuthConfirmProviderTypeEnum';
 import {IAuthJwtCookieConfig} from '../domain/interfaces/IAuthJwtCookieConfig';
 
@@ -8,6 +9,7 @@ export interface IAuthModuleConfig {
     refreshTokenExpiresSec?: string, // Additional token expiration time for FilesAuthGuard
     filesTokenAdditionalTime?: string,
     confirm: IAuthConfirmConfig,
+    checkNewPermissions?: boolean,
     jwtCookie?: IAuthJwtCookieConfig,
 }
 
@@ -38,6 +40,7 @@ export default () => ({
         providerType: process.env.AUTH_PROVIDER_TYPE || AuthConfirmProviderTypeEnum.VOICE, // or "sms", or "call"
         messageTemplate: process.env.AUTH_CONFIRM_MESSAGE_TEMPLATE || 'Ваш код авторизации в {appTitle} - {code}',
     },
+    checkNewPermissions: normalizeBoolean(process.env.AUTH_CHECK_NEW_PERMISSIONS),
     jwtCookie: {
         secure: process.env.APP_ENVIRONMENT !== 'dev',
         sameSite: 'lax',
