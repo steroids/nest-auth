@@ -1,6 +1,6 @@
 # Steroids Nest Migration Guide
 
-## [Unreleased](../CHANGELOG.md#unreleased)
+## Unreleased
 
 ### Поддержка NestJS 11
 
@@ -51,6 +51,19 @@ import type {Request, Response} from 'express';
 Если проект напрямую использует runtime API Express, его собственную зависимость `express` необходимо обновить до версии 5. Также проверьте wildcard-маршруты и middleware paths: в Express 5 wildcard должен иметь имя, например `/files/*path` вместо `/files/*`.
 
 Контроллеры, guards и Passport strategies внутри `@steroidsjs/nest-auth` используют совместимые с Express 4 и Express 5 API; дополнительных изменений их конфигурации не требуется.
+
+### Использование JWT из cookie
+
+Был добавлен `AuthCookieController`, который позволяет хранить jwt в cookie.
+Также в `AuthPhoneController` добавлен эндпоинт `POST /auth/phone/confirm/cookie`,
+который проверяет код подтверждения и логинит пользователя, записывая jwt в cookie.
+
+Чтобы использовать cookie-функционал, необходимо настроить конфиг для передачи кук (`jwtCookie`) под нужды проекта.
+Также куки можно подписывать на сервере, передав в конфиге `AuthModule` `jwtCookie.signed: true` 
+и поставив `cookieSecret` в конфиге `AppModule` (из `steroids-nest`).
+Подписанные куки будут храниться не в `request.cookies`, а в `request.signedCookies`,
+их можно взять из запроса в контроллере с помощью декоратора `@Cookies(<cookieName>)`.
+Чтобы устанавливать или очищать jwt в cookie, используется `AuhtCookieService`.
 
 ### Публичные типы `@nestjs/jwt`
 

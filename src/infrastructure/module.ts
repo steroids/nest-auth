@@ -51,6 +51,8 @@ import {authUpdatePasswordValidators} from './validators';
 import {AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN} from '../domain/constants/AuthUpdatePasswordValidatorsToken';
 import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermissionsMigrationCommand';
 import {AuthNewPermissionsCheckService} from './services/AuthNewPermissionsCheckService';
+import {AuthCookieController} from './controllers/AuthCookieController';
+import {AuthCookieService} from './services/AuthCookieService';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -65,6 +67,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
     controllers: [
         AuthController,
         AuthEmailController,
+        AuthCookieController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
@@ -139,6 +142,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         },
         GeneratePermissionsMigrationCommand,
         AuthNewPermissionsCheckService,
+        AuthCookieService,
     ],
     exports: [
         ISessionService,

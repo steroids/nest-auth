@@ -1,8 +1,12 @@
 # Steroids nest-auth Changelog
 
-## [Unreleased]
+## Unreleased
 
-[Migration guide](docs/MigrationGuide.md#unreleased)
+[Migration guide](docs/MigrationGuide.md#)
+
+### Features
+
+- Добавлена поддержка передачи JWT в httpOnly cookies
 
 ### Changes
 
