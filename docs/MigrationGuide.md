@@ -1,10 +1,10 @@
 # Steroids Nest Migration Guide
 
-## Unreleased
+## [0.8.0](../CHANGELOG.md#080-2026-08-11) (2026-08-11)
 
 ### Поддержка NestJS 11
 
-Новый релиз `@steroidsjs/nest-auth` будет одновременно поддерживать NestJS 10 и NestJS 11.
+Версия `0.8.0` пакета `@steroidsjs/nest-auth` одновременно поддерживает NestJS 10 и NestJS 11.
 Обновление пакета не требует обязательного перехода на NestJS 11: проекты на NestJS 10 могут сохранить текущую major-версию NestJS и совместимые с ней версии интеграционных пакетов.
 
 Для перехода приложения на NestJS 11 обновите NestJS- и auth-зависимости согласованно:
@@ -54,16 +54,43 @@ import type {Request, Response} from 'express';
 
 ### Использование JWT из cookie
 
-Был добавлен `AuthCookieController`, который позволяет хранить jwt в cookie.
-Также в `AuthPhoneController` добавлен эндпоинт `POST /auth/phone/confirm/cookie`,
-который проверяет код подтверждения и логинит пользователя, записывая jwt в cookie.
+Добавлен `AuthCookieController` с эндпоинтами:
 
-Чтобы использовать cookie-функционал, необходимо настроить конфиг для передачи кук (`jwtCookie`) под нужды проекта.
-Также куки можно подписывать на сервере, передав в конфиге `AuthModule` `jwtCookie.signed: true` 
-и поставив `cookieSecret` в конфиге `AppModule` (из `steroids-nest`).
-Подписанные куки будут храниться не в `request.cookies`, а в `request.signedCookies`,
-их можно взять из запроса в контроллере с помощью декоратора `@Cookies(<cookieName>)`.
-Чтобы устанавливать или очищать jwt в cookie, используется `AuhtCookieService`.
+- `POST /auth/cookie/login` — записывает access и refresh JWT в cookies;
+- `POST /auth/cookie/refresh` — читает refresh token из cookie и обновляет access token;
+- `POST /auth/cookie/logout` — завершает сессию и очищает обе cookies;
+- `POST /auth/cookie/update-password` — меняет пароль и очищает обе cookies.
+
+В `AuthPhoneController` также добавлен эндпоинт `POST /auth/phone/confirm/cookie`, который проверяет
+код подтверждения, авторизует пользователя и записывает access и refresh JWT в cookies.
+
+Ответы cookie-эндпоинтов формируются через `AuthCookieLoginSchema` и не содержат сами токены.
+Access token для защищённых эндпоинтов теперь можно передавать в cookie `accessToken`; способы передачи
+через заголовок `Authorization` и query-параметр `token` продолжают работать. Refresh token читается из
+cookie `refreshToken`.
+
+Настройте `jwtCookie` в конфигурации `AuthModule` под требования приложения:
+
+```ts
+jwtCookie: {
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    domain: '.example.com', // При необходимости.
+    signed: true,
+},
+```
+
+Для `jwtCookie` поддерживаются параметры `signed`, `path`, `domain`, `secure` и `sameSite`.
+По умолчанию используются `secure: false` в dev-окружении (`true` в остальных окружениях),
+`sameSite: 'lax'` и `path: '/'`; флаг `httpOnly` всегда включён. Срок действия каждой cookie
+соответствует сроку действия записанного в неё JWT.
+
+Для подписанных cookies передайте `jwtCookie.signed: true` в конфигурации `AuthModule` и задайте
+`cookieSecret` в конфигурации `AppModule` из `@steroidsjs/nest`. Подписанные cookies читаются из
+`request.signedCookies`, неподписанные — из `request.cookies`. Для чтения cookies в собственных
+контроллерах можно использовать декоратор `@Cookies(<cookieName>)`; установкой и очисткой JWT
+занимается `AuthCookieService`.
 
 ### Публичные типы `@nestjs/jwt`
 

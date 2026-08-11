@@ -1,17 +1,18 @@
 # Steroids nest-auth Changelog
 
-## Unreleased
+## [0.8.0](https://github.com/steroids/nest-auth/compare/0.7.0...0.8.0) (2026-08-11)
 
-[Migration guide](docs/MigrationGuide.md#)
+[Migration guide](docs/MigrationGuide.md#080-2026-08-11)
 
 ### Features
 
-- Добавлена поддержка передачи JWT в httpOnly cookies
+- Добавлена поддержка передачи JWT в `httpOnly` cookies: новый `AuthCookieController` предоставляет эндпоинты для входа, обновления токена, выхода и смены пароля, а `POST /auth/phone/confirm/cookie` позволяет войти по коду подтверждения ([#230](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/230)).
+- Добавлены конфигурация `jwtCookie`, декоратор `@Cookies()` и `AuthCookieService` для чтения, установки и очистки обычных или подписанных cookies. JWT strategy теперь извлекает access token не только из заголовка и query-параметра, но и из cookie `accessToken` ([#230](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/230)).
 
 ### Changes
 
-- Добавлена одновременная поддержка NestJS 10 и NestJS 11 в `peerDependencies` для `@nestjs/cli`, `@nestjs/common` и `@nestjs/core`.
-- Диапазоны `peerDependencies` расширены для совместимых с NestJS 10 и NestJS 11 версий `@nestjs/jwt`, `@nestjs/passport` и `@nestjs/swagger`.
+- Добавлена одновременная поддержка NestJS 10 и NestJS 11 в `peerDependencies` для `@nestjs/cli`, `@nestjs/common` и `@nestjs/core` ([#148](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/148)).
+- Диапазоны `peerDependencies` исправлены и расширены для совместимых с NestJS 10 и NestJS 11 версий `@nestjs/jwt`, `@nestjs/passport` и `@nestjs/swagger` ([#148](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/148)).
 - Среда разработки обновлена до NestJS 11, JWT 11, Passport adapter 11, Swagger 11 и типов Express 5.
 - `JwtService`, `JwtSignOptions` и `JwtVerifyOptions` теперь импортируются из публичного API `@nestjs/jwt` вместо внутреннего модуля пакета.
 - Тип `Response` в `AuthFilePermissionController` переведён на type-only import.
