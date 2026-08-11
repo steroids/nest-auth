@@ -1,5 +1,21 @@
 # Steroids nest-auth Changelog
 
+## [Unreleased]
+
+[Migration guide](docs/MigrationGuide.md#unreleased)
+
+### Changes
+
+- Добавлена одновременная поддержка NestJS 10 и NestJS 11 в `peerDependencies` для `@nestjs/cli`, `@nestjs/common` и `@nestjs/core`.
+- Диапазоны `peerDependencies` расширены для совместимых с NestJS 10 и NestJS 11 версий `@nestjs/jwt`, `@nestjs/passport` и `@nestjs/swagger`.
+- Среда разработки обновлена до NestJS 11, JWT 11, Passport adapter 11, Swagger 11 и типов Express 5.
+- `JwtService`, `JwtSignOptions` и `JwtVerifyOptions` теперь импортируются из публичного API `@nestjs/jwt` вместо внутреннего модуля пакета.
+- Тип `Response` в `AuthFilePermissionController` переведён на type-only import.
+
+### Removed
+
+- Удалена прямая runtime-зависимость от Express 4. Версия Express теперь определяется установленным `@nestjs/platform-express`: Express 4 для NestJS 10 и Express 5 для NestJS 11.
+
 ## [0.7.0](https://github.com/steroids/nest-auth/compare/0.6.0...0.7.0) (2026-07-23)
 
 [Migration guide](docs/MigrationGuide.md#070-2026-07-23)
