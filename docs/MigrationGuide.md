@@ -2,6 +2,56 @@
 
 ## Unreleased
 
+### Поддержка NestJS 11
+
+Новый релиз `@steroidsjs/nest-auth` будет одновременно поддерживать NestJS 10 и NestJS 11.
+Обновление пакета не требует обязательного перехода на NestJS 11: проекты на NestJS 10 могут сохранить текущую major-версию NestJS и совместимые с ней версии интеграционных пакетов.
+
+Для перехода приложения на NestJS 11 обновите NestJS- и auth-зависимости согласованно:
+
+```json
+{
+  "dependencies": {
+    "@nestjs/cli": "^11.0.24",
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/core": "^11.1.28",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/swagger": "^11.4.6",
+    "@nestjs/testing": "^11.1.28"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}
+```
+
+NestJS 11 требует Node.js 20 или новее, а Nest CLI 11 — Node.js 20.11 или новее.
+
+Перед обновлением `@steroidsjs/nest-auth` также необходимо:
+
+1. Обновить `@steroidsjs/nest` до версии, в которой добавлена поддержка NestJS 11.
+2. Проверить `peerDependencies` остальных NestJS- и `@steroidsjs/*`-пакетов приложения.
+3. Не смешивать разные major-версии `@nestjs/common`, `@nestjs/core`, `@nestjs/testing` и HTTP-адаптера.
+4. Для NestJS 11 использовать JWT 11 и Passport adapter 11; их предыдущие major-версии не заявляют поддержку NestJS 11.
+
+Для проекта, который остаётся на NestJS 10, используются JWT 10, Passport adapter 10 и Swagger 8. `peerDependencies` нового релиза допускают обе согласованные комбинации.
+
+### Переход на Express 5
+
+`@nestjs/platform-express` использует Express 4 в NestJS 10 и Express 5 в NestJS 11.
+`@steroidsjs/nest-auth` больше не устанавливает собственную версию Express и не добавляет Express 4 в дерево зависимостей приложения на NestJS 11.
+
+Если приложение добавляло `express` только ради типов `Request` и `Response`, прямую runtime-зависимость можно удалить. При переходе на NestJS 11 оставьте типы Express 5 и используйте type-only imports:
+
+```ts
+import type {Request, Response} from 'express';
+```
+
+Если проект напрямую использует runtime API Express, его собственную зависимость `express` необходимо обновить до версии 5. Также проверьте wildcard-маршруты и middleware paths: в Express 5 wildcard должен иметь имя, например `/files/*path` вместо `/files/*`.
+
+Контроллеры, guards и Passport strategies внутри `@steroidsjs/nest-auth` используют совместимые с Express 4 и Express 5 API; дополнительных изменений их конфигурации не требуется.
+
 ### Использование JWT из cookie
 
 Был добавлен `AuthCookieController`, который позволяет хранить jwt в cookie.
@@ -14,6 +64,20 @@
 Подписанные куки будут храниться не в `request.cookies`, а в `request.signedCookies`,
 их можно взять из запроса в контроллере с помощью декоратора `@Cookies(<cookieName>)`.
 Чтобы устанавливать или очищать jwt в cookie, используется `AuhtCookieService`.
+
+### Публичные типы `@nestjs/jwt`
+
+`SessionService` больше не импортирует `JwtSignOptions` и `JwtVerifyOptions` из закрытого пути `@nestjs/jwt/dist/interfaces/jwt-module-options.interface`. Все JWT-типы теперь импортируются из публичного API `@nestjs/jwt`:
+
+```ts
+import {
+    JwtService,
+    JwtSignOptions,
+    JwtVerifyOptions,
+} from '@nestjs/jwt';
+```
+
+Публичные методы `SessionService` и формат токенов не изменились. Если код приложения также использует внутренний JWT-import, его рекомендуется заменить аналогичным публичным импортом.
 
 ## [0.7.0](../CHANGELOG.md#070-2026-07-23) (2026-07-23)
 
