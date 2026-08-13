@@ -9,7 +9,7 @@ import {AuthConfirmSaveInputDto} from '../../domain/dtos/AuthConfirmSaveInputDto
 @Injectable()
 export class CodeAuthGuard implements CanActivate {
     constructor(
-        @Inject(AuthConfirmService) private authConfirmService: AuthConfirmService,
+        private authConfirmService: AuthConfirmService,
     ) {
     }
 

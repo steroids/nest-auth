@@ -1,15 +1,12 @@
 import {JwtModule} from '@nestjs/jwt';
 import {PassportModule} from '@nestjs/passport';
-import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {UserModule} from '@steroidsjs/nest-modules/user/UserModule';
 import {FileModule} from '@steroidsjs/nest-modules/file/FileModule';
 import {NotifierModule} from '@steroidsjs/nest-modules/notifier/NotifierModule';
-import {IUserService} from '@steroidsjs/nest-modules/user/services/IUserService';
-import {IFileService} from '@steroidsjs/nest-modules/file/services/IFileService';
 import {forwardRef, ModuleMetadata} from '@nestjs/common';
 import {IAuthUpdateUserOwnPasswordUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
-import {IUserUpdatePasswordUseCase} from '@steroidsjs/nest-modules/user/usecases/IUserUpdatePasswordUseCase';
 import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {IValidator} from '@steroidsjs/nest/usecases/interfaces/IValidator';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
 import {AuthPermissionsService} from '../domain/services/AuthPermissionsService';
@@ -43,12 +40,18 @@ import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {authConfirmProviders} from './services/authConfirmProviders';
 import {authConfirmTargetValidators} from './services/authConfirmTargetValidators';
 import {AuthController} from './controllers/AuthController';
+import {AuthEmailController} from './controllers/AuthEmailController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
 import {AuthPermissionController} from './controllers/AuthPermissionController';
 import {AuthPhoneController} from './controllers/AuthPhoneController';
 import {AuthRoleController} from './controllers/AuthRoleController';
 import {IAuthModuleConfig} from './config';
-import {PasswordValidator} from './validators/PasswordValidator';
+import {authUpdatePasswordValidators} from './validators';
+import {AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN} from '../domain/constants/AuthUpdatePasswordValidatorsToken';
+import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermissionsMigrationCommand';
+import {AuthNewPermissionsCheckService} from './services/AuthNewPermissionsCheckService';
+import {AuthCookieController} from './controllers/AuthCookieController';
+import {AuthCookieService} from './services/AuthCookieService';
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -62,6 +65,8 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
     ],
     controllers: [
         AuthController,
+        AuthEmailController,
+        AuthCookieController,
         AuthFilePermissionController,
         AuthPermissionController,
         AuthPhoneController,
@@ -88,16 +93,9 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             provide: IAuthConfirmRepository,
             useClass: AuthConfirmRepository,
         },
-        ModuleHelper.provide(AuthRoleService, [
-            IAuthRoleRepository,
-            AuthPermissionsService,
-        ]),
-        ModuleHelper.provide(AuthService, [
-            IUserService,
-            ISessionService,
-            AuthLoginService,
-            AuthPermissionsService,
-        ]),
+
+        AuthRoleService,
+        AuthService,
         ...authConfirmProviders,
         ...authConfirmTargetValidators,
         {
@@ -111,40 +109,22 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             inject: authConfirmTargetValidators,
         },
         AuthConfirmService,
-        ModuleHelper.provide(AuthLoginService, [
-            IAuthLoginRepository,
-            ISessionService,
-        ]),
-        ModuleHelper.provide(AuthPermissionsService, [
-            IAuthPermissionsRepository,
-            IAuthRoleRepository,
-        ]),
-        ModuleHelper.provide(AuthFilePermissionService, [
-            IFileService,
-        ]),
-        ModuleHelper.provide(LoginPasswordStrategy, [
-            IUserService,
-            AuthService,
-            ISessionService,
-        ]),
-        ModuleHelper.provide(LoginSmsCodeStrategy, [
-            AuthConfirmService,
-            AuthService,
-            ISessionService,
-        ]),
+        AuthLoginService,
+        AuthPermissionsService,
+        AuthFilePermissionService,
+        LoginPasswordStrategy,
+        LoginSmsCodeStrategy,
         JwtStrategy,
 
         // UseCases
-        ModuleHelper.provide(AuthUpdateUserOwnPasswordUseCase, IAuthUpdateUserOwnPasswordUseCase, [
-            IUserUpdatePasswordUseCase,
-            IAuthRevokeUserActiveLoginsUseCase,
-            [
-                PasswordValidator,
-            ],
-        ]),
-        ModuleHelper.provide(AuthRevokeUserActiveLoginsUseCase, IAuthRevokeUserActiveLoginsUseCase, [
-            AuthLoginService,
-        ]),
+        {
+            provide: IAuthUpdateUserOwnPasswordUseCase,
+            useClass: AuthUpdateUserOwnPasswordUseCase,
+        },
+        {
+            provide: IAuthRevokeUserActiveLoginsUseCase,
+            useClass: AuthRevokeUserActiveLoginsUseCase,
+        },
         {
             provide: AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN,
             useClass: AuthenticateWithCodeUseCase,
@@ -155,10 +135,15 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         },
 
         // Validators
-        ModuleHelper.provide(PasswordValidator, [
-            IUserService,
-            ISessionService,
-        ]),
+        ...authUpdatePasswordValidators,
+        {
+            provide: AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN,
+            useFactory: (...providers: IValidator[]) => providers,
+            inject: authUpdatePasswordValidators,
+        },
+        GeneratePermissionsMigrationCommand,
+        AuthNewPermissionsCheckService,
+        AuthCookieService,
     ],
     exports: [
         ISessionService,
