@@ -6,5 +6,6 @@ export const AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN = 'auth_confirm_target_validat
 export interface IAuthConfirmTargetValidator {
     readonly providerTypes: AuthConfirmProviderType[],
     readonly targetField: AuthConfirmTargetField,
-    validate(target: string): Promise<string> | string,
+    normalize(target: string): string,
+    validate(target: string): Promise<void> | void,
 }

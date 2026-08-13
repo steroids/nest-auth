@@ -4,8 +4,12 @@ import {UserModule} from '@steroidsjs/nest-modules/user/UserModule';
 import {FileModule} from '@steroidsjs/nest-modules/file/FileModule';
 import {NotifierModule} from '@steroidsjs/nest-modules/notifier/NotifierModule';
 import {forwardRef, ModuleMetadata} from '@nestjs/common';
-import {IAuthUpdateUserOwnPasswordUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
-import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {
+    IAuthUpdateUserOwnPasswordUseCase
+} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
+import {
+    IAuthRevokeUserActiveLoginsUseCase
+} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
 import {IValidator} from '@steroidsjs/nest/usecases/interfaces/IValidator';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
@@ -20,8 +24,12 @@ import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
 import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
 import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
-import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
-import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {
+    AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN
+} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {
+    SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN
+} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
 import {
     AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
     IAuthConfirmTargetValidator,
@@ -52,6 +60,7 @@ import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermission
 import {AuthNewPermissionsCheckService} from './services/AuthNewPermissionsCheckService';
 import {AuthCookieController} from './controllers/AuthCookieController';
 import {AuthCookieService} from './services/AuthCookieService';
+import {AuthConfirmTargetService} from "../domain/services/AuthConfirmTargetService";
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -108,6 +117,7 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
             useFactory: (...validators: IAuthConfirmTargetValidator[]) => validators,
             inject: authConfirmTargetValidators,
         },
+        AuthConfirmTargetService,
         AuthConfirmService,
         AuthLoginService,
         AuthPermissionsService,

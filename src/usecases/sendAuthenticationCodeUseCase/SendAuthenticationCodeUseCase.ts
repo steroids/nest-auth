@@ -7,6 +7,7 @@ import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
 import {AuthConfirmProviderType} from '../../domain/types/AuthConfirmProviderType';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
+import {AuthConfirmTargetService, IResolvedTargetInfo} from "../../domain/services/AuthConfirmTargetService";
 
 @Injectable()
 export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUseCase {
@@ -14,21 +15,23 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
         protected readonly authConfirmService: AuthConfirmService,
         @Inject(IUserService)
         protected readonly userService: IUserService,
-    ) {}
+        protected readonly authConfirmTargetService: AuthConfirmTargetService,
+    ) {
+    }
 
     public async handle(
         providerType: AuthConfirmProviderType,
         dto: AuthenticateWithCodeDto,
         context: ContextDto,
     ): Promise<AuthConfirmModel> {
-        const resolvedTarget = await this.authConfirmService.resolveTarget(providerType, dto.target);
+        const resolvedTargetInfo: IResolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target);
 
         const user = await this.userService
             .createQuery()
             .where([
                 '=',
-                resolvedTarget.validator.targetField,
-                resolvedTarget.target,
+                resolvedTargetInfo.targetField,
+                resolvedTargetInfo.target,
             ])
             .one();
 
@@ -38,9 +41,9 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
 
         const sendCodeDto: AuthConfirmSendCodeDto = {
             userId: user.id,
-            target: resolvedTarget.target,
+            target: resolvedTargetInfo.target,
         };
 
-        return this.authConfirmService.sendCode(sendCodeDto, providerType, context, null, resolvedTarget);
+        return this.authConfirmService.sendCode(sendCodeDto, providerType, context, null, resolvedTargetInfo);
     }
 }

@@ -18,16 +18,8 @@ import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/
 import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
 import {AuthConfirmProviderType} from '../types/AuthConfirmProviderType';
-import {
-    AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
-    IAuthConfirmTargetValidator,
-} from '../interfaces/IAuthConfirmTargetValidator';
+import {AuthConfirmTargetService, IResolvedTargetInfo} from "./AuthConfirmTargetService";
 
-export interface IResolvedAuthConfirmTarget {
-    providerType: AuthConfirmProviderType,
-    target: string,
-    validator: IAuthConfirmTargetValidator,
-}
 
 @Injectable()
 export class AuthConfirmService extends CrudService<
@@ -42,31 +34,9 @@ export class AuthConfirmService extends CrudService<
         public repository: IAuthConfirmRepository,
         @Inject(AUTH_CONFIRM_PROVIDERS_TOKEN)
         protected readonly authConfirmProviders: IAuthConfirmProvider[],
-        @Inject(AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN)
-        protected readonly authConfirmTargetValidators: IAuthConfirmTargetValidator[],
+        protected readonly authConfirmTargetService: AuthConfirmTargetService,
     ) {
         super();
-    }
-
-    getTargetValidator(providerType: AuthConfirmProviderType): IAuthConfirmTargetValidator {
-        const targetValidator = this.authConfirmTargetValidators
-            .find(validator => validator.providerTypes.includes(providerType));
-
-        if (!targetValidator) {
-            throw new Error('Wrong provider type: ' + providerType);
-        }
-
-        return targetValidator;
-    }
-
-    async resolveTarget(providerType: AuthConfirmProviderType, target: string): Promise<IResolvedAuthConfirmTarget> {
-        const targetValidator = this.getTargetValidator(providerType);
-
-        return {
-            providerType,
-            validator: targetValidator,
-            target: await targetValidator.validate(target),
-        };
     }
 
     async sendCode<TSchema>(
@@ -74,11 +44,15 @@ export class AuthConfirmService extends CrudService<
         providerType: AuthConfirmProviderType,
         context: ContextDto,
         schemaClass: IType<TSchema> | null,
-        resolvedTarget?: IResolvedAuthConfirmTarget,
+        resolvedTargetInfo?: IResolvedTargetInfo,
     ): Promise<AuthConfirmModel> {
         await ValidationHelper.validate(dto, {context});
+
         const config: IAuthConfirmConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm;
-        resolvedTarget = resolvedTarget || await this.resolveTarget(providerType, dto.target);
+
+        if (!resolvedTargetInfo) {
+            resolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target)
+        }
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
@@ -92,8 +66,9 @@ export class AuthConfirmService extends CrudService<
                         formatISO9075(addSeconds(new Date(), -1 * config.repeatLimitSec)),
                     ])
                     .andWhere({
-                        target: resolvedTarget.target,
+                        target: resolvedTargetInfo.target,
                         isConfirmed: false,
+                        providerName: providerType,
                     }),
             );
             if (model) {
@@ -105,24 +80,26 @@ export class AuthConfirmService extends CrudService<
         if (config.isEnableDebugStaticCode) {
             code = _repeat('1', config.codeLength);
         } else {
-            const authConfirmProvider = this.authConfirmProviders.find(provider => provider.type === resolvedTarget.providerType);
+            const authConfirmProvider = this.authConfirmProviders
+                .find(provider => provider.type === providerType);
+
             if (!authConfirmProvider) {
-                throw new Error('Wrong provider type: ' + resolvedTarget.providerType);
+                throw new Error('Wrong provider type: ' + providerType);
             }
 
-            code = await authConfirmProvider.generateAndSendCode(config, resolvedTarget.target);
+            code = await authConfirmProvider.generateAndSendCode(config, resolvedTargetInfo.target);
 
             if (!code) {
-                throw new Error('Code is not sent, provider type: ' + resolvedTarget.providerType);
+                throw new Error('Code is not sent, provider type: ' + providerType);
             }
         }
 
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
-                target: resolvedTarget.target,
+                target: resolvedTargetInfo.target,
                 code,
-                providerName: resolvedTarget.providerType,
+                providerName: providerType,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
