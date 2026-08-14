@@ -1,4 +1,5 @@
 import {Injectable} from '@nestjs/common';
+import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {IAuthConfirmTargetValidator} from '../../../domain/interfaces/IAuthConfirmTargetValidator';
 import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {AuthConfirmTargetField} from '../../../domain/types/AuthConfirmTargetField';
@@ -23,7 +24,9 @@ export class PhoneAuthConfirmTargetValidator implements IAuthConfirmTargetValida
 
     validate(target: string): void {
         if (!/^\+\d{11,15}$/.test(target)) {
-            throw new Error('Invalid phone for confirmation');
+            throw new ValidationException({
+                target: 'Некорректный номер телефона для подтверждения',
+            });
         }
     }
 }

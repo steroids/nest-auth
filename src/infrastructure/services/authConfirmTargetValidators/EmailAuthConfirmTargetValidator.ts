@@ -1,7 +1,9 @@
 import {Injectable} from '@nestjs/common';
+import {ValidationException} from '@steroidsjs/nest/usecases/exceptions/ValidationException';
 import {IAuthConfirmTargetValidator} from '../../../domain/interfaces/IAuthConfirmTargetValidator';
 import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {AuthConfirmTargetField} from '../../../domain/types/AuthConfirmTargetField';
+
 
 @Injectable()
 export class EmailAuthConfirmTargetValidator implements IAuthConfirmTargetValidator {
@@ -15,7 +17,9 @@ export class EmailAuthConfirmTargetValidator implements IAuthConfirmTargetValida
 
     validate(target: string): void {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) {
-            throw new Error('Invalid email for confirmation');
+            throw new ValidationException({
+                target: 'Некорректный email для подтверждения',
+            });
         }
     }
 }
