@@ -1,5 +1,5 @@
 import {ApiTags} from '@nestjs/swagger';
-import {Controller, forwardRef, Get, Inject, Query, UseGuards} from '@nestjs/common';
+import {Controller, Get, Query, UseGuards} from '@nestjs/common';
 import {AuthPermissionsService} from '../../domain/services/AuthPermissionsService';
 import {FindPermissionsByRoleDto} from '../../domain/dtos/FindPermissionsByRoleDto';
 import {AuthRoleService} from '../../domain/services/AuthRoleService';
@@ -11,7 +11,6 @@ import {JwtAuthGuard} from '../guards/JwtAuthGuard';
 @Controller('/auth/permissions')
 export class AuthPermissionController {
     constructor(
-        @Inject(forwardRef(() => AuthPermissionsService))
         private service: AuthPermissionsService,
         private roleService: AuthRoleService,
     ) {

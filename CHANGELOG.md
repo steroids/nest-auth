@@ -1,7 +1,70 @@
 # Steroids nest-auth Changelog
 
+## [0.8.0](https://github.com/steroids/nest-auth/compare/0.7.0...0.8.0) (2026-08-11)
+
+[Migration guide](docs/MigrationGuide.md#080-2026-08-11)
+
+### Features
+
+- Добавлена поддержка передачи JWT в `httpOnly` cookies: новый `AuthCookieController` предоставляет эндпоинты для входа, обновления токена, выхода и смены пароля, а `POST /auth/phone/confirm/cookie` позволяет войти по коду подтверждения ([#230](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/230)).
+- Добавлены конфигурация `jwtCookie`, декоратор `@Cookies()` и `AuthCookieService` для чтения, установки и очистки обычных или подписанных cookies. JWT strategy теперь извлекает access token не только из заголовка и query-параметра, но и из cookie `accessToken` ([#230](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/230)).
+
+### Changes
+
+- Добавлена одновременная поддержка NestJS 10 и NestJS 11 в `peerDependencies` для `@nestjs/cli`, `@nestjs/common` и `@nestjs/core` ([#148](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/148)).
+- Диапазоны `peerDependencies` исправлены и расширены для совместимых с NestJS 10 и NestJS 11 версий `@nestjs/jwt`, `@nestjs/passport` и `@nestjs/swagger` ([#148](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/148)).
+- Среда разработки обновлена до NestJS 11, JWT 11, Passport adapter 11, Swagger 11 и типов Express 5.
+- `JwtService`, `JwtSignOptions` и `JwtVerifyOptions` теперь импортируются из публичного API `@nestjs/jwt` вместо внутреннего модуля пакета.
+- Тип `Response` в `AuthFilePermissionController` переведён на type-only import.
+
+### Removed
+
+- Удалена прямая runtime-зависимость от Express 4. Версия Express теперь определяется установленным `@nestjs/platform-express`: Express 4 для NestJS 10 и Express 5 для NestJS 11.
+
+## [0.7.0](https://github.com/steroids/nest-auth/compare/0.6.0...0.7.0) (2026-07-23)
+
+[Migration guide](docs/MigrationGuide.md#070-2026-07-23)
+
+### Changes
+- Форки `@steroidsjs/typeorm` и `@steroidsjs/nest-typeorm` заменены на оригинальные пакеты `typeorm@^1.1.0` и `@nestjs/typeorm@^11.0.3`; импорты репозиториев, `DataSource`, CLI-утилит и шаблона permission migrations обновлены ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
+- `@steroidsjs/nest` обновлён до `^5.0.0`, а зависимости NestJS приведены к совместимым версиям: `@nestjs/common` и `@nestjs/core` до `^10.4.19`, `@nestjs/testing` до `^10.4.19` ([#276](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/276))
+
+## [0.6.0](https://github.com/steroids/nest-auth/compare/0.5.0...0.6.0) (2026-06-26)
+
+[Migration guide](docs/MigrationGuide.md#060-2026-06-26)
+
+### Features
+- Добавлена проверка новых permissions (которые есть в коде, но нет в БД) при старте приложения по флагу `AUTH_CHECK_NEW_PERMISSIONS`, при migrate-командах она всегда отключена ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
+- Добавлен email-провайдер кодов подтверждения: `AuthConfirmProviderTypeEnum.EMAIL`, `AuthConfirmEmailProvider` и эндпоинты `/auth/email/send`, `/auth/email/confirm` ([#83](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/83))
+- Добавлена peer-зависимость `@sqltools/formatter` для форматирования SQL в генерируемых permission migrations ([#155](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/155))
+
+### Changes
+- Ответы эндпоинтов `/auth/login` и `/auth/refresh` теперь приводятся к `AuthLoginSchema` и не содержат служебные поля модели ([#261](https://gitlab.kozhindev.com/steroids/steroids-nest/-/work_items/261))
+
+## [0.5.0](https://github.com/steroids/nest-auth/compare/0.4.0...0.5.0) (2026-05-04)
+
+[Migration guide](docs/MigrationGuide.md#041-2026-05-04)
+
+### Features
+- Добавлена команда `migrate:generate-permissions` для генерации миграции с новыми permissions, которых еще нет в таблице `auth_permission`([#247](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/247))
+- Добавлены peer-зависимости `@nestjs/cli` и `nestjs-command`, необходимые для работы команды генерации permission migration ([#247](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/247))
+
+### Fixes
+- При отправке кода авторизации для несуществующего пользователя теперь выбрасывается `NotFoundException` вместо обычного `Error` ([#209](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/209))
+- Удалено использование deprecated `ModuleHelper.provide` при регистрации провайдеров внутри модуля ([#159](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/159))
+- Валидаторы смены собственного пароля теперь собираются через токен `AUTH_UPDATE_PASSWORD_VALIDATORS_TOKEN` ([#159](https://gitlab.kozhindev.com/steroids/steroids-nest/-/issues/159))
+
+## [0.4.0](https://github.com/steroids/nest-auth/compare/0.3.0...0.4.0) (2026-03-25)
+
+[Migration guide](docs/MigrationGuide.md#040-2026-03-25)
+
+### Features
+- Отправка кода по разным каналам была вынесена из `AuthConfirmService` в `authConfirmProviders`, которые провайдятся токеном `AUTH_CONFIRM_PROVIDERS_TOKEN`
+
 ### Fixes
 - Замена ts-типа `Date` на `string` у полей с `DateTimeField` или `StringField` декоратором
+- Функция `generateCode` вынесена из `domain/services/AuthConfirmService.ts` в `domain/utils/index.ts`
+- Добавлен `GetAuthConfirmTargetFieldUseCase` для получения поля из пользователя, которое надо взять для отправки кода подтверждения, провайдится по токену `GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN`
 
 ## [0.3.0](https://github.com/steroids/nest-auth/compare/0.2.3...0.3.0) (2025-12-26)
 
