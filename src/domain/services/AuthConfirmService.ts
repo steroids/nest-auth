@@ -6,7 +6,6 @@ import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
 import {ValidationHelper} from '@steroidsjs/nest/usecases/helpers/ValidationHelper';
 import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
 import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
-import {IType} from '@steroidsjs/nest/usecases/interfaces/IType';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Inject, Injectable} from '@nestjs/common';
 import {IAuthConfirmRepository} from '../interfaces/IAuthConfirmRepository';
@@ -18,7 +17,7 @@ import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../interfaces/
 import {AuthConfirmSendCodeDto} from '../dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmSaveDto} from '../dtos/AuthConfirmSaveDto';
 import {AuthConfirmProviderType} from '../types/AuthConfirmProviderType';
-import {AuthConfirmTargetService, IResolvedTargetInfo} from "./AuthConfirmTargetService";
+import {AuthConfirmTargetService} from "./AuthConfirmTargetService";
 
 
 @Injectable()
@@ -39,16 +38,20 @@ export class AuthConfirmService extends CrudService<
         super();
     }
 
-    async sendCode<TSchema>(
+    async sendCode(
         dto: AuthConfirmSendCodeDto,
-        providerType: AuthConfirmProviderType,
+        providerType: AuthConfirmProviderType | null,
         context: ContextDto,
-        schemaClass: IType<TSchema> | null,
-        resolvedTargetInfo?: IResolvedTargetInfo,
+        schemaClass = null,
+        resolvedTargetInfo = null,
     ): Promise<AuthConfirmModel> {
         await ValidationHelper.validate(dto, {context});
 
         const config: IAuthConfirmConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm;
+
+        if (!providerType) {
+            providerType = config.providerType
+        }
 
         if (!resolvedTargetInfo) {
             resolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target)
@@ -72,7 +75,7 @@ export class AuthConfirmService extends CrudService<
                     }),
             );
             if (model) {
-                return schemaClass ? DataMapper.create(schemaClass as unknown as any, model) : model;
+                return schemaClass ? DataMapper.create(schemaClass, model) : model;
             }
         }
 

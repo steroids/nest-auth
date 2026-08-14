@@ -45,7 +45,7 @@ export class AuthPhoneController {
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.SMS,
-            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -59,7 +59,7 @@ export class AuthPhoneController {
     ) {
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             NotifierProviderType.CALL,
-            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
@@ -75,7 +75,7 @@ export class AuthPhoneController {
 
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
             providerType,
-            DataMapper.create(AuthenticateWithCodeDto, {target: dto.target}),
+            DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );
         return DataMapper.create(AuthConfirmSchema, authConfirm);
