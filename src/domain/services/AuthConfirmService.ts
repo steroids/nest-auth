@@ -60,6 +60,12 @@ export class AuthConfirmService extends CrudService<
 
         const targetField = this.getAuthConfirmTargetFieldUseCase.handle(providerType);
 
+        const purpose = dto.purpose || AUTH_CONFIRM_DEFAULT_PURPOSE;
+
+        if (!dto.purpose) {
+            console.warn(`Purpose not provided; using "${AUTH_CONFIRM_DEFAULT_PURPOSE}" fallback. It can lead to confirm code check errors`);
+        }
+
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
         // TODO Не уверен насколько это правильная логика.. Нужно подумать.
         if (config.repeatLimitSec > 0) {
@@ -73,6 +79,7 @@ export class AuthConfirmService extends CrudService<
                     ])
                     .andWhere({
                         [targetField]: dto.target,
+                        purpose,
                         isConfirmed: false,
                     }),
             );
@@ -97,17 +104,13 @@ export class AuthConfirmService extends CrudService<
             }
         }
 
-        if (!dto.purpose) {
-            console.warn(`Purpose not provided; using "${AUTH_CONFIRM_DEFAULT_PURPOSE}" fallback. It can lead to confirm code check errors`)
-        }
-
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
                 [targetField]: dto.target,
                 code,
                 providerName: providerType,
-                purpose: dto.purpose || AUTH_CONFIRM_DEFAULT_PURPOSE,
+                purpose,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
