@@ -22,6 +22,7 @@ import {
     GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
     IGetAuthConfirmTargetFieldUseCase
 } from '../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
+import {AUTH_CONFIRM_DEFAULT_PURPOSE} from '../constants';
 
 @Injectable()
 export class AuthConfirmService extends CrudService<
@@ -96,14 +97,17 @@ export class AuthConfirmService extends CrudService<
             }
         }
 
+        if (!dto.purpose) {
+            console.warn(`Purpose not provided; using "${AUTH_CONFIRM_DEFAULT_PURPOSE}" fallback. It can lead to confirm code check errors`)
+        }
+
         // Сохраняем в БД
         const model = await this.repository.create(
             DataMapper.create(AuthConfirmModel, {
                 [targetField]: dto.target,
                 code,
                 providerName: providerType,
-                purpose: dto.purpose,
-                providerName,
+                purpose: dto.purpose || AUTH_CONFIRM_DEFAULT_PURPOSE,
                 expireTime: formatISO9075(addMinutes(new Date(), config.expireMins)),
                 lastSentTime: formatISO9075(new Date()),
                 attemptsCount: config.attemptsCount,
