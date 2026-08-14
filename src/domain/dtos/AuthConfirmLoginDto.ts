@@ -13,9 +13,4 @@ export class AuthConfirmLoginDto {
     })
     code: string;
 
-    @StringField({
-        label: 'Purpose',
-        required: false,
-    })
-    purpose?: string;
 }
