@@ -10,6 +10,7 @@ import {
     UpdateTimeField, IntegerField, UidField, RelationIdField,
 } from '@steroidsjs/nest/infrastructure/decorators/fields';
 import {UserModel} from '@steroidsjs/nest-modules/user/models/UserModel';
+import {AUTH_CONFIRM_DEFAULT_PURPOSE} from '../constants';
 
 /**
  * Отправленные коды подтверждений
@@ -56,9 +57,9 @@ export class AuthConfirmModel {
 
     @StringField({
         label: 'Назначение кода',
-        nullable: true,
+        defaultValue: AUTH_CONFIRM_DEFAULT_PURPOSE,
     })
-    purpose?: string;
+    purpose: string;
 
     @StringField({
         label: 'Системное имя провайдера для отправки',
