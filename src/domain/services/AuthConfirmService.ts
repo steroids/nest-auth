@@ -50,11 +50,11 @@ export class AuthConfirmService extends CrudService<
         const config: IAuthConfirmConfig = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm;
 
         if (!providerType) {
-            providerType = config.providerType
+            providerType = config.providerType;
         }
 
         if (!resolvedTargetInfo) {
-            resolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target)
+            resolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target);
         }
 
         // Не отправляем повторно смс, если она была отправлена недавно. Используем ту же модель
@@ -111,7 +111,7 @@ export class AuthConfirmService extends CrudService<
             }),
         );
 
-        return schemaClass ? DataMapper.create(schemaClass as unknown as any, model) : model;
+        return schemaClass ? DataMapper.create(schemaClass, model) : model;
     }
 
     async confirmCode(dto: AuthConfirmLoginDto) {

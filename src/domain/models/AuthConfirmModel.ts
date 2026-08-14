@@ -35,7 +35,7 @@ export class AuthConfirmModel {
     userId: number;
 
     @StringField({
-        label: 'Цель отправки кода',
+        label: 'Получатель кода',
     })
     target: string;
 
