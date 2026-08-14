@@ -6,4 +6,9 @@ export class AuthConfirmSendCodeDto {
 
     @IntegerField()
     userId: number;
+
+    @StringField({
+        required: false,
+    })
+    purpose?: string;
 }

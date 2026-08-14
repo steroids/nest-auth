@@ -12,4 +12,5 @@ export class AuthConfirmLoginDto {
         required: true,
     })
     code: string;
+
 }

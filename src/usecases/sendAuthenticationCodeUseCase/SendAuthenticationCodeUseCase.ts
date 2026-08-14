@@ -11,6 +11,7 @@ import {
 import {AuthConfirmProviderType} from '../../domain/types/AuthConfirmProviderType';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
+import {AUTH_CONFIRM_LOGIN_PURPOSE} from '../../domain/constants';
 
 @Injectable()
 export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUseCase {
@@ -45,6 +46,7 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
         const sendCodeDto: AuthConfirmSendCodeDto = {
             userId: user.id,
             target: dto.target,
+            purpose: AUTH_CONFIRM_LOGIN_PURPOSE,
         };
 
         return this.authConfirmService.sendCode(sendCodeDto, providerType, context);
