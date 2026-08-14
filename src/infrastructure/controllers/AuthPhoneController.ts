@@ -4,6 +4,8 @@ import {Body, Controller, Inject, Post, Res, UseGuards} from '@nestjs/common';
 import {ContextDto} from '@steroidsjs/nest/usecases/dtos/ContextDto';
 import {Context} from '@steroidsjs/nest/infrastructure/decorators/Context';
 import {DataMapper} from '@steroidsjs/nest/usecases/helpers/DataMapper';
+import {ModuleHelper} from '@steroidsjs/nest/infrastructure/helpers/ModuleHelper';
+import {AuthModule} from '@steroidsjs/nest-modules/auth/AuthModule';
 import {Response} from 'express';
 import {CodeAuthGuard} from '../guards/CodeAuthGuard';
 import {AuthenticateWithCodeDto} from '../../usecases/sendAuthenticationCodeUseCase/dtos/AuthenticateWithCodeDto';
@@ -21,6 +23,7 @@ import {
 import {AuthConfirmPhoneDto} from '../../domain/dtos/AuthConfirmPhoneDto';
 import {AuthCookieLoginSchema} from '../schemas/AuthCookieLoginSchema';
 import {AuthCookieService} from '../services/AuthCookieService';
+import {IAuthModuleConfig} from '../config';
 
 @ApiTags('Авторизация по телефону')
 @Controller('/auth/phone')
@@ -68,8 +71,10 @@ export class AuthPhoneController {
         @Body() dto: AuthConfirmPhoneDto,
         @Context() context: ContextDto,
     ) {
+        const providerType = ModuleHelper.getConfig<IAuthModuleConfig>(AuthModule).confirm.providerType;
+
         const authConfirm = await this.sendAuthenticationCodeUseCase.handle(
-            null,
+            providerType,
             DataMapper.create(AuthenticateWithCodeDto, {target: dto.phone}),
             context,
         );

@@ -12,10 +12,7 @@ export class AuthConfirmSaveDto {
     userId: number;
 
     @ExtendField(AuthConfirmModel)
-    email: string;
-
-    @ExtendField(AuthConfirmModel)
-    phone: string;
+    target: string;
 
     @ExtendField(AuthConfirmModel)
     code: string;

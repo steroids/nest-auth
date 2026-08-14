@@ -7,10 +7,6 @@ import {Inject, Injectable} from '@nestjs/common';
 import {IAuthConfirmConfig} from '../../config';
 import {AuthConfirmProviderTypeEnum} from '../../../domain/enums/AuthConfirmProviderTypeEnum';
 import {generateCode} from '../../../domain/utils';
-import {
-    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-    IGetAuthConfirmTargetFieldUseCase,
-} from '../../../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
 import {BaseAuthConfirmProvider} from './BaseAuthConfirmProvider';
 
 @Injectable()
@@ -18,10 +14,8 @@ export class AuthConfirmSmsProvider extends BaseAuthConfirmProvider {
     constructor(
         @Inject(INotifierService)
         protected readonly notifierService: INotifierService,
-        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
-        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
     ) {
-        super(notifierService, getAuthConfirmTargetFieldUseCase);
+        super(notifierService);
     }
 
     readonly type = AuthConfirmProviderTypeEnum.SMS;

@@ -4,13 +4,10 @@ import {Inject, Injectable, NotFoundException} from '@nestjs/common';
 import {AuthConfirmService} from '../../domain/services/AuthConfirmService';
 import {AuthConfirmSendCodeDto} from '../../domain/dtos/AuthConfirmSendCodeDto';
 import {AuthConfirmModel} from '../../domain/models/AuthConfirmModel';
-import {
-    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-    IGetAuthConfirmTargetFieldUseCase,
-} from '../getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
 import {AuthConfirmProviderType} from '../../domain/types/AuthConfirmProviderType';
 import {AuthenticateWithCodeDto} from './dtos/AuthenticateWithCodeDto';
 import {ISendAuthenticationCodeUseCase} from './ISendAuthenticationCodeUseCase';
+import {AuthConfirmTargetService, IResolvedTargetInfo} from "../../domain/services/AuthConfirmTargetService";
 
 @Injectable()
 export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUseCase {
@@ -18,23 +15,23 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
         protected readonly authConfirmService: AuthConfirmService,
         @Inject(IUserService)
         protected readonly userService: IUserService,
-        @Inject(GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN)
-        protected readonly getAuthConfirmTargetFieldUseCase: IGetAuthConfirmTargetFieldUseCase,
-    ) {}
+        protected readonly authConfirmTargetService: AuthConfirmTargetService,
+    ) {
+    }
 
     public async handle(
-        providerType: AuthConfirmProviderType | null,
+        providerType: AuthConfirmProviderType,
         dto: AuthenticateWithCodeDto,
         context: ContextDto,
     ): Promise<AuthConfirmModel> {
-        const targetField = this.getAuthConfirmTargetFieldUseCase.handle(providerType);
+        const resolvedTargetInfo: IResolvedTargetInfo = await this.authConfirmTargetService.resolveTargetInfo(providerType, dto.target);
 
         const user = await this.userService
             .createQuery()
             .where([
                 '=',
-                targetField,
-                dto.target,
+                resolvedTargetInfo.targetField,
+                resolvedTargetInfo.target,
             ])
             .one();
 
@@ -44,9 +41,9 @@ export class SendAuthenticationCodeUseCase implements ISendAuthenticationCodeUse
 
         const sendCodeDto: AuthConfirmSendCodeDto = {
             userId: user.id,
-            target: dto.target,
+            target: resolvedTargetInfo.target,
         };
 
-        return this.authConfirmService.sendCode(sendCodeDto, providerType, context);
+        return this.authConfirmService.sendCode(sendCodeDto, providerType, context, null, resolvedTargetInfo);
     }
 }

@@ -4,8 +4,12 @@ import {UserModule} from '@steroidsjs/nest-modules/user/UserModule';
 import {FileModule} from '@steroidsjs/nest-modules/file/FileModule';
 import {NotifierModule} from '@steroidsjs/nest-modules/notifier/NotifierModule';
 import {forwardRef, ModuleMetadata} from '@nestjs/common';
-import {IAuthUpdateUserOwnPasswordUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
-import {IAuthRevokeUserActiveLoginsUseCase} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
+import {
+    IAuthUpdateUserOwnPasswordUseCase
+} from '@steroidsjs/nest-modules/auth/usecases/IAuthUpdateUserOwnPasswordUseCase';
+import {
+    IAuthRevokeUserActiveLoginsUseCase
+} from '@steroidsjs/nest-modules/auth/usecases/IAuthRevokeUserActiveLoginsUseCase';
 import {IValidator} from '@steroidsjs/nest/usecases/interfaces/IValidator';
 import {AuthService} from '../domain/services/AuthService';
 import {AuthLoginService} from '../domain/services/AuthLoginService';
@@ -20,17 +24,19 @@ import {AuthRoleService} from '../domain/services/AuthRoleService';
 import {AuthFilePermissionService} from '../domain/services/AuthFilePermissionService';
 import {AuthenticateWithCodeUseCase} from '../usecases/authenticateWithCodeUseCase/AuthenticateWithCodeUseCase';
 import {SendAuthenticationCodeUseCase} from '../usecases/sendAuthenticationCodeUseCase/SendAuthenticationCodeUseCase';
-import {AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
-import {SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {
+    AUTHENTICATE_WITH_CODE_USE_CASE_TOKEN
+} from '../usecases/authenticateWithCodeUseCase/IAuthenticateWithCodeUseCase';
+import {
+    SEND_AUTHENTICATION_CODE_USE_CASE_TOKEN
+} from '../usecases/sendAuthenticationCodeUseCase/ISendAuthenticationCodeUseCase';
+import {
+    AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
+    IAuthConfirmTargetValidator,
+} from '../domain/interfaces/IAuthConfirmTargetValidator';
 import {AuthUpdateUserOwnPasswordUseCase} from '../usecases/updatePassword/AuthUpdateUserOwnPasswordUseCase';
 import {AuthRevokeUserActiveLoginsUseCase} from '../usecases/revokeUserActiveLogins/AuthRevokeUserActiveLoginsUseCase';
 import {AUTH_CONFIRM_PROVIDERS_TOKEN, IAuthConfirmProvider} from '../domain/interfaces/IAuthConfirmProvider';
-import {
-    GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-} from '../usecases/getAuthConfirmTargetField/IGetAuthConfirmTargetFieldUseCase';
-import {
-    GetAuthConfirmTargetFieldUseCase,
-} from '../usecases/getAuthConfirmTargetField/GetAuthConfirmTargetFieldUseCase';
 import {SessionService} from './services/SessionService';
 import {AuthLoginRepository} from './repositories/AuthLoginRepository';
 import {AuthPermissionRepository} from './repositories/AuthPermissionRepository';
@@ -40,6 +46,7 @@ import {AuthConfirmRepository} from './repositories/AuthConfirmRepository';
 import {LoginSmsCodeStrategy} from './strategies/LoginSmsCodeStrategy';
 import {AuthRoleRepository} from './repositories/AuthRoleRepository';
 import {authConfirmProviders} from './services/authConfirmProviders';
+import {authConfirmTargetValidators} from './services/authConfirmTargetValidators';
 import {AuthController} from './controllers/AuthController';
 import {AuthEmailController} from './controllers/AuthEmailController';
 import {AuthFilePermissionController} from './controllers/AuthFilePermissionController';
@@ -53,6 +60,7 @@ import {GeneratePermissionsMigrationCommand} from './commands/GeneratePermission
 import {AuthNewPermissionsCheckService} from './services/AuthNewPermissionsCheckService';
 import {AuthCookieController} from './controllers/AuthCookieController';
 import {AuthCookieService} from './services/AuthCookieService';
+import {AuthConfirmTargetService} from "../domain/services/AuthConfirmTargetService";
 
 export default (config: IAuthModuleConfig): ModuleMetadata => ({
     imports: [
@@ -98,15 +106,18 @@ export default (config: IAuthModuleConfig): ModuleMetadata => ({
         AuthRoleService,
         AuthService,
         ...authConfirmProviders,
+        ...authConfirmTargetValidators,
         {
             provide: AUTH_CONFIRM_PROVIDERS_TOKEN,
             useFactory: (...providers: IAuthConfirmProvider[]) => providers,
             inject: authConfirmProviders,
         },
         {
-            provide: GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN,
-            useClass: GetAuthConfirmTargetFieldUseCase,
+            provide: AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN,
+            useFactory: (...validators: IAuthConfirmTargetValidator[]) => validators,
+            inject: authConfirmTargetValidators,
         },
+        AuthConfirmTargetService,
         AuthConfirmService,
         AuthLoginService,
         AuthPermissionsService,

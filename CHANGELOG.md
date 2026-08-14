@@ -1,5 +1,18 @@
 # Steroids nest-auth Changelog
 
+## Unreleased
+
+[Migration guide](docs/MigrationGuide.md#unreleased)
+
+### Changes
+
+- Поля `email` и `phone` в `AuthConfirmModel` и связанных DTO и схемах заменены единым полем `target`.
+- Добавлены `AuthConfirmTargetService`, контракт `IAuthConfirmTargetValidator` и стандартные валидаторы для email и телефона.
+
+### Removed
+
+- Удалены `GetAuthConfirmTargetFieldUseCase`, `IGetAuthConfirmTargetFieldUseCase` и `GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN`; их ответственность перенесена в `AuthConfirmTargetService`.
+
 ## [0.8.0](https://github.com/steroids/nest-auth/compare/0.7.0...0.8.0) (2026-08-11)
 
 [Migration guide](docs/MigrationGuide.md#080-2026-08-11)
