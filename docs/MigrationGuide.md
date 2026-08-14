@@ -1,5 +1,88 @@
 # Steroids Nest Migration Guide
 
+## Unreleased
+
+### Переход `AuthConfirmModel` на единый `target`
+
+Поля `email` и `phone` в `AuthConfirmModel`, `AuthConfirmSaveDto`, `AuthConfirmSaveInputDto` и
+`AuthConfirmSchema` заменены единым полем `target`. Канал отправки по-прежнему определяется полем
+`providerName`.
+
+При обновлении проекта создайте миграцию таблицы `AuthConfirmTable` в следующем порядке:
+
+1. Добавьте nullable-колонку `target`.
+2. Перенесите в неё значения из `email` для email-провайдера и из `phone` для телефонных провайдеров
+   (`call`, `sms`, `voice`).
+3. Убедитесь, что у всех сохраняемых записей заполнен `target`, и сделайте колонку обязательной.
+4. Удалите колонки `email` и `phone`.
+
+Если исторические записи подтверждений сохранять не требуется, вместо переноса данных можно удалить
+старые колонки и сразу создать обязательную колонку `target`.
+
+В коде приложения замените обращения к `AuthConfirmModel.email` и `AuthConfirmModel.phone` на
+`AuthConfirmModel.target`. То же относится к кастомным DTO, схемам, запросам и переопределениям
+`AuthConfirmService`.
+
+### Обработка target и кастомные провайдеры
+
+`GetAuthConfirmTargetFieldUseCase`, `IGetAuthConfirmTargetFieldUseCase` и токен
+`GET_AUTH_CONFIRM_TARGET_FIELD_USE_CASE_TOKEN` удалены. Определение поля пользователя, нормализация и
+валидация target теперь выполняются через `AuthConfirmTargetService`.
+
+Для стандартных провайдеров уже зарегистрированы
+[email-валидатор](../src/infrastructure/services/authConfirmTargetValidators/EmailAuthConfirmTargetValidator.ts)
+и [phone-валидатор](../src/infrastructure/services/authConfirmTargetValidators/PhoneAuthConfirmTargetValidator.ts).
+Если приложение добавляет собственный провайдер подтверждения, для него необходимо реализовать
+`IAuthConfirmTargetValidator` и зарегистрировать реализацию в `AUTH_CONFIRM_TARGET_VALIDATORS_TOKEN`:
+
+```ts
+export interface IAuthConfirmTargetValidator {
+    readonly providerTypes: AuthConfirmProviderType[];
+    readonly targetField: AuthConfirmTargetField;
+    normalize(target: string): string;
+    validate(target: string): Promise<void> | void;
+}
+```
+
+Стандартный тип `AuthConfirmTargetField` содержит поля `email` и `phone` из `UserModel`. Если модель
+пользователя в приложении расширена дополнительным полем, например `tg`, и это поле используется как target,
+можно взять `AuthConfirmTargetField` за основу и определить собственный тип:
+
+```ts
+export type AppAuthConfirmTargetField = Extract<
+    keyof AppUserModel,
+    AuthConfirmTargetField | 'tg'
+>;
+```
+
+Затем этот тип следует использовать для `targetField` в валидаторе нового канала:
+
+```ts
+export class TgAuthConfirmTargetValidator implements Omit<IAuthConfirmTargetValidator, 'targetField'> {
+    readonly providerTypes: AuthConfirmProviderType[] = ['tg'];
+
+    readonly targetField: AppAuthConfirmTargetField = 'tg';
+
+    normalize(target: string): string {
+        return target.trim().replace(/^@/, '');
+    }
+
+    validate(target: string): void {
+        if (!target) {
+            throw new ValidationException({
+                target: 'Некорректный Telegram username',
+            });
+        }
+    }
+}
+```
+
+Аналогично можно добавить любое другое поле модели пользователя. Использование `Extract` сохраняет связь
+типа с реально существующими полями модели, в отличие от обычного строкового union.
+
+`targetField` определяет поле пользователя, по которому выполняется поиск, `normalize` приводит target к
+формату хранения, а `validate` проверяет полученное значение. Асинхронная валидация поддерживается.
+
 ## [0.8.0](../CHANGELOG.md#080-2026-08-11) (2026-08-11)
 
 ### Поддержка NestJS 11
